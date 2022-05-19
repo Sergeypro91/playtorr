@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./.idea/pt.svg" width="200" alt="Nest Logo" />
+  <img src="https://raw.githubusercontent.com/Sergeypro91/playtorr/d994e4ad74639da77523100a34ddcd45d56454ca/pt.svg" width="200" alt="PlayTorr Logo" />
 </p>
 
 [circleci-image]: ./idea/pt.svg
@@ -46,4 +46,4 @@ $ npm run test:cov
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+PlayTorr is [MIT licensed](LICENSE).

@@ -10,7 +10,6 @@ import {
 import { AuthDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { ALREADY_REGISTERED_ERROR } from './auth.constants';
-import { runInThisContext } from 'vm';
 
 @Controller('auth')
 export class AuthController {
@@ -32,12 +31,12 @@ export class AuthController {
 	@HttpCode(200)
 	@Post('login')
 	async login(@Body() { loginName, password }: AuthDto) {
-		const { email } = await this.authService.validateUser(
+		const { email, role } = await this.authService.validateUser(
 			loginName,
 			password,
 		);
 
-		return this.authService.login(email);
+		return this.authService.login({ email, role });
 	}
 
 	@HttpCode(200)
