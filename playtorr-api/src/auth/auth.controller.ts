@@ -2,8 +2,10 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	Get,
 	HttpCode,
 	Post,
+	Query,
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
@@ -11,6 +13,7 @@ import { AuthDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { ALREADY_REGISTERED_ERROR } from './auth.constants';
 import { TelegramService } from '../telegram/telegram.service';
+import { TelegramUserDto } from '../telegram/dto/telegram.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,7 +25,7 @@ export class AuthController {
 	@UsePipes(new ValidationPipe())
 	@Post('register')
 	async register(@Body() dto: AuthDto) {
-		const oldUser = await this.authService.findUser(dto.loginName);
+		const oldUser = await this.authService.findUserByEmail(dto.loginName);
 
 		if (oldUser) {
 			throw new BadRequestException(ALREADY_REGISTERED_ERROR);
@@ -45,12 +48,16 @@ export class AuthController {
 
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
-	@Post('telegram')
-	async telegram() {
-		return this.telegramService.sendMessage(
-			'regular_message',
-			'Test message',
+	@Get('telegram')
+	async telegram(@Query() query: TelegramUserDto) {
+		await this.telegramService.sendMessage(
+			'enter',
+			'Вы вошли как',
+			query.id,
+			query,
 		);
+
+		return query;
 	}
 
 	@HttpCode(200)

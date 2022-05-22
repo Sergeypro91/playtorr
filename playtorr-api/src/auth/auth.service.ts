@@ -30,15 +30,19 @@ export class AuthService {
 		return newUser.save();
 	}
 
-	async findUser(email: string) {
+	async findUserByEmail(email: string) {
 		return this.userModel.findOne({ email }).exec();
+	}
+
+	async findUserByTgId(tgId: string) {
+		return this.userModel.findOne({ tgId }).exec();
 	}
 
 	async validateUser(
 		email: string,
 		password: string,
 	): Promise<Pick<UserModel, 'email' | 'role'>> {
-		const user = await this.findUser(email);
+		const user = await this.findUserByEmail(email);
 
 		if (!user) {
 			throw new UnauthorizedException(USER_NOT_FOUND_ERROR);

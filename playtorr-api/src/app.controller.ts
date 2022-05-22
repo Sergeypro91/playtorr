@@ -17,7 +17,7 @@ export class AppController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get()
 	async getHello() {
-		const user = await this.authService.findUser('test1@mail.ru');
+		const user = await this.authService.findUserByEmail('test1@mail.ru');
 		return user;
 	}
 }

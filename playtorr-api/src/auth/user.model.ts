@@ -15,6 +15,9 @@ export class UserModel extends TimeStamps {
 	@prop({ unique: true })
 	email: string;
 
+	@prop({ unique: true })
+	tgId: string;
+
 	@prop()
 	passwordHash: string;
 

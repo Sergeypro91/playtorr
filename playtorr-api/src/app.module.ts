@@ -19,7 +19,7 @@ import { getTelegramConfig } from './configs/telegram.config';
 		}),
 		AuthModule,
 		TelegramModule.forRootAsync({
-			imports: [ConfigModule],
+			imports: [ConfigModule, AuthModule],
 			inject: [ConfigService],
 			useFactory: getTelegramConfig,
 		}),
