@@ -5,6 +5,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { getMongoConfig } from './configs/mongo.config';
+import { TelegramModule } from './telegram/telegram.module';
+import { getTelegramConfig } from './configs/telegram.config';
 
 @Module({
 	controllers: [AppController],
@@ -16,6 +18,11 @@ import { getMongoConfig } from './configs/mongo.config';
 			useFactory: getMongoConfig,
 		}),
 		AuthModule,
+		TelegramModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: getTelegramConfig,
+		}),
 	],
 	providers: [AppService],
 })

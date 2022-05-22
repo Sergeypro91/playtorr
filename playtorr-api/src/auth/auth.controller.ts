@@ -10,10 +10,14 @@ import {
 import { AuthDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { ALREADY_REGISTERED_ERROR } from './auth.constants';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		private readonly telegramService: TelegramService,
+	) {}
 
 	@UsePipes(new ValidationPipe())
 	@Post('register')
@@ -37,6 +41,16 @@ export class AuthController {
 		);
 
 		return this.authService.login({ email, role });
+	}
+
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Post('telegram')
+	async telegram() {
+		return this.telegramService.sendMessage(
+			'regular_message',
+			'Test message',
+		);
 	}
 
 	@HttpCode(200)

@@ -9,6 +9,7 @@ import { getJWTConfig } from '../configs/jwt.config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
+import { TelegramModule } from '../telegram/telegram.module';
 
 @Module({
 	controllers: [AuthController],
@@ -28,7 +29,9 @@ import { RolesGuard } from './guards/roles.guard';
 			useFactory: getJWTConfig,
 		}),
 		PassportModule,
+		TelegramModule,
 	],
 	providers: [AuthService, JwtStrategy, RolesGuard],
+	exports: [AuthService],
 })
 export class AuthModule {}
