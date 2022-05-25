@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { Telegraf, Markup } from 'telegraf';
+import { Markup, Scenes, session, Telegraf } from 'telegraf';
 import {
 	MyBotTelegramOptions,
 	MyTelegramBotMessageType,
@@ -10,6 +10,7 @@ import {
 	AUTH_LOGIN_MENU,
 	BACK_BTN,
 	CONGRATS_STICKER,
+	PLEASE_USE_MENU_PROMPT,
 	SOME_ERROR_HAPPENS,
 	SORRY_STICKER,
 	TELEGRAM_MODULE_OPTIONS,
@@ -18,59 +19,54 @@ import {
 } from './telegram.constants';
 import { TelegramUserDto } from './dto/telegram.dto';
 import { AuthService } from '../auth/auth.service';
+import { BaseBg, BaseFg, loggerBuilder } from '../utils/logerBuilder';
+import { genStartScene } from './scenes/telegram.scene.start';
+import { genAuthScene } from './scenes/telegram.scene.auth';
+import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
 
 @Injectable()
 export class TelegramService {
-	bot: Telegraf;
+	bot: Telegraf<Scenes.SceneContext>;
 	options: MyBotTelegramOptions;
+	startScene: Scenes.BaseScene<Scenes.SceneContext<Scenes.SceneSessionData>>;
+	authScene: Scenes.BaseScene<Scenes.SceneContext<Scenes.SceneSessionData>>;
+	addMovieScene: Scenes.BaseScene<
+		Scenes.SceneContext<Scenes.SceneSessionData>
+	>;
 
 	constructor(
 		@Inject(TELEGRAM_MODULE_OPTIONS) options: MyBotTelegramOptions,
 		private readonly authService: AuthService,
 	) {
-		this.bot = new Telegraf(options.token);
+		this.bot = new Telegraf<Scenes.SceneContext>(options.token);
 		this.options = options;
+		this.startScene = genStartScene.bind(this)();
+		this.authScene = genAuthScene.bind(this)();
+		this.addMovieScene = genAddMovieScene.bind(this)();
 
-		// this.bot.use(Telegraf.log());
+		const stage = new Scenes.Stage<Scenes.SceneContext>(
+			[this.startScene, this.authScene, this.addMovieScene],
+			{ default: 'startScene' },
+		);
 
-		// Telegram bot functions
-		this.startBot();
-		this.enter();
-		this.addMovie();
-		this.back();
-		this.toMainMenu();
+		this.bot.use(session());
+		this.bot.use(stage.middleware());
 		this.launchBot();
+		this.startBot();
 		this.stopBot();
-	}
-
-	loginBtn = Markup.inlineKeyboard([
-		Markup.button.login(AUTH_BTN, TELEGRAM_REDIRECT_URL, {
-			bot_username: 'PlayTorrBot',
-			request_write_access: true,
-		}),
-	]);
-
-	startBot() {
-		this.bot.start(async (ctx) => {
-			return await ctx.reply(
-				'Для работы с ботом воспользуйтесь "Меню" ниже.',
-				Markup.keyboard([
-					[AUTH_LOGIN_MENU, ADD_MOVIE_MENU],
-					[BACK_BTN, TO_MAIN_BTN],
-				])
-					.oneTime()
-					.resize(),
-			);
-		});
 	}
 
 	launchBot() {
 		this.bot
 			.launch()
 			.then(() => {
-				console.log(
-					'\x1b[30m\x1b[42m%s\x1b[0m',
+				loggerBuilder(
+					'Telegram',
 					'Telegram Bot is started!',
+					BaseFg.GREEN,
+					'',
+					BaseFg.BLACK,
+					BaseBg.GREEN,
 				);
 			})
 			.catch((err) => {
@@ -78,34 +74,9 @@ export class TelegramService {
 			});
 	}
 
-	enter() {
-		this.bot.hears(AUTH_LOGIN_MENU, async (ctx) => {
-			const userInfo = ctx.update.message.from;
-			const userImage = await this.getUserImageUrl(userInfo.id);
-
-			console.log('USER DATA', { userInfo, userImage });
-
-			const user = await this.authService.findUserByTgId(
-				`${userInfo.id}`,
-			);
-
-			if (!user) {
-				console.log('USER DIDNT FOUND');
-				try {
-					await ctx.reply('👇🏼', this.loginBtn);
-				} catch (err) {
-					await this.bot.telegram.sendSticker(
-						`${userInfo.id}`,
-						SORRY_STICKER,
-					);
-					ctx.reply(SOME_ERROR_HAPPENS);
-					console.log(
-						'\x1b[30m\x1b[43m%s\x1b[0m',
-						'Handled Error',
-						err,
-					);
-				}
-			}
+	startBot() {
+		this.bot.start(async (ctx) => {
+			ctx.scene.enter('startScene');
 		});
 	}
 
@@ -127,28 +98,46 @@ export class TelegramService {
 		);
 	}
 
+	onMessage() {
+		this.bot.on(['message'], (ctx) => {
+			const thUserId = ctx.update.message.from.id;
+			this.sendMessage(
+				'regular_message',
+				PLEASE_USE_MENU_PROMPT,
+				`${thUserId}`,
+			);
+		});
+	}
+
 	stopBot() {
 		// Enable graceful stop
 		process.once('SIGINT', () => this.bot.stop('SIGINT'));
 		process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
-		console.log('\x1b[30m\x1b[41m%s\x1b[0m', 'Telegram Bot is stopped!');
+		loggerBuilder(
+			'Telegram',
+			'Telegram Bot is stopped!',
+			BaseFg.RED,
+			'',
+			BaseFg.BLACK,
+			BaseBg.RED,
+		);
 	}
 
 	async sendMessage(
 		type: MyTelegramBotMessageType,
 		message: string,
-		chatId: string = this.options.chatId,
-		userInfo?: TelegramUserDto,
+		tgUserId: string = this.options.chatId,
+		tgUserInfo?: TelegramUserDto,
 	) {
 		try {
 			const messageBuilder = `${message}${
-				userInfo
+				tgUserInfo
 					? ` ${
-							userInfo.username
-								? userInfo.username
-								: `${userInfo.first_name} ${
-										userInfo.last_name
-											? userInfo.last_name
+							tgUserInfo.username
+								? tgUserInfo.username
+								: `${tgUserInfo.first_name} ${
+										tgUserInfo.last_name
+											? tgUserInfo.last_name
 											: ''
 								  }`
 					  }`
@@ -157,20 +146,20 @@ export class TelegramService {
 
 			if (type === 'enter') {
 				await this.bot.telegram.sendSticker(
-					`${chatId}`,
+					`${tgUserId}`,
 					CONGRATS_STICKER,
 				);
 			}
 
-			await this.bot.telegram.sendMessage(chatId, messageBuilder);
+			await this.bot.telegram.sendMessage(tgUserId, messageBuilder);
 		} catch (err) {
 			throw new BadRequestException(err.response.description, err);
 		}
 	}
 
-	async getUserImageUrl(userId: number) {
+	async getUserImageUrl(tgUserId: number) {
 		return this.bot.telegram
-			.getUserProfilePhotos(userId, 0, 1)
+			.getUserProfilePhotos(tgUserId, 0, 1)
 			.then(async (data) => {
 				const fileId = data.photos[0][0].file_id;
 				const { href } = await this.bot.telegram.getFileLink(fileId);
