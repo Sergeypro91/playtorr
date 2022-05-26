@@ -1,27 +1,29 @@
 import { Markup, Scenes } from 'telegraf';
-import { AUTH_LOGIN_MENU, TO_MAIN_BTN } from '../telegram.constants';
+import {
+	TO_MAIN_BTN,
+	AUTH_LOGIN_MENU,
+	PLEASE_USE_MENU_PROMPT,
+} from '../telegram.constants';
 
 export function genAddMovieScene() {
-	// Handler factories
-	const { enter, leave } = Scenes.Stage;
-
-	// Start scene
+	// AddMovie scene
 	const addMovieScene = new Scenes.BaseScene<Scenes.SceneContext>(
 		'addMovieScene',
 	);
-	addMovieScene.enter(async (ctx) =>
+	const start = async (ctx: Scenes.SceneContext<Scenes.SceneSessionData>) =>
 		ctx.reply(
 			'В данном разделе Вы можете добавлять новые Торренты в загрузку.',
 			Markup.keyboard([[TO_MAIN_BTN, AUTH_LOGIN_MENU]])
 				.oneTime()
 				.resize(),
-		),
-	);
+		);
 
-	addMovieScene.hears(TO_MAIN_BTN, enter<Scenes.SceneContext>('startScene'));
-	addMovieScene.hears(
-		AUTH_LOGIN_MENU,
-		enter<Scenes.SceneContext>('authScene'),
+	addMovieScene.enter(start);
+	addMovieScene.start(start);
+	addMovieScene.hears(TO_MAIN_BTN, this.enter('startScene'));
+	addMovieScene.hears(AUTH_LOGIN_MENU, this.enter('authScene'));
+	addMovieScene.on('message', async (ctx) =>
+		ctx.reply(PLEASE_USE_MENU_PROMPT),
 	);
 
 	return addMovieScene;

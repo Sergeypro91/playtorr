@@ -1,42 +1,50 @@
-import { Markup, Scenes, Telegraf } from 'telegraf';
-import { ADD_MOVIE_MENU, TO_MAIN_BTN } from '../telegram.constants';
+import { Scenes } from 'telegraf';
+import {
+	AUTH_BTN,
+	LOGIN_BTN,
+	TO_MAIN_BTN,
+	ADD_MOVIE_MENU,
+	PLEASE_USE_MENU_PROMPT,
+} from '../telegram.constants';
 
 export function genAuthScene() {
-	// Handler factories
-	const { enter, leave } = Scenes.Stage;
-
 	// Auth scene
 	const authScene = new Scenes.BaseScene<Scenes.SceneContext>('authScene');
-	authScene.enter(async (ctx) => {
+	const sceneButtons = [[ADD_MOVIE_MENU], [TO_MAIN_BTN]];
+	const start = async (ctx: Scenes.SceneContext) => {
 		const tgUserInfo = ctx.from;
 
 		if (tgUserInfo) {
-			const tgUserImage = await this.getUserImageUrl(tgUserInfo.id);
-
-			console.log('USER DATA', { tgUserInfo, tgUserImage });
-
 			const dbUser = await this.authService.findUserByTgId(
 				`${tgUserInfo.id}`,
 			);
 
 			if (!dbUser) {
-				console.log('USER DIDNT FOUND');
+				if (sceneButtons[0].length >= 2) {
+					sceneButtons[0].splice(0, 1, AUTH_BTN);
+				} else {
+					sceneButtons[0].unshift(AUTH_BTN);
+				}
+			} else {
+				if (sceneButtons[0].length >= 2) {
+					sceneButtons[0].splice(0, 1, LOGIN_BTN);
+				} else {
+					sceneButtons[0].unshift(LOGIN_BTN);
+				}
 			}
 		}
 
-		ctx.reply(
-			'В данном разделе Вы можете зарегистрироватся, или перейти в учетную запись приложения.',
-			Markup.keyboard([[TO_MAIN_BTN, ADD_MOVIE_MENU]])
-				.oneTime()
-				.resize(),
-		);
-	});
+		this.bot.session = { ...this.bot.session, tgUser: { name: 'test' } };
 
-	authScene.hears(TO_MAIN_BTN, enter<Scenes.SceneContext>('startScene'));
-	authScene.hears(
-		ADD_MOVIE_MENU,
-		enter<Scenes.SceneContext>('addMovieScene'),
-	);
+		return this.buildMenu(sceneButtons, ctx);
+	};
+
+	authScene.enter(start);
+	authScene.start(start);
+	authScene.hears(AUTH_BTN, this.enter('authWizard'));
+	authScene.hears(TO_MAIN_BTN, this.enter('startScene'));
+	authScene.hears(ADD_MOVIE_MENU, this.enter('addMovieScene'));
+	authScene.on('message', async (ctx) => ctx.reply(PLEASE_USE_MENU_PROMPT));
 
 	return authScene;
 }

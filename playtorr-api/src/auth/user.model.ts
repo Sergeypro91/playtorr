@@ -15,11 +15,20 @@ export class UserModel extends TimeStamps {
 	@prop({ unique: true })
 	email: string;
 
-	@prop({ unique: true })
-	tgId: string;
-
 	@prop()
 	passwordHash: string;
+
+	@prop()
+	nickname?: string;
+
+	@prop()
+	firstName?: string;
+
+	@prop()
+	lastName?: string;
+
+	@prop({ unique: true })
+	tgId?: number;
 
 	@prop({ enum: Role, default: Role.GUEST })
 	role: Role;

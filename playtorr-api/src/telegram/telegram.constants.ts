@@ -14,5 +14,9 @@ export const LOGIN_BTN = 'Войти';
 export const BACK_BTN = 'Назад';
 export const TO_MAIN_BTN = 'На главную';
 
+export const START_PROMPT = 'Для работы с ботом воспользуйтесь "Меню" ниже.';
+
 export const PLEASE_USE_MENU_PROMPT =
 	'Для взаимодействия с ботом, воспользуйтесь меню в нижнем правом углу.';
+
+export const SOME_ERROR = 'Произошёл сбой. Прийдется повторить.';

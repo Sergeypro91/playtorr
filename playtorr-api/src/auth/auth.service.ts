@@ -19,8 +19,14 @@ export class AuthService {
 		const salt = await genSalt(10);
 		const usersCount = await this.userModel.count().exec();
 		const newUser = new this.userModel({
-			email: dto.loginName,
+			email: dto.email,
 			passwordHash: await hash(dto.password, salt),
+			nickname: dto.nickname,
+			firstName: dto.firstName,
+			lastName: dto.lastName,
+			tgId: dto.tgId,
+			role: dto.role,
+			image: dto.image,
 		});
 
 		if (!usersCount) {

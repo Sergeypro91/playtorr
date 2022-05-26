@@ -6,30 +6,34 @@ import {
 } from './telegram.interface';
 import {
 	ADD_MOVIE_MENU,
-	AUTH_BTN,
 	AUTH_LOGIN_MENU,
-	BACK_BTN,
 	CONGRATS_STICKER,
-	PLEASE_USE_MENU_PROMPT,
-	SOME_ERROR_HAPPENS,
-	SORRY_STICKER,
+	START_PROMPT,
 	TELEGRAM_MODULE_OPTIONS,
-	TELEGRAM_REDIRECT_URL,
-	TO_MAIN_BTN,
 } from './telegram.constants';
 import { TelegramUserDto } from './dto/telegram.dto';
 import { AuthService } from '../auth/auth.service';
-import { BaseBg, BaseFg, loggerBuilder } from '../utils/logerBuilder';
+import { BaseBg, BaseFg, buildLog } from '../utils/logerBuilder';
 import { genStartScene } from './scenes/telegram.scene.start';
 import { genAuthScene } from './scenes/telegram.scene.auth';
 import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
+import { genAuthWizard } from './wizard/telegram.wizard.auth';
 
 @Injectable()
 export class TelegramService {
 	bot: Telegraf<Scenes.SceneContext>;
 	options: MyBotTelegramOptions;
+	stage: Scenes.Stage<
+		Scenes.SceneContext<Scenes.SceneSessionData>,
+		Scenes.SceneSessionData
+	>;
+	enter: typeof Scenes.Stage.enter;
+	leave: typeof Scenes.Stage.leave;
 	startScene: Scenes.BaseScene<Scenes.SceneContext<Scenes.SceneSessionData>>;
 	authScene: Scenes.BaseScene<Scenes.SceneContext<Scenes.SceneSessionData>>;
+	authWizard: Scenes.WizardScene<
+		Scenes.WizardContext<Scenes.WizardSessionData>
+	>;
 	addMovieScene: Scenes.BaseScene<
 		Scenes.SceneContext<Scenes.SceneSessionData>
 	>;
@@ -40,17 +44,27 @@ export class TelegramService {
 	) {
 		this.bot = new Telegraf<Scenes.SceneContext>(options.token);
 		this.options = options;
+		this.enter = Scenes.Stage.enter;
+		this.leave = Scenes.Stage.leave;
 		this.startScene = genStartScene.bind(this)();
 		this.authScene = genAuthScene.bind(this)();
 		this.addMovieScene = genAddMovieScene.bind(this)();
+		this.authWizard = genAuthWizard.bind(this)();
 
-		const stage = new Scenes.Stage<Scenes.SceneContext>(
-			[this.startScene, this.authScene, this.addMovieScene],
-			{ default: 'startScene' },
+		this.stage = new Scenes.Stage<Scenes.SceneContext>(
+			[
+				this.startScene,
+				this.authScene,
+				this.addMovieScene,
+				this.authWizard,
+			],
+			{
+				default: 'startScene',
+			},
 		);
 
 		this.bot.use(session());
-		this.bot.use(stage.middleware());
+		this.bot.use(this.stage.middleware());
 		this.launchBot();
 		this.startBot();
 		this.stopBot();
@@ -60,7 +74,7 @@ export class TelegramService {
 		this.bot
 			.launch()
 			.then(() => {
-				loggerBuilder(
+				buildLog(
 					'Telegram',
 					'Telegram Bot is started!',
 					BaseFg.GREEN,
@@ -75,45 +89,14 @@ export class TelegramService {
 	}
 
 	startBot() {
-		this.bot.start(async (ctx) => {
-			ctx.scene.enter('startScene');
-		});
-	}
-
-	addMovie() {
-		this.bot.hears(ADD_MOVIE_MENU, async (ctx) =>
-			ctx.reply('Данный функционал в разработке, попробуйте позже!'),
-		);
-	}
-
-	back() {
-		this.bot.hears(BACK_BTN, async (ctx) =>
-			ctx.reply('Данный функционал в разработке, попробуйте позже!'),
-		);
-	}
-
-	toMainMenu() {
-		this.bot.hears(TO_MAIN_BTN, async (ctx) =>
-			ctx.reply('Данный функционал в разработке, попробуйте позже!'),
-		);
-	}
-
-	onMessage() {
-		this.bot.on(['message'], (ctx) => {
-			const thUserId = ctx.update.message.from.id;
-			this.sendMessage(
-				'regular_message',
-				PLEASE_USE_MENU_PROMPT,
-				`${thUserId}`,
-			);
-		});
+		this.bot.start(async (ctx) => ctx.scene.enter('startScene'));
 	}
 
 	stopBot() {
 		// Enable graceful stop
 		process.once('SIGINT', () => this.bot.stop('SIGINT'));
 		process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
-		loggerBuilder(
+		buildLog(
 			'Telegram',
 			'Telegram Bot is stopped!',
 			BaseFg.RED,
@@ -165,5 +148,16 @@ export class TelegramService {
 				const { href } = await this.bot.telegram.getFileLink(fileId);
 				return href;
 			});
+	}
+
+	async buildMenu(
+		buttons: string[][],
+		ctx: Scenes.SceneContext<Scenes.SceneSessionData>,
+		message?: string,
+	) {
+		ctx.reply(
+			message || START_PROMPT,
+			Markup.keyboard(buttons).oneTime().resize(),
+		);
 	}
 }
