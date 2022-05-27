@@ -9,8 +9,9 @@ import {
 	SOME_ERROR_HAPPENS,
 	TELEGRAM_MODULE_OPTIONS,
 } from './telegram.constants';
+import { UserService } from '../user/user.service';
 import { AuthService } from '../auth/auth.service';
-import { BaseBg, BaseFg, buildLog } from '../utils/buildLog';
+import { BaseBg, BaseFg, buildLog } from '../../utils/buildLog';
 import { genStartScene } from './scenes/telegram.scene.start';
 import { genAuthScene } from './scenes/telegram.scene.auth';
 import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
@@ -37,6 +38,7 @@ export class TelegramService {
 
 	constructor(
 		@Inject(TELEGRAM_MODULE_OPTIONS) options: MyBotTelegramOptions,
+		private readonly userService: UserService,
 		private readonly authService: AuthService,
 	) {
 		this.bot = new Telegraf<Scenes.SceneContext>(options.token);

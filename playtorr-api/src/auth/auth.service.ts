@@ -1,17 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { InjectModel } from 'nestjs-typegoose';
-import { Role, UserModel } from './user.model';
+import { Role, UserModel } from '../user/user.model';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { genSalt, hash, compare } from 'bcryptjs';
 import { USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from './auth.constants';
 import { JwtService } from '@nestjs/jwt';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		@InjectModel(UserModel)
 		private readonly userModel: ModelType<UserModel>,
+		private readonly userService: UserService,
 		private readonly jwtService: JwtService,
 	) {}
 
@@ -19,7 +21,7 @@ export class AuthService {
 		const salt = await genSalt(10);
 		const usersCount = await this.userModel.count().exec();
 		const newUser = new this.userModel({
-			email: dto.email,
+			email: dto.email.toLowerCase().trim(),
 			passwordHash: await hash(dto.password, salt),
 			nickname: dto.nickname,
 			firstName: dto.firstName,
@@ -36,19 +38,11 @@ export class AuthService {
 		return newUser.save();
 	}
 
-	async findUserByEmail(email: string) {
-		return this.userModel.findOne({ email }).exec();
-	}
-
-	async findUserByTgId(tgId: string) {
-		return this.userModel.findOne({ tgId }).exec();
-	}
-
 	async validateUser(
 		email: string,
 		password: string,
 	): Promise<Pick<UserModel, 'email' | 'role'>> {
-		const user = await this.findUserByEmail(email);
+		const user = await this.userService.findUserByEmail(email);
 
 		if (!user) {
 			throw new UnauthorizedException(USER_NOT_FOUND_ERROR);

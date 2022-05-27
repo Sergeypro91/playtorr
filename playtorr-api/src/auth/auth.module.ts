@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { UserModel } from './user.model';
+import { UserModel } from '../user/user.model';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -9,7 +9,7 @@ import { getJWTConfig } from '../configs/jwt.config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
-import { TelegramModule } from '../telegram/telegram.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
 	controllers: [AuthController],
@@ -29,7 +29,7 @@ import { TelegramModule } from '../telegram/telegram.module';
 			useFactory: getJWTConfig,
 		}),
 		PassportModule,
-		TelegramModule,
+		UserModule,
 	],
 	providers: [AuthService, JwtStrategy, RolesGuard],
 	exports: [AuthService],

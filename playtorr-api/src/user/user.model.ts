@@ -1,8 +1,6 @@
 import { prop } from '@typegoose/typegoose';
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
-export type UserRole = 'guest' | 'member' | 'admin';
-
 export enum Role {
 	GUEST = 'guest',
 	MEMBER = 'member',

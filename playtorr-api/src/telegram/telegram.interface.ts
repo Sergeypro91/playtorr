@@ -1,5 +1,5 @@
 import { ModuleMetadata } from '@nestjs/common';
-import { Role } from '../auth/user.model';
+import { Role } from '../user/user.model';
 
 export interface MyBotTelegramOptions {
 	chatId: string;

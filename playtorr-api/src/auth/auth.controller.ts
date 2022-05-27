@@ -10,19 +10,19 @@ import {
 import { AuthDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { ALREADY_REGISTERED_ERROR } from './auth.constants';
-import { TelegramService } from '../telegram/telegram.service';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private readonly authService: AuthService,
-		private readonly telegramService: TelegramService,
+		private readonly userService: UserService,
 	) {}
 
 	@UsePipes(new ValidationPipe())
 	@Post('register')
 	async register(@Body() dto: AuthDto) {
-		const oldUser = await this.authService.findUserByEmail(dto.email);
+		const oldUser = await this.userService.findUserByEmail(dto.email);
 
 		if (oldUser) {
 			throw new BadRequestException(ALREADY_REGISTERED_ERROR);
