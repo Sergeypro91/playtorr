@@ -1,10 +1,5 @@
 import { ModuleMetadata } from '@nestjs/common';
-
-export type MyTelegramBotMessageType =
-	| 'enter'
-	| 'regular_message'
-	| 'warning'
-	| 'error';
+import { Role } from '../auth/user.model';
 
 export interface MyBotTelegramOptions {
 	chatId: string;
@@ -17,4 +12,15 @@ export interface MyBotTelegramModuleAsyncOptions
 		...args: any[]
 	) => Promise<MyBotTelegramOptions> | MyBotTelegramOptions;
 	inject?: any[];
+}
+
+export interface User {
+	tgId: number;
+	email: string;
+	role?: Role;
+	image?: string;
+	password: string;
+	nickname?: string;
+	lastName?: string;
+	firstName?: string;
 }

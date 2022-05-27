@@ -1,116 +1,78 @@
-import { Composer, Markup, Scenes } from 'telegraf';
-import { hash } from 'bcryptjs';
+import { Composer, Scenes } from 'telegraf';
+import {
+	EMAIL_REQUEST_PROMPT,
+	NOT_VALID_EMAIL_PROMPT,
+	PASSWORD_REQUEST_PROMPT,
+	NOT_VALID_PASSWORD_PROMPT,
+} from '../telegram.constants';
+import { emailValidator, passwordValidator } from '../validators/validators';
+import { User } from '../telegram.interface';
 
 interface MyWizardSession extends Scenes.WizardSessionData {
-	// will be available under `ctx.scene.session.myWizardSessionProp`
-	wizaedSession: any;
+	wizardSession: {
+		user: User;
+	};
 }
-
-const emailValidator = (email: string) =>
-	/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
-
-const passwordValidator = (email: string) =>
-	/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/.test(email);
 
 type MyContext = Scenes.WizardContext<MyWizardSession>;
 
 export function genAuthWizard() {
 	const emailRequest = new Composer<MyContext>();
 	emailRequest.on('message', async (ctx) => {
-		const tgUserInfo = ctx.from;
+		const tgUserInfo = {
+			tgId: ctx.from.id,
+			email: '',
+			password: '',
+			nickname: ctx.from?.username,
+			firstName: ctx.from?.first_name,
+			lastName: ctx.from?.last_name,
+		};
 
 		if (tgUserInfo) {
-			const tgUserImage = await this.getUserImageUrl(tgUserInfo.id);
-			ctx.scene.session.wizaedSession = {
-				user: {
-					...ctx.from,
-					image: tgUserImage,
-				},
+			const tgUserImage = await this.getUserImageUrl(tgUserInfo.tgId);
+			ctx.scene.session.wizardSession = {
+				user: { ...tgUserInfo, image: tgUserImage },
 			};
 		}
 
-		await ctx.reply('Укажите почту:');
+		await ctx.reply(EMAIL_REQUEST_PROMPT);
 
 		return ctx.wizard.next();
-	});
-
-	const userNameRequest = new Composer<MyContext>();
-	userNameRequest.on('message', async (ctx) => {
-		if (ctx.message && 'text' in ctx.message) {
-			const { user } = ctx.scene.session.wizaedSession;
-			const message = ctx.message.text;
-
-			if (emailValidator(message)) {
-				user.email = message;
-
-				await ctx.reply(
-					'Укажите свой логин, или воспользуйтесь логином "Телеграма"',
-					Markup.inlineKeyboard([
-						Markup.button.callback(
-							`Логин "Телеграма": ${user.username}`,
-							'next',
-						),
-					]),
-				);
-
-				return ctx.wizard.next();
-			} else {
-				await ctx.reply(
-					'Это не похоже на адресс электронной почты. Попробуйте еще раз.',
-				);
-			}
-		}
 	});
 
 	const passwordRequest = new Composer<MyContext>();
-	passwordRequest.action('next', async (ctx) => {
-		await ctx.reply('Укажите пароль:');
-
-		return ctx.wizard.next();
-	});
 	passwordRequest.on('message', async (ctx) => {
 		if (ctx.message && 'text' in ctx.message) {
-			const { user } = ctx.scene.session.wizaedSession;
 			const message = ctx.message.text;
-			user.username = message;
+
+			if (emailValidator(message)) {
+				ctx.scene.session.wizardSession.user.email = message;
+
+				await ctx.reply(PASSWORD_REQUEST_PROMPT);
+
+				return ctx.wizard.next();
+			} else {
+				await ctx.reply(NOT_VALID_EMAIL_PROMPT);
+			}
 		}
-
-		await ctx.reply('Укажите пароль:');
-
-		return ctx.wizard.next();
 	});
 
 	const finalStep = new Composer<MyContext>();
 	finalStep.on('message', async (ctx) => {
 		if (ctx.message && 'text' in ctx.message) {
-			const { user } = ctx.scene.session.wizaedSession;
+			const { user } = ctx.scene.session.wizardSession;
 			const message = ctx.message?.text || '';
+
+			await this.secureMessage(ctx);
 
 			if (passwordValidator(message)) {
 				user.password = message;
-				const newUser = {
-					email: user.email,
-					password: user.password,
-					nickname: user?.nickname,
-					firstName: user.first_name,
-					lastName: user?.last_name,
-					tgId: user.id,
-					image: user?.image,
-				};
 
-				try {
-					this.authService.createUser(newUser);
-				} catch (err) {
-					console.log(err);
-				}
+				await this.authNewUser(ctx, user);
 
-				await ctx.reply('Ура, Вы зарегистрированны!');
-
-				return ctx.scene.enter('authScene');
+				return await ctx.scene.enter('authScene');
 			} else {
-				await ctx.reply(
-					'Пароль не достаточно надежный. Попробуйте еще раз.',
-				);
+				await ctx.reply(NOT_VALID_PASSWORD_PROMPT);
 			}
 		}
 	});
@@ -119,7 +81,6 @@ export function genAuthWizard() {
 	const genAuthWizard = new Scenes.WizardScene(
 		'authWizard',
 		emailRequest,
-		userNameRequest,
 		passwordRequest,
 		finalStep,
 	);

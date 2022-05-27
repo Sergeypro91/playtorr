@@ -23,8 +23,9 @@ export class AuthDto {
 	@IsString()
 	tgId?: number;
 
+	@IsOptional()
 	@IsString()
-	role: string;
+	role?: string;
 
 	@IsOptional()
 	@IsString()
