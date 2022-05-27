@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthDto } from './dto/auth.dto';
+import { UserDto } from './dto/userDto';
 import { InjectModel } from 'nestjs-typegoose';
 import { Role, UserModel } from '../user/user.model';
 import { ModelType } from '@typegoose/typegoose/lib/types';
@@ -17,11 +17,11 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 	) {}
 
-	async createUser(dto: AuthDto) {
+	async createUser(dto: UserDto) {
 		const salt = await genSalt(10);
 		const usersCount = await this.userModel.count().exec();
 		const newUser = new this.userModel({
-			email: dto.email.toLowerCase().trim(),
+			email: dto.email,
 			passwordHash: await hash(dto.password, salt),
 			nickname: dto.nickname,
 			firstName: dto.firstName,

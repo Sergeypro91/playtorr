@@ -1,16 +1,55 @@
-import { Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
-import { AuthService } from '../auth/auth.service';
+import {
+	Body,
+	Controller,
+	Delete,
+	HttpException,
+	HttpStatus,
+	Param,
+	Post,
+	UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from './user.model';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { IdValidationPipe } from '../pipes/id-validation.pipe';
+import { UserDto } from '../auth/dto/userDto';
+import { USER_NOT_CHANGE, USER_NOT_DELETE } from './user.constants';
 
 @Controller('user')
 export class UserController {
-	constructor(
-		// private readonly authService: AuthService,
-		private readonly userService: UserService,
-	) {}
-	@UsePipes(new ValidationPipe())
-	@Post('edit')
-	async register() {
-		return 'TEST';
+	constructor(private readonly userService: UserService) {}
+
+	// @Roles(Role.ADMIN)
+	// @UseGuards(JwtAuthGuard, RolesGuard)
+	@Post(':id')
+	async editUser(
+		@Param('id', IdValidationPipe) id: string,
+		@Body() dto: Partial<UserDto>,
+	) {
+		const editedUser = await this.userService.editUser(id, dto);
+
+		if (!editedUser) {
+			throw new HttpException(USER_NOT_CHANGE, HttpStatus.NOT_FOUND);
+		}
+
+		return editedUser;
+	}
+
+	// @Roles(Role.ADMIN)
+	// @UseGuards(JwtAuthGuard, RolesGuard)
+	@Delete(':id')
+	async deleteUser(
+		@Param('id', IdValidationPipe) id: string,
+		@Body() dto: Partial<UserDto>,
+	) {
+		const deletedUser = await this.userService.deleteUser(id);
+
+		if (!deletedUser) {
+			throw new HttpException(USER_NOT_DELETE, HttpStatus.NOT_FOUND);
+		}
+
+		return deletedUser;
 	}
 }

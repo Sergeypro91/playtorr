@@ -7,7 +7,7 @@ import {
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
-import { AuthDto } from './dto/auth.dto';
+import { UserDto } from './dto/userDto';
 import { AuthService } from './auth.service';
 import { ALREADY_REGISTERED_ERROR } from './auth.constants';
 import { UserService } from '../user/user.service';
@@ -21,7 +21,7 @@ export class AuthController {
 
 	@UsePipes(new ValidationPipe())
 	@Post('register')
-	async register(@Body() dto: AuthDto) {
+	async register(@Body() dto: UserDto) {
 		const oldUser = await this.userService.findUserByEmail(dto.email);
 
 		if (oldUser) {
@@ -34,7 +34,7 @@ export class AuthController {
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
 	@Post('login')
-	async login(@Body() { email, password }: AuthDto) {
+	async login(@Body() { email, password }: UserDto) {
 		const user = await this.authService.validateUser(email, password);
 
 		return this.authService.login({ ...user });
@@ -42,5 +42,5 @@ export class AuthController {
 
 	@HttpCode(200)
 	@Post('logout')
-	async logout(@Body() email: Pick<AuthDto, 'email'>) {}
+	async logout(@Body() email: Pick<UserDto, 'email'>) {}
 }
