@@ -10,6 +10,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
 import { UserModule } from '../user/user.module';
+import { LocalStrategy } from './strategies/local.strategy';
+import { SessionSerializer } from './session/session.serializer';
 
 @Module({
 	controllers: [AuthController],
@@ -28,10 +30,16 @@ import { UserModule } from '../user/user.module';
 			inject: [ConfigService],
 			useFactory: getJWTConfig,
 		}),
-		PassportModule,
+		PassportModule.register({ session: true }),
 		UserModule,
 	],
-	providers: [AuthService, JwtStrategy, RolesGuard],
+	providers: [
+		AuthService,
+		JwtStrategy,
+		LocalStrategy,
+		RolesGuard,
+		SessionSerializer,
+	],
 	exports: [AuthService],
 })
 export class AuthModule {}

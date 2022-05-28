@@ -38,10 +38,7 @@ export class AuthService {
 		return newUser.save();
 	}
 
-	async validateUser(
-		email: string,
-		password: string,
-	): Promise<Pick<UserModel, 'email' | 'role'>> {
+	async validateUser(email: string, password: string): Promise<UserModel> {
 		const user = await this.userService.findUserByEmail(email);
 
 		if (!user) {
@@ -54,14 +51,14 @@ export class AuthService {
 			throw new UnauthorizedException(WRONG_PASSWORD_ERROR);
 		}
 
-		return { email: user.email, role: user.role };
+		return user;
 	}
 
-	async login({ email, role }: Pick<UserModel, 'email' | 'role'>) {
-		const payload = { email, role };
+	async login(user: UserModel) {
+		const { email, role } = user;
 
 		return {
-			access_token: await this.jwtService.signAsync(payload),
+			access_token: await this.jwtService.signAsync({ email, role }),
 		};
 	}
 }

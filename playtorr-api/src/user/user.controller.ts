@@ -6,13 +6,8 @@ import {
 	HttpStatus,
 	Param,
 	Post,
-	UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from './user.model';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
 import { IdValidationPipe } from '../pipes/id-validation.pipe';
 import { UserDto } from '../auth/dto/userDto';
 import { USER_NOT_CHANGE, USER_NOT_DELETE } from './user.constants';
