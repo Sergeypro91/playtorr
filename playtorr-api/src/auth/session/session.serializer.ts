@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { UserService } from '../../user/user.service';
+import { UserModel } from '../../user/user.model';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
@@ -9,15 +10,21 @@ export class SessionSerializer extends PassportSerializer {
 	}
 
 	serializeUser(
-		user: any,
-		done: (err: null | Error, user: any) => void,
-	): any {
+		user: Pick<UserModel, 'email' | 'tgId' | 'role'>,
+		done: (
+			err: null | Error,
+			user: Pick<UserModel, 'email' | 'tgId' | 'role'>,
+		) => void,
+	) {
 		done(null, user);
 	}
 
 	async deserializeUser(
-		payload: any,
-		done: (err: null | Error, payload: any) => void,
+		payload: Pick<UserModel, 'email' | 'tgId' | 'role'>,
+		done: (
+			err: null | Error,
+			payload: Pick<UserModel, 'email' | 'tgId' | 'role'>,
+		) => void,
 	) {
 		return done(null, payload);
 	}

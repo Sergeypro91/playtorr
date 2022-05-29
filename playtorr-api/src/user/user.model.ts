@@ -25,7 +25,11 @@ export class UserModel extends TimeStamps {
 	@prop()
 	lastName?: string;
 
-	@prop({ unique: true })
+	@prop({
+		unique: true,
+		sparse: true,
+		default: null,
+	})
 	tgId?: number;
 
 	@prop({ enum: Role, default: Role.GUEST })

@@ -37,8 +37,8 @@ import { SessionSerializer } from './session/session.serializer';
 		AuthService,
 		JwtStrategy,
 		LocalStrategy,
-		RolesGuard,
 		SessionSerializer,
+		RolesGuard,
 	],
 	exports: [AuthService],
 })

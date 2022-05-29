@@ -1,50 +1,64 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	HttpException,
-	HttpStatus,
-	Param,
+	Get,
 	Post,
+	Body,
+	Delete,
+	Request,
+	UsePipes,
+	UseGuards,
+	Controller,
+	ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { IdValidationPipe } from '../pipes/id-validation.pipe';
+import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
+import { Role } from './user.model';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { DeleteUserDto, EditUserDto } from './dto/userDto';
 import { UserDto } from '../auth/dto/userDto';
-import { USER_NOT_CHANGE, USER_NOT_DELETE } from './user.constants';
 
 @Controller('user')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 
-	// @Roles(Role.ADMIN)
-	// @UseGuards(JwtAuthGuard, RolesGuard)
-	@Post(':id')
-	async editUser(
-		@Param('id', IdValidationPipe) id: string,
-		@Body() dto: Partial<UserDto>,
-	) {
-		const editedUser = await this.userService.editUser(id, dto);
-
-		if (!editedUser) {
-			throw new HttpException(USER_NOT_CHANGE, HttpStatus.NOT_FOUND);
-		}
-
-		return editedUser;
+	@UsePipes(new ValidationPipe())
+	@UseGuards(AuthenticatedGuard)
+	@Post('edit')
+	async editUser(@Body() dto: Partial<UserDto>, @Request() req: any) {
+		const { email } = req.session.passport.user;
+		return await this.userService.editUser(email, dto);
 	}
 
-	// @Roles(Role.ADMIN)
-	// @UseGuards(JwtAuthGuard, RolesGuard)
-	@Delete(':id')
-	async deleteUser(
-		@Param('id', IdValidationPipe) id: string,
-		@Body() dto: Partial<UserDto>,
-	) {
-		const deletedUser = await this.userService.deleteUser(id);
+	@UsePipes(new ValidationPipe())
+	@Roles(Role.ADMIN)
+	@UseGuards(AuthenticatedGuard, RolesGuard)
+	@Post('editByAdmin')
+	async editUserAdmin(@Body() dto: EditUserDto) {
+		return await this.userService.editUser(
+			dto.editUserEmail,
+			dto.editUserData,
+		);
+	}
 
-		if (!deletedUser) {
-			throw new HttpException(USER_NOT_DELETE, HttpStatus.NOT_FOUND);
-		}
+	@UseGuards(AuthenticatedGuard)
+	@Delete('delete')
+	async deleteUser(@Request() req: any) {
+		const { email } = req.session.passport.user;
+		return await this.userService.deleteUser(email);
+	}
 
-		return deletedUser;
+	@UsePipes(new ValidationPipe())
+	@Roles(Role.ADMIN)
+	@UseGuards(AuthenticatedGuard, RolesGuard)
+	@Delete('deleteByAdmin')
+	async deleteUserAdmin(@Body() dto: DeleteUserDto) {
+		return await this.userService.deleteUser(dto.editUserEmail);
+	}
+
+	@Roles(Role.ADMIN)
+	@UseGuards(AuthenticatedGuard, RolesGuard)
+	@Get('getAllUsers')
+	async getAllUsers() {
+		return await this.userService.getAllUsers();
 	}
 }

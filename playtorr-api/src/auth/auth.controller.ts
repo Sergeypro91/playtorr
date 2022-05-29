@@ -1,16 +1,21 @@
 import {
-	BadRequestException,
+	Get,
 	Post,
 	Body,
+	Request,
 	UsePipes,
 	HttpCode,
+	UseGuards,
 	Controller,
 	ValidationPipe,
+	BadRequestException,
 } from '@nestjs/common';
 import { UserDto } from './dto/userDto';
 import { AuthService } from './auth.service';
 import { ALREADY_REGISTERED_ERROR } from './auth.constants';
 import { UserService } from '../user/user.service';
+import { LocalAuthGuard } from './guards/local.guard';
+import { AuthenticatedGuard } from './guards/authenticated.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -32,15 +37,33 @@ export class AuthController {
 	}
 
 	@UsePipes(new ValidationPipe())
+	@UseGuards(LocalAuthGuard)
 	@HttpCode(200)
 	@Post('login')
-	async login(@Body() { email, password }: UserDto) {
+	async login(@Body() { email, password }: UserDto, @Request() req: any) {
+		return req.user;
+	}
+
+	@HttpCode(200)
+	@Get('logout')
+	async logout(@Request() req: any) {
+		req.session.destroy();
+
+		return { message: 'User session end' };
+	}
+
+	@UseGuards(AuthenticatedGuard)
+	@Get('checkSession')
+	async checkSession(@Request() req: any) {
+		return req.user;
+	}
+
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Post('loginJwt')
+	async loginJwt(@Body() { email, password }: UserDto) {
 		const user = await this.authService.validateUser(email, password);
 
 		return this.authService.login(user);
 	}
-
-	@HttpCode(200)
-	@Post('logout')
-	async logout(@Body() email: Pick<UserDto, 'email'>) {}
 }
