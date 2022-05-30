@@ -20,10 +20,17 @@ export function genAddMovieScene() {
 
 	addMovieScene.enter(start);
 	addMovieScene.start(start);
-	addMovieScene.hears(TO_MAIN_BTN, this.enter('startScene'));
-	addMovieScene.hears(AUTH_LOGIN_MENU, this.enter('authScene'));
-	addMovieScene.on('message', async (ctx) =>
-		ctx.reply(PLEASE_USE_MENU_PROMPT),
+	addMovieScene.hears(
+		TO_MAIN_BTN,
+		async (ctx) => await ctx.scene.enter('startScene'),
+	);
+	addMovieScene.hears(
+		AUTH_LOGIN_MENU,
+		async (ctx) => await ctx.scene.enter('authScene'),
+	);
+	addMovieScene.on(
+		'message',
+		async (ctx) => await ctx.reply(PLEASE_USE_MENU_PROMPT),
 	);
 
 	return addMovieScene;

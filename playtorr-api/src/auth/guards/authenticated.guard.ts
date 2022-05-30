@@ -14,6 +14,6 @@ export class AuthenticatedGuard implements CanActivate {
 			throw new UnauthorizedException();
 		}
 
-		return isAuth;
+		return true;
 	}
 }

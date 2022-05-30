@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+	Logger,
+	Inject,
+	Injectable,
+	BadRequestException,
+} from '@nestjs/common';
 import { Markup, Scenes, session, Telegraf } from 'telegraf';
 import { MyBotTelegramOptions, User } from './telegram.interface';
 import {
@@ -11,7 +16,6 @@ import {
 } from './telegram.constants';
 import { UserService } from '../user/user.service';
 import { AuthService } from '../auth/auth.service';
-import { BaseBg, BaseFg, buildLog } from '../../utils/buildLog';
 import { genStartScene } from './scenes/telegram.scene.start';
 import { genAuthScene } from './scenes/telegram.scene.auth';
 import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
@@ -21,12 +25,7 @@ import { genAuthWizard } from './wizard/telegram.wizard.auth';
 export class TelegramService {
 	bot: Telegraf<Scenes.SceneContext>;
 	options: MyBotTelegramOptions;
-	stage: Scenes.Stage<
-		Scenes.SceneContext<Scenes.SceneSessionData>,
-		Scenes.SceneSessionData
-	>;
-	enter: typeof Scenes.Stage.enter;
-	leave: typeof Scenes.Stage.leave;
+	logger: Logger;
 	startScene: Scenes.BaseScene<Scenes.SceneContext<Scenes.SceneSessionData>>;
 	authScene: Scenes.BaseScene<Scenes.SceneContext<Scenes.SceneSessionData>>;
 	authWizard: Scenes.WizardScene<
@@ -43,14 +42,13 @@ export class TelegramService {
 	) {
 		this.bot = new Telegraf<Scenes.SceneContext>(options.token);
 		this.options = options;
-		this.enter = Scenes.Stage.enter;
-		this.leave = Scenes.Stage.leave;
+		this.logger = new Logger('TelegramBot');
 		this.startScene = genStartScene.bind(this)();
 		this.authScene = genAuthScene.bind(this)();
 		this.addMovieScene = genAddMovieScene.bind(this)();
 		this.authWizard = genAuthWizard.bind(this)();
 
-		this.stage = new Scenes.Stage<Scenes.SceneContext>(
+		const stage = new Scenes.Stage<Scenes.SceneContext>(
 			[
 				this.startScene,
 				this.authScene,
@@ -63,7 +61,7 @@ export class TelegramService {
 		);
 
 		this.bot.use(session());
-		this.bot.use(this.stage.middleware());
+		this.bot.use(stage.middleware());
 		this.launchBot();
 		this.startBot();
 		this.stopBot();
@@ -73,14 +71,7 @@ export class TelegramService {
 		this.bot
 			.launch()
 			.then(() => {
-				buildLog(
-					'Telegram',
-					'Telegram Bot is started!',
-					BaseFg.GREEN,
-					'',
-					BaseFg.BLACK,
-					BaseBg.GREEN,
-				);
+				this.logger.log('Telegram Bot is started');
 			})
 			.catch((err) => {
 				throw err;
@@ -95,14 +86,7 @@ export class TelegramService {
 		// Enable graceful stop
 		process.once('SIGINT', () => this.bot.stop('SIGINT'));
 		process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
-		buildLog(
-			'Telegram',
-			'Telegram Bot is stopped!',
-			BaseFg.RED,
-			'',
-			BaseFg.BLACK,
-			BaseBg.RED,
-		);
+		this.logger.warn('Telegram Bot is stopped');
 	}
 
 	async sendSticker(sticker: string, chatId: string = this.options.chatId) {
@@ -166,8 +150,7 @@ export class TelegramService {
 			await this.authService.createUser(user);
 			await this.sendSticker(CONGRATS_STICKER);
 			await ctx.reply(CONGRATS_PROMPT);
-			buildLog(
-				'New User',
+			this.logger.log(
 				'New user' +
 					(user?.nickname
 						? `: ${user.nickname} - `

@@ -17,13 +17,21 @@ export function genStartScene() {
 		message?: string,
 	) => this.buildMenu(sceneButtons, ctx, message);
 
-	startScene.enter(async (ctx) => start(ctx));
-	startScene.start(async (ctx) => start(ctx));
-	startScene.hears(TO_MAIN_BTN, async (ctx) => start(ctx));
-	startScene.hears(AUTH_BTN, async (ctx) => start(ctx, SOME_ERROR));
-	startScene.hears(AUTH_LOGIN_MENU, this.enter('authScene'));
-	startScene.hears(ADD_MOVIE_MENU, this.enter('addMovieScene'));
-	startScene.on('message', async (ctx) => ctx.reply(PLEASE_USE_MENU_PROMPT));
+	startScene.enter(async (ctx) => await start(ctx));
+	startScene.start(async (ctx) => await start(ctx));
+	startScene.hears(TO_MAIN_BTN, async (ctx) => await start(ctx));
+	startScene.hears(AUTH_BTN, async (ctx) => await start(ctx, SOME_ERROR));
+	startScene.hears(AUTH_LOGIN_MENU, async (ctx) =>
+		ctx.scene.enter('authScene'),
+	);
+	startScene.hears(
+		ADD_MOVIE_MENU,
+		async (ctx) => await ctx.scene.enter('addMovieScene'),
+	);
+	startScene.on(
+		'message',
+		async (ctx) => await ctx.reply(PLEASE_USE_MENU_PROMPT),
+	);
 
 	return startScene;
 }

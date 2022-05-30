@@ -39,10 +39,22 @@ export function genAuthScene() {
 
 	authScene.enter(start);
 	authScene.start(start);
-	authScene.hears(AUTH_BTN, this.enter('authWizard'));
-	authScene.hears(TO_MAIN_BTN, this.enter('startScene'));
-	authScene.hears(ADD_MOVIE_MENU, this.enter('addMovieScene'));
-	authScene.on('message', async (ctx) => ctx.reply(PLEASE_USE_MENU_PROMPT));
+	authScene.hears(
+		AUTH_BTN,
+		async (ctx) => await ctx.scene.enter('authWizard'),
+	);
+	authScene.hears(
+		TO_MAIN_BTN,
+		async (ctx) => await ctx.scene.enter('startScene'),
+	);
+	authScene.hears(
+		ADD_MOVIE_MENU,
+		async (ctx) => await ctx.scene.enter('addMovieScene'),
+	);
+	authScene.on(
+		'message',
+		async (ctx) => await ctx.reply(PLEASE_USE_MENU_PROMPT),
+	);
 
 	return authScene;
 }
