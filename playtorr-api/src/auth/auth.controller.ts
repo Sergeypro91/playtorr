@@ -36,12 +36,11 @@ export class AuthController {
 		return this.authService.createUser(dto);
 	}
 
-	@UsePipes(new ValidationPipe())
 	@UseGuards(LocalAuthGuard)
 	@HttpCode(200)
 	@Post('login')
-	async login(@Body() { email, password }: UserDto, @Request() req: any) {
-		return req.user;
+	async login(@Body() dto: UserDto) {
+		return await this.userService.findUserByEmail(dto.email);
 	}
 
 	@HttpCode(200)
