@@ -2,10 +2,11 @@ import { prop } from '@typegoose/typegoose';
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
 export enum Role {
+	ADMIN = 'admin',
 	GUEST = 'guest',
 	MEMBER = 'member',
 	PREMIUM = 'premium',
-	ADMIN = 'admin',
+	BLOCKED = 'blocked',
 }
 
 export interface UserModel extends Base {}
@@ -25,11 +26,7 @@ export class UserModel extends TimeStamps {
 	@prop()
 	lastName?: string;
 
-	@prop({
-		unique: true,
-		sparse: true,
-		default: null,
-	})
+	@prop()
 	tgId?: number;
 
 	@prop({ enum: Role, default: Role.GUEST })

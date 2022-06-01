@@ -150,13 +150,6 @@ export class TelegramService {
 			await this.authService.createUser(user);
 			await this.sendSticker(CONGRATS_STICKER);
 			await ctx.reply(CONGRATS_PROMPT);
-			this.logger.log(
-				'New user' +
-					(user?.nickname
-						? `: ${user.nickname} - `
-						: `: ${user.tgId} - `) +
-					'added to DB',
-			);
 		} catch (err) {
 			await this.sendSticker(SORRY_STICKER);
 			await ctx.reply(SOME_ERROR_HAPPENS);

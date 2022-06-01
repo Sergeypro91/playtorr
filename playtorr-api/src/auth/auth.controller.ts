@@ -1,5 +1,6 @@
 import {
 	Get,
+	Req,
 	Post,
 	Body,
 	Request,
@@ -12,7 +13,10 @@ import {
 } from '@nestjs/common';
 import { UserDto } from './dto/userDto';
 import { AuthService } from './auth.service';
-import { ALREADY_REGISTERED_ERROR } from './auth.constants';
+import {
+	ALREADY_REGISTERED_TGID_ERROR,
+	ALREADY_REGISTERED_EMAIL_ERROR,
+} from './auth.constants';
 import { UserService } from '../user/user.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
@@ -27,10 +31,22 @@ export class AuthController {
 	@UsePipes(new ValidationPipe())
 	@Post('register')
 	async register(@Body() dto: UserDto) {
-		const oldUser = await this.userService.findUserByEmail(dto.email);
+		const existEmailUser = await this.userService.findUserByEmail(
+			dto.email,
+		);
 
-		if (oldUser) {
-			throw new BadRequestException(ALREADY_REGISTERED_ERROR);
+		if (existEmailUser) {
+			throw new BadRequestException(ALREADY_REGISTERED_EMAIL_ERROR);
+		}
+
+		if (dto.tgId) {
+			const existTgIdUser = await this.userService.findUserByTgId(
+				dto.tgId,
+			);
+
+			if (existTgIdUser) {
+				throw new BadRequestException(ALREADY_REGISTERED_TGID_ERROR);
+			}
 		}
 
 		return this.authService.createUser(dto);
@@ -39,8 +55,8 @@ export class AuthController {
 	@UseGuards(LocalAuthGuard)
 	@HttpCode(200)
 	@Post('login')
-	async login(@Body() dto: UserDto) {
-		return await this.userService.findUserByEmail(dto.email);
+	async login(@Req() req: any) {
+		return req.session;
 	}
 
 	@HttpCode(200)

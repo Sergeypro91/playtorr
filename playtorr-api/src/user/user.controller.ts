@@ -1,9 +1,9 @@
 import {
 	Get,
+	Req,
 	Post,
 	Body,
 	Delete,
-	Request,
 	UsePipes,
 	UseGuards,
 	Controller,
@@ -24,8 +24,8 @@ export class UserController {
 	@UsePipes(new ValidationPipe())
 	@UseGuards(AuthenticatedGuard)
 	@Post('edit')
-	async editUser(@Body() dto: Partial<UserDto>, @Request() req: any) {
-		const { email } = req.session.passport.user;
+	async editUser(@Body() dto: Partial<UserDto>, @Req() req: any) {
+		const { email } = req.user;
 		return await this.userService.editUser(email, dto);
 	}
 
@@ -42,8 +42,8 @@ export class UserController {
 
 	@UseGuards(AuthenticatedGuard)
 	@Delete('delete')
-	async deleteUser(@Request() req: any) {
-		const { email } = req.session.passport.user;
+	async deleteUser(@Req() req: any) {
+		const { email } = req.user;
 		return await this.userService.deleteUser(email);
 	}
 

@@ -4,7 +4,6 @@ import { UserController } from './user.controller';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { UserModel } from './user.model';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { LocalStrategy } from '../auth/strategies/local.strategy';
 import { SessionSerializer } from '../auth/session/session.serializer';
 
 @Module({

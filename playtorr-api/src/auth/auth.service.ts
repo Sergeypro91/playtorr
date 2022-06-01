@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Logger, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserDto } from './dto/userDto';
 import { InjectModel } from 'nestjs-typegoose';
 import { Role, UserModel } from '../user/user.model';
@@ -10,12 +10,16 @@ import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
+	logger: Logger;
+
 	constructor(
 		@InjectModel(UserModel)
 		private readonly userModel: ModelType<UserModel>,
 		private readonly userService: UserService,
 		private readonly jwtService: JwtService,
-	) {}
+	) {
+		this.logger = new Logger('AuthService');
+	}
 
 	async createUser(dto: UserDto) {
 		const salt = await genSalt(10);
@@ -34,6 +38,8 @@ export class AuthService {
 		if (!usersCount) {
 			newUser.role = Role.ADMIN;
 		}
+
+		this.logger.log(`New user: ${newUser.email} - added to DB`);
 
 		return newUser.save();
 	}
