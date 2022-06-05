@@ -1,9 +1,11 @@
 import { Composer, Scenes } from 'telegraf';
 import {
+	TO_MAIN_BTN,
 	EMAIL_REQUEST_PROMPT,
 	NOT_VALID_EMAIL_PROMPT,
 	PASSWORD_REQUEST_PROMPT,
 	NOT_VALID_PASSWORD_PROMPT,
+	ADD_MOVIE_MENU,
 } from '../telegram.constants';
 import { emailValidator, passwordValidator } from '../validators/validators';
 import { User } from '../telegram.interface';
@@ -84,6 +86,14 @@ export function genAuthWizard() {
 		passwordRequest,
 		finalStep,
 	);
+
+	genAuthWizard.hears(TO_MAIN_BTN, (ctx) => {
+		ctx.scene.enter('startScene');
+	});
+
+	genAuthWizard.hears(ADD_MOVIE_MENU, (ctx) => {
+		ctx.scene.enter('addMovieScene');
+	});
 
 	return genAuthWizard;
 }

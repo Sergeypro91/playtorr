@@ -5,6 +5,8 @@ services:
     image: mongo:latest
     container_name: mongodb
     restart: always
+    env_file:
+      - ../.env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
@@ -31,9 +33,11 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    env_file:
+      - ../.env
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
     volumes:
       - ./storage-minio:/data
     command: server --console-address ":9001" /data

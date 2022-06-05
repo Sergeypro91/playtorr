@@ -26,7 +26,7 @@ export class UserController {
 	@Post('edit')
 	async editUser(@Body() dto: Partial<UserDto>, @Req() req: any) {
 		const { email } = req.user;
-		return await this.userService.editUser(email, dto);
+		return this.userService.editUser(email, dto);
 	}
 
 	@UsePipes(new ValidationPipe())
@@ -34,17 +34,14 @@ export class UserController {
 	@UseGuards(AuthenticatedGuard, RolesGuard)
 	@Post('editByAdmin')
 	async editUserAdmin(@Body() dto: EditUserDto) {
-		return await this.userService.editUser(
-			dto.editUserEmail,
-			dto.editUserData,
-		);
+		return this.userService.editUser(dto.editUserEmail, dto.editUserData);
 	}
 
 	@UseGuards(AuthenticatedGuard)
 	@Delete('delete')
 	async deleteUser(@Req() req: any) {
 		const { email } = req.user;
-		return await this.userService.deleteUser(email);
+		return this.userService.deleteUser(email);
 	}
 
 	@UsePipes(new ValidationPipe())
@@ -52,13 +49,13 @@ export class UserController {
 	@UseGuards(AuthenticatedGuard, RolesGuard)
 	@Delete('deleteByAdmin')
 	async deleteUserAdmin(@Body() dto: DeleteUserDto) {
-		return await this.userService.deleteUser(dto.editUserEmail);
+		return this.userService.deleteUser(dto.editUserEmail);
 	}
 
 	@Roles(Role.ADMIN)
 	@UseGuards(AuthenticatedGuard, RolesGuard)
 	@Get('getAllUsers')
 	async getAllUsers() {
-		return await this.userService.getAllUsers();
+		return this.userService.getAllUsers();
 	}
 }

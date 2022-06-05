@@ -12,7 +12,7 @@ async function bootstrap() {
 	const logger = new Logger('App');
 	const redisClient = new Redis();
 	const configService = await app.get(ConfigService);
-	const APP_PORT = Number(configService.get('APP_PORT'));
+	const MAIN_API_PORT = Number(configService.get('MAIN_API_PORT'));
 	const REDIS_KEY = configService.get('REDIS_KEY');
 	const REDIS_TTL = Number(configService.get('REDIS_TTL'));
 
@@ -36,9 +36,11 @@ async function bootstrap() {
 		passport.session(),
 	);
 
-	await app.listen(APP_PORT, async () => {
+	await app.listen(MAIN_API_PORT, async () => {
 		logger.log(`Application start on - ${await app.getUrl()}`);
 	});
 }
 
-bootstrap();
+bootstrap().then(() => {
+	console.log('---------#|Start - MAIN_API_SERVICE|#---------');
+});

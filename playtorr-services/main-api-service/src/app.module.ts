@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -17,7 +18,15 @@ import { GetFileModule } from './get-file/get-file.module';
 @Module({
 	controllers: [AppController],
 	imports: [
-		ConfigModule.forRoot(),
+		ClientsModule.register([
+			{
+				name: 'COMMUNICATION',
+				transport: Transport.REDIS,
+				// TODO pass url from .env
+				options: { url: 'redis://localhost:6379' },
+			},
+		]),
+		ConfigModule.forRoot({ envFilePath: '../../.env' }),
 		TypegooseModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],

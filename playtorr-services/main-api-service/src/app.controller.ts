@@ -1,4 +1,4 @@
-import { Get, UseGuards, Controller } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
 import { Role } from './user/user.model';
@@ -19,5 +19,15 @@ export class AppController {
 	async getHello() {
 		const user = await this.userService.findUserByEmail('test1@mail.ru');
 		return user;
+	}
+
+	@Post('micro-event')
+	testMicroEvent(@Body() numbers: number[]) {
+		this.appService.countNumberEvent(numbers);
+	}
+
+	@Post('micro-message')
+	testMicroMessage(@Body() numbers: number[]) {
+		return this.appService.countNumberMessage(numbers);
 	}
 }
