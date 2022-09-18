@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
@@ -17,6 +17,9 @@ async function bootstrap() {
 	const REDIS_TTL = Number(configService.get('REDIS_TTL'));
 
 	app.setGlobalPrefix('api');
+	app.useGlobalPipes(
+		new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+	);
 	app.use(
 		session({
 			store: new (RedisStore(session))({

@@ -1,16 +1,82 @@
-import { IsString } from 'class-validator';
-import { Type } from 'class-transformer';
-import { UserDto } from '../../auth/dto/userDto';
+import {
+	IsString,
+	IsArray,
+	IsOptional,
+	IsNumber,
+	IsEmail,
+} from 'class-validator';
+import { Request } from 'express';
 
-export class EditUserDto {
+export class UserDto {
+	@IsEmail()
+	email: string;
+
 	@IsString()
-	editUserEmail: string;
+	password: string;
 
-	@Type(() => UserDto)
-	editUserData: Partial<UserDto>;
+	@IsOptional()
+	@IsString()
+	nickname?: string;
+
+	@IsOptional()
+	@IsString()
+	firstName?: string;
+
+	@IsOptional()
+	@IsString()
+	lastName?: string;
+
+	@IsOptional()
+	@IsNumber()
+	tgId?: number;
+
+	@IsOptional()
+	@IsString()
+	role?: string;
+
+	@IsOptional()
+	@IsString()
+	image?: string;
 }
 
-export class DeleteUserDto {
+export class EditUserDto {
+	@IsOptional()
+	@IsEmail()
+	email?: string;
+
+	@IsOptional()
 	@IsString()
-	editUserEmail: string;
+	nickname?: string;
+
+	@IsOptional()
+	@IsString()
+	firstName?: string;
+
+	@IsOptional()
+	@IsString()
+	lastName?: string;
+
+	@IsOptional()
+	@IsNumber()
+	tgId?: number;
+
+	@IsOptional()
+	@IsString()
+	role?: string;
+
+	@IsOptional()
+	@IsString()
+	image?: string;
+}
+
+export type UserSession = Pick<UserDto, 'email' | 'tgId' | 'role'>;
+
+export interface RequestWithUserSession extends Request {
+	user: UserSession;
+}
+
+export class UsersEmailDto {
+	@IsArray()
+	@IsString({ each: true })
+	users: string[];
 }

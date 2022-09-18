@@ -6,7 +6,6 @@ export const getMongoConfig = async (
 ): Promise<TypegooseModuleOptions> => {
 	return {
 		uri: getMongoString(configService),
-		...getMongoOptions(),
 	};
 };
 
@@ -20,9 +19,6 @@ const getMongoString = (configService: ConfigService) =>
 	':' +
 	configService.get('MONGO_PORT') +
 	'/' +
+	configService.get('MONGO_DATABASE') +
+	'?authSource=' +
 	configService.get('MONGO_AUTH_DATABASE');
-
-const getMongoOptions = () => ({
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-});

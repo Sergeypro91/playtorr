@@ -1,61 +1,54 @@
 import {
 	Get,
+	Put,
 	Req,
 	Post,
 	Body,
 	Delete,
-	UsePipes,
 	UseGuards,
 	Controller,
-	ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
 import { Role } from './user.model';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { DeleteUserDto, EditUserDto } from './dto/userDto';
-import { UserDto } from '../auth/dto/userDto';
+import {
+	EditUserDto,
+	UsersEmailDto,
+	RequestWithUserSession,
+} from './dto/userDto';
 
 @Controller('user')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 
-	@UsePipes(new ValidationPipe())
 	@UseGuards(AuthenticatedGuard)
-	@Post('edit')
-	async editUser(@Body() dto: Partial<UserDto>, @Req() req: any) {
-		const { email } = req.user;
-		return this.userService.editUser(email, dto);
+	@Get()
+	async getUser(@Req() { user }: RequestWithUserSession) {
+		return this.userService.getUsers([user.email]);
 	}
 
-	@UsePipes(new ValidationPipe())
 	@Roles(Role.ADMIN)
 	@UseGuards(AuthenticatedGuard, RolesGuard)
-	@Post('editByAdmin')
-	async editUserAdmin(@Body() dto: EditUserDto) {
-		return this.userService.editUser(dto.editUserEmail, dto.editUserData);
+	@Post()
+	async getUsers(@Body() { users }: UsersEmailDto) {
+		return this.userService.getUsers(users);
 	}
 
 	@UseGuards(AuthenticatedGuard)
-	@Delete('delete')
-	async deleteUser(@Req() req: any) {
-		const { email } = req.user;
-		return this.userService.deleteUser(email);
-	}
-
-	@UsePipes(new ValidationPipe())
-	@Roles(Role.ADMIN)
-	@UseGuards(AuthenticatedGuard, RolesGuard)
-	@Delete('deleteByAdmin')
-	async deleteUserAdmin(@Body() dto: DeleteUserDto) {
-		return this.userService.deleteUser(dto.editUserEmail);
+	@Put()
+	async editUser(
+		@Body() dto: EditUserDto,
+		@Req() { user }: RequestWithUserSession,
+	) {
+		return this.userService.editUser(user, dto);
 	}
 
 	@Roles(Role.ADMIN)
 	@UseGuards(AuthenticatedGuard, RolesGuard)
-	@Get('getAllUsers')
-	async getAllUsers() {
-		return this.userService.getAllUsers();
+	@Delete()
+	async deleteUsers(@Body() { users }: UsersEmailDto) {
+		return this.userService.deleteUsers(users);
 	}
 }

@@ -1,10 +1,20 @@
-import { Logger, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserDto } from './dto/userDto';
+import {
+	Logger,
+	Injectable,
+	UnauthorizedException,
+	BadRequestException,
+} from '@nestjs/common';
+import { UserDto } from '../user/dto/userDto';
 import { InjectModel } from 'nestjs-typegoose';
 import { Role, UserModel } from '../user/user.model';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { genSalt, hash, compare } from 'bcryptjs';
-import { USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from './auth.constants';
+import {
+	ALREADY_REGISTERED_EMAIL_ERROR,
+	ALREADY_REGISTERED_TGID_ERROR,
+	USER_NOT_FOUND_ERROR,
+	WRONG_PASSWORD_ERROR,
+} from './auth.constants';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 
@@ -21,18 +31,34 @@ export class AuthService {
 		this.logger = new Logger('AuthService');
 	}
 
+	async registerUser(dto: UserDto) {
+		const existEmailUser = await this.userService.findUserByEmail(
+			dto.email,
+		);
+
+		if (existEmailUser) {
+			throw new BadRequestException(ALREADY_REGISTERED_EMAIL_ERROR);
+		}
+
+		if (dto.tgId) {
+			const existTgIdUser = await this.userService.findUserByTgId(
+				dto.tgId,
+			);
+
+			if (existTgIdUser) {
+				throw new BadRequestException(ALREADY_REGISTERED_TGID_ERROR);
+			}
+		}
+
+		return this.createUser(dto);
+	}
+
 	async createUser(dto: UserDto) {
 		const salt = await genSalt(10);
 		const usersCount = await this.userModel.count().exec();
 		const newUser = new this.userModel({
-			email: dto.email,
+			...dto,
 			passwordHash: await hash(dto.password, salt),
-			nickname: dto.nickname,
-			firstName: dto.firstName,
-			lastName: dto.lastName,
-			tgId: dto.tgId,
-			role: dto.role,
-			image: dto.image,
 		});
 
 		if (!usersCount) {
@@ -60,7 +86,7 @@ export class AuthService {
 		return user;
 	}
 
-	async login(user: UserModel) {
+	async loginUser(user: UserModel) {
 		const { email, role } = user;
 
 		return {
