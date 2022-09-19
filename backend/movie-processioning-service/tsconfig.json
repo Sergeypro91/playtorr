@@ -1,0 +1,20 @@
+{
+  "extends": "@tooling/client/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {},
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "incremental": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "./**/*.js",
+    "./**/*.jsx",
+    "./**/*.ts",
+    "./**/*.tsx"
+  ]
+}

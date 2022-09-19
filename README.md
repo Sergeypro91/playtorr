@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Sergeypro91/playtorr/d994e4ad74639da77523100a34ddcd45d56454ca/pt.svg" width="200" alt="PlayTorr Logo" />
+  <img src="./pt.svg" width="200" alt="PlayTorr Logo" />
 </p>
 
-[circleci-image]: ./idea/pt.svg
+[circleci-image]: ./pt.svg
 
 <h1 align="center">PlayTorr</h1>
 <h3 align="center">App for watcing torrent movies by MPEG-DASH stream.</h3>
@@ -14,34 +14,40 @@
 
 ## Installation
 
-```bash
-$ npm install
+```
+npm install
+```
+
+## Running Docker services
+
+```
+npm run start-docker-services
 ```
 
 ## Running the app
 
-```bash
+```
 # development
-$ npm run start
+npm run start
 
 # watch mode
-$ npm run start:dev
+npm run start:dev
 
 # production mode
-$ npm run start:prod
+npm run start:prod
 ```
 
 ## Test
 
-```bash
+```
 # unit tests
-$ npm run test
+npm run test
 
 # e2e tests
-$ npm run test:e2e
+npm run test:e2e
 
 # test coverage
-$ npm run test:cov
+npm run test:cov
 ```
 
 ## License

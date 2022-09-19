@@ -1,0 +1,6 @@
+{
+  "name": "@tooling/client",
+  "description": "Project configs",
+  "version": "1.0.0",
+  "private": true
+}
