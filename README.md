@@ -10,34 +10,41 @@
 
 ## Description
 
-// TODO
+The backend part consists of 3 microservices:
+* <span style="color: #de3f3f">communication-api</span> - entry point and communication layer for all microservices;
+* <span style="color: #de3f3f">main-api</span> - contains the main modules of registration, authorization, telegram bot implementation, connection of S3 compatible MinIO storage;
+* <span style="color: #de3f3f">movie-processioning-api</span> - contains all logic of video loading and processing
 
-## Installation
+### App installation
 
 ```
-npm install
+# for first installation
+npm run first-install
+
+# for clear reinstallation
+npm run reinstall
 ```
 
-## Running Docker services
+### Running Docker services
 
 ```
 npm run start-docker-services
 ```
 
-## Running the app
+### Running the app
 
 ```
 # development
-npm run start
+npm run start-all-apis
 
 # watch mode
-npm run start:dev
+npm run start-all-apis:dev
 
 # production mode
-npm run start:prod
+npm run start-all-apis:prod
 ```
 
-## Test
+### Test
 
 ```
 # unit tests
@@ -50,6 +57,6 @@ npm run test:e2e
 npm run test:cov
 ```
 
-## License
+### License
 
 PlayTorr is [MIT licensed](LICENSE).
