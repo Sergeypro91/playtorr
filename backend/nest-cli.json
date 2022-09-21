@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/main-api/src",
+  "monorepo": true,
+  "root": "apps/main-api",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/main-api/tsconfig.app.json"
+  },
+  "projects": {
+    "main-api": {
+      "type": "application",
+      "root": "apps/main-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/main-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/main-api/tsconfig.app.json"
+      }
+    },
+    "movie-processing-api": {
+      "type": "application",
+      "root": "apps/movie-processing-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/movie-processing-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/movie-processing-api/tsconfig.app.json"
+      }
+    },
+    "communication-api": {
+      "type": "application",
+      "root": "apps/communication-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/communication-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/communication-api/tsconfig.app.json"
+      }
+    }
+  }
+}

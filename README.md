@@ -17,12 +17,23 @@ The backend part consists of 3 microservices:
 
 ### App installation
 
-```
-# for first installation
-npm run first-install
+Backend:
 
-# for clear reinstallation
-npm run reinstall
+```
+# install packages
+npm run install:backend
+
+# clear instalation / reinstall packages
+npm run reinstall:backend
+```
+Frontend:
+
+```
+# install packages
+npm run install:frontend
+
+# clear instalation / reinstall packages
+npm run reinstall:frontend
 ```
 
 ### Running Docker services
@@ -33,15 +44,20 @@ npm run start-docker-services
 
 ### Running the app
 
+Backend:
+
 ```
-# development
-npm run start-all-apis
+# development mode
+npm run start:backend
 
 # watch mode
-npm run start-all-apis:dev
+npm run start:dev:backend
+
+# debug mode
+npm run start:debug:backend
 
 # production mode
-npm run start-all-apis:prod
+npm run start:prod:backend
 ```
 
 ### Test
