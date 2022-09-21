@@ -13,7 +13,7 @@
     "reinstall": "npm run remove-node_modules && npm run remove-package-lock && npm run first-install",
     "remove-node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "remove-package-lock": "rm package-lock.json",
-    "start-docker-services": "cp backend/.env docker && cd docker && docker-compose -p playtorr_services up",
+    "start-docker-services": "cp backend/.env docker && cd docker && docker-compose -p playtorr_services -d up",
     "start-communication-api": "npm start -w communication-api",
     "start-main-api": "npm start -w main-api",
     "start-movie-processing-api": "npm start -w movie-processing-api",
