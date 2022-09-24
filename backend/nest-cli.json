@@ -36,13 +36,22 @@
         "tsConfigPath": "apps/communication-api/tsconfig.app.json"
       }
     },
-    "common": {
+    "contracts": {
       "type": "library",
-      "root": "libs/common",
+      "root": "libs/contracts",
       "entryFile": "index",
-      "sourceRoot": "libs/common/src",
+      "sourceRoot": "libs/contracts/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/common/tsconfig.lib.json"
+        "tsConfigPath": "libs/contracts/tsconfig.lib.json"
+      }
+    },
+    "interfaces": {
+      "type": "library",
+      "root": "libs/interfaces",
+      "entryFile": "index",
+      "sourceRoot": "libs/interfaces/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interfaces/tsconfig.lib.json"
       }
     }
   }

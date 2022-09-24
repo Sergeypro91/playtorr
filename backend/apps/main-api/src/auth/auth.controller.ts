@@ -34,6 +34,7 @@ export class AuthController {
     return session;
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Get('logout')
   async logoutUser(@Session() session: Record<string, any>) {
     session.destroy();

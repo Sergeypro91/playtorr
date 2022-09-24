@@ -18,11 +18,17 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/common": [
-        "libs/common/src"
+      "@app/contracts": [
+        "libs/contracts/src"
       ],
-      "@app/common/*": [
-        "libs/common/src/*"
+      "@app/contracts/*": [
+        "libs/contracts/src/*"
+      ],
+      "@app/interfaces": [
+        "libs/interfaces/src"
+      ],
+      "@app/interfaces/*": [
+        "libs/interfaces/src/*"
       ]
     }
   }

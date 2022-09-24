@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="./pt.svg" width="200" alt="PlayTorr Logo" />
+  <img src="frontend/src/assets/images/svg/pt.svg" width="200" alt="PlayTorr Logo" />
 </p>
 
-[circleci-image]: ./pt.svg
+[circleci-image]: frontend/src/assets/images/svg/pt.svg
 
 <h1 align="center">PlayTorr</h1>
 <h3 align="center">App for watcing torrent movies by MPEG-DASH stream.</h3>
@@ -34,10 +34,6 @@ To run the application, you need to create an .env file in the project directory
     <tr>        
         <td>MONGO_DATABASE</td>
         <td>MONGO_AUTH_DATABASE</td>
-    </tr>
-    <tr>
-        <td>MONGO_INITDB_ROOT_USERNAME</td>
-        <td>MONGO_INITDB_ROOT_PASSWORD</td>
     </tr>
     <tr>
         <td>REDIS_KEY</td>

@@ -39,8 +39,8 @@ export class UserController {
   @UseGuards(AuthenticatedGuard)
   @Put()
   async editUser(
-    @Body() dto: EditUserDto,
     @Req() { user }: RequestWithUserSession,
+    @Body() dto: EditUserDto,
   ) {
     return this.userService.editUser(user, dto);
   }
