@@ -6,7 +6,7 @@ import {
   ADD_MOVIE_MENU,
   AUTH_LOGIN_MENU,
   PLEASE_USE_MENU_PROMPT,
-} from '../telegram.constants';
+} from '@app/contracts/telegram/telegram.constants';
 
 export function genStartScene() {
   // Start scene

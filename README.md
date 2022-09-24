@@ -17,7 +17,7 @@ The backend part consists of 3 microservices:
 
 ## App installation & running
 ### Step 1
-To run the application, you need to create an .env file in the project directory with the following variables:
+To run the application, you need to create an `.env` file in the `./envs` directory with the following variables:
 <table>
     <tr>
         <td>MAIN_API_PORT</td>

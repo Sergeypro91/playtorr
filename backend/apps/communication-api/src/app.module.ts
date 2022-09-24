@@ -6,7 +6,7 @@ import { ClientsModule } from '@nestjs/microservices';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '../envs/.env' }),
     ClientsModule.register([
       {
         name: 'MAIN_API',

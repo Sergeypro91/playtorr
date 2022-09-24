@@ -1,4 +1,4 @@
-import { MyBotTelegramOptions } from '../telegram/telegram.interface';
+import { MyBotTelegramOptions } from '@app/interfaces/telegram/telegram.interface';
 import { ConfigService } from '@nestjs/config';
 
 export const getTelegramConfig = (

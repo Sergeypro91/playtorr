@@ -1,4 +1,4 @@
-import { MinIOOptions } from '../minio/minio.interface';
+import { MinIOOptions } from '@app/interfaces/minio/minio.interface';
 import { ConfigService } from '@nestjs/config';
 
 export const getMinIOConfig = (configService: ConfigService): MinIOOptions => {

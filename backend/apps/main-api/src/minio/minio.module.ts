@@ -1,6 +1,6 @@
 import { Global, Module, Provider, DynamicModule } from '@nestjs/common';
-import { MinIOModuleAsyncOptions } from './minio.interface';
-import { MINIO_MODULE_OPTIONS } from './minio.constants';
+import { MinIOModuleAsyncOptions } from '@app/interfaces/minio/minio.interface';
+import { MINIO_MODULE_OPTIONS } from '@app/contracts/minio/minio.constants';
 import { MinIOService } from './minio.service';
 
 @Global()

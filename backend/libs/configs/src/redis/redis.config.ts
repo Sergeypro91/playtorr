@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RedisModule } from '../redis/redis.module';
+import { RedisModule } from '../../../../apps/main-api/src/redis/redis.module';
 
 export const RedisDinamicModule = RedisModule.registerAsync({
   imports: [ConfigModule],

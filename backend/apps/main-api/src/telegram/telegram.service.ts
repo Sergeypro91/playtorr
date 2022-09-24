@@ -5,7 +5,10 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Markup, Scenes, session, Telegraf } from 'telegraf';
-import { MyBotTelegramOptions, User } from './telegram.interface';
+import {
+  MyBotTelegramOptions,
+  User,
+} from '@app/interfaces/telegram/telegram.interface';
 import {
   START_PROMPT,
   SORRY_STICKER,
@@ -13,7 +16,7 @@ import {
   CONGRATS_STICKER,
   SOME_ERROR_HAPPENS,
   TELEGRAM_MODULE_OPTIONS,
-} from './telegram.constants';
+} from '@app/contracts/telegram/telegram.constants';
 import { UserService } from '../user/user.service';
 import { AuthService } from '../auth/auth.service';
 import { genStartScene } from './scenes/telegram.scene.start';

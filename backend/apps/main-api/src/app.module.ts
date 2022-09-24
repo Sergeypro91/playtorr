@@ -4,14 +4,14 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { getMongoConfig } from './configs/mongo.config';
+import { getMongoConfig } from '@app/configs/mongo/mongo.config';
 import { TelegramModule } from './telegram/telegram.module';
-import { getTelegramConfig } from './configs/telegram.config';
+import { getTelegramConfig } from '@app/configs/telegram/telegram.config';
 import { MinIOModule } from './minio/minio.module';
-import { getMinIOConfig } from './configs/minio.config';
+import { getMinIOConfig } from '@app/configs/minio/minio.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { RedisDinamicModule } from './configs/redis.config';
+import { RedisDinamicModule } from '@app/configs/redis/redis.config';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { GetFileModule } from './get-file/get-file.module';
 
@@ -25,7 +25,7 @@ import { GetFileModule } from './get-file/get-file.module';
         options: { url: 'redis://localhost:6379' },
       },
     ]),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '../envs/.env' }),
     TypegooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

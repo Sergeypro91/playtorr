@@ -5,7 +5,7 @@ import { User } from '../user/User';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { getJWTConfig } from '../configs/jwt.config';
+import { getJWTConfig } from '@app/configs/jwt/jwt.config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';

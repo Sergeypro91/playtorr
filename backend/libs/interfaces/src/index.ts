@@ -1,2 +1,2 @@
-export * from './interfaces.module';
-export * from './interfaces.service';
+export * from './minio/minio.interface';
+export * from './telegram/telegram.interface';

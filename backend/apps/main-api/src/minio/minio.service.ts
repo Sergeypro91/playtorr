@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { Client, Region, NoResultCallback } from 'minio';
-import { MinIOOptions } from './minio.interface';
-import { MINIO_MODULE_OPTIONS } from './minio.constants';
+import { MinIOOptions } from '@app/interfaces/minio/minio.interface';
+import { MINIO_MODULE_OPTIONS } from '@app/contracts/minio/minio.constants';
 import { BufferedFile } from './minio.model';
 
 @Injectable()

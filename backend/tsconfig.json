@@ -29,6 +29,12 @@
       ],
       "@app/interfaces/*": [
         "libs/interfaces/src/*"
+      ],
+      "@app/configs": [
+        "libs/configs/src"
+      ],
+      "@app/configs/*": [
+        "libs/configs/src/*"
       ]
     }
   }
