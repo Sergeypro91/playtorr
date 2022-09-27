@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MinIOService } from '../minio/minio.service';
-import { BufferedFile } from '../minio/minio.model';
+import { BufferedFile } from '../minio/models/minio.model';
 
 @Injectable()
 export class ImageUploadService {

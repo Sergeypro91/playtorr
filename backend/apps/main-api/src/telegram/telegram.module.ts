@@ -1,33 +1,35 @@
 import { Global, Module, DynamicModule, Provider } from '@nestjs/common';
 import { TelegramService } from './telegram.service';
 import { MyBotTelegramModuleAsyncOptions } from '@app/interfaces/telegram/telegram.interface';
-import { TELEGRAM_MODULE_OPTIONS } from '@app/contracts/telegram/telegram.constants';
+import { TELEGRAM_MODULE_OPTIONS } from '@app/constants/telegram/telegram.constants';
 
 @Global()
 @Module({})
 export class TelegramModule {
-  static forRootAsync(options: MyBotTelegramModuleAsyncOptions): DynamicModule {
-    const asyncOptions = this.createAsyncOptionsProvider(options);
+	static forRootAsync(
+		options: MyBotTelegramModuleAsyncOptions,
+	): DynamicModule {
+		const asyncOptions = this.createAsyncOptionsProvider(options);
 
-    return {
-      module: TelegramModule,
-      imports: options.imports,
-      providers: [TelegramService, asyncOptions],
-      exports: [TelegramService],
-    };
-  }
+		return {
+			module: TelegramModule,
+			imports: options.imports,
+			providers: [TelegramService, asyncOptions],
+			exports: [TelegramService],
+		};
+	}
 
-  private static createAsyncOptionsProvider(
-    options: MyBotTelegramModuleAsyncOptions,
-  ): Provider {
-    return {
-      provide: TELEGRAM_MODULE_OPTIONS,
-      useFactory: async (...args: any[]) => {
-        const config = await options.useFactory(...args);
+	private static createAsyncOptionsProvider(
+		options: MyBotTelegramModuleAsyncOptions,
+	): Provider {
+		return {
+			provide: TELEGRAM_MODULE_OPTIONS,
+			useFactory: async (...args: any[]) => {
+				const config = await options.useFactory(...args);
 
-        return config;
-      },
-      inject: options.inject || [],
-    };
-  }
+				return config;
+			},
+			inject: options.inject || [],
+		};
+	}
 }

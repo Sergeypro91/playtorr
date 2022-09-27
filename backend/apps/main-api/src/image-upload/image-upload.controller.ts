@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ImageUploadService } from './image-upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { BufferedFile } from '../minio/minio.model';
+import { BufferedFile } from '../minio/models/minio.model';
 
 @Controller('image-upload')
 export class ImageUploadController {

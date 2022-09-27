@@ -1,11 +1,13 @@
-import { ConfigService } from '@nestjs/config';
-import { TypegooseModuleOptions } from 'nestjs-typegoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModuleAsyncOptions } from '@nestjs/mongoose';
 
-export const getMongoConfig = async (
-  configService: ConfigService,
-): Promise<TypegooseModuleOptions> => {
+export const getMongoConfig = (): MongooseModuleAsyncOptions => {
   return {
-    uri: getMongoString(configService),
+    useFactory: (configService: ConfigService) => ({
+      uri: getMongoString(configService),
+    }),
+    inject: [ConfigService],
+    imports: [ConfigModule],
   };
 };
 
