@@ -13,21 +13,26 @@ import { UserDto } from '@app/contracts/user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
+import { AuthLogin, AuthRegister } from '@app/contracts';
 
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
 	@Post('register')
-	async registerUser(@Body() dto: UserDto) {
+	async registerUser(
+		@Body() dto: AuthRegister.Request,
+	): Promise<AuthRegister.Response> {
 		return this.authService.registerUser(dto);
 	}
 
 	@UseGuards(LocalAuthGuard)
 	@HttpCode(200)
 	@Post('login')
-	async loginUserBySession(@Session() session: Record<string, any>) {
-		return session;
+	async loginUserBySession(
+		@Session() { passport: { user } },
+	): Promise<AuthLogin.Response> {
+		return user;
 	}
 
 	@UseGuards(AuthenticatedGuard)
@@ -46,7 +51,9 @@ export class AuthController {
 
 	@HttpCode(200)
 	@Post('loginJwt')
-	async loginUserByJwt(@Body() { email, password }: UserDto) {
+	async loginUserByJwt(
+		@Body() { email, password }: Pick<UserDto, 'email' | 'password'>,
+	) {
 		const user = await this.authService.validateUser(email, password);
 
 		return this.authService.loginUser(user);
