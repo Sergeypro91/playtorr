@@ -1,10 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class AppService {
-  constructor(
-    @Inject('COMMUNICATION')
-    private readonly communicationClient: ClientProxy,
-  ) {}
-}
+export class AppService {}

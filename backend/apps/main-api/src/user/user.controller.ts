@@ -18,14 +18,18 @@ import { UserService } from './user.service';
 import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { RMQRoute, RMQValidate } from 'nestjs-rmq';
+import { UserGetUser } from '@app/contracts/user/user.getUser';
 
 @Controller('user')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 
-	@UseGuards(AuthenticatedGuard)
-	@Get()
-	async getUser(@Req() { user }: RequestWithUserSession) {
+	@RMQValidate()
+	@RMQRoute(UserGetUser.topic)
+	async getUser(
+		@Req() user: UserGetUser.Request,
+	): Promise<UserGetUser.Response[]> {
 		return this.userService.getUsers([user.email]);
 	}
 

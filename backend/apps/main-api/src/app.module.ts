@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule } from '@nestjs/microservices';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -14,18 +13,14 @@ import { RedisDinamicModule } from '@app/configs/redis/redis.config';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { GetFileModule } from './get-file/get-file.module';
 import { UserModule } from './user/user.module';
+import { RMQModule } from 'nestjs-rmq';
+import { getRMQConfig } from '@app/configs/rmq/rmq.config';
 
 @Module({
 	controllers: [AppController],
 	imports: [
-		ClientsModule.register([
-			{
-				name: 'COMMUNICATION',
-				// TODO pass url from .env
-				options: { url: 'redis://localhost:6379' },
-			},
-		]),
 		ConfigModule.forRoot({ isGlobal: true, envFilePath: '../envs/.env' }),
+		RMQModule.forRootAsync(getRMQConfig()),
 		MongooseModule.forRootAsync(getMongoConfig()),
 		RedisDinamicModule,
 		TelegramModule.forRootAsync({
@@ -38,7 +33,6 @@ import { UserModule } from './user/user.module';
 			inject: [ConfigService],
 			useFactory: getMinIOConfig,
 		}),
-		ImageUploadModule,
 		AuthModule,
 		UserModule,
 		ImageUploadModule,

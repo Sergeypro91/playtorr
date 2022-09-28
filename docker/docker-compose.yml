@@ -25,6 +25,19 @@ services:
     volumes:
       - ./storage-redis:/data
 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASS}
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - ./storage-rmq:/data
+
   s3:
     image: minio/minio:latest
     container_name: minio

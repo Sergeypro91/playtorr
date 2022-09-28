@@ -1,59 +1,35 @@
-import {
-	Get,
-	Req,
-	Post,
-	Body,
-	Session,
-	HttpCode,
-	UseGuards,
-	Controller,
-} from '@nestjs/common';
-import { RequestWithUserSession } from '@app/contracts/user.dto';
-import { UserDto } from '@app/contracts/user.dto';
+import { Body, Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local.guard';
-import { AuthenticatedGuard } from './guards/authenticated.guard';
-import { AuthLogin, AuthRegister } from '@app/contracts';
+import { AuthRegister } from '@app/contracts';
+import { RMQRoute, RMQValidate } from 'nestjs-rmq';
+import { AuthValidateUser } from '@app/contracts/auth/auth.validateUser';
+import { AuthJWTLogin } from '@app/contracts/auth/auth.jwtLogin';
 
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
-	@Post('register')
+	@RMQValidate()
+	@RMQRoute(AuthRegister.topic)
 	async registerUser(
 		@Body() dto: AuthRegister.Request,
 	): Promise<AuthRegister.Response> {
 		return this.authService.registerUser(dto);
 	}
 
-	@UseGuards(LocalAuthGuard)
-	@HttpCode(200)
-	@Post('login')
-	async loginUserBySession(
-		@Session() { passport: { user } },
-	): Promise<AuthLogin.Response> {
-		return user;
+	@RMQValidate()
+	@RMQRoute(AuthValidateUser.topic)
+	async validateUser(
+		@Body() { email, password }: AuthValidateUser.Request,
+	): Promise<AuthValidateUser.Response> {
+		return this.authService.validateUser(email, password);
 	}
 
-	@UseGuards(AuthenticatedGuard)
-	@Get('logout')
-	async logoutUser(@Session() session: Record<string, any>) {
-		session.destroy();
-
-		return { message: 'User session end' };
-	}
-
-	@UseGuards(AuthenticatedGuard)
-	@Get('checkSession')
-	async check(@Req() { user }: RequestWithUserSession) {
-		return user;
-	}
-
-	@HttpCode(200)
-	@Post('loginJwt')
+	@RMQValidate()
+	@RMQRoute(AuthJWTLogin.topic)
 	async loginUserByJwt(
-		@Body() { email, password }: Pick<UserDto, 'email' | 'password'>,
-	) {
+		@Body() { email, password }: AuthJWTLogin.Request,
+	): Promise<AuthJWTLogin.Response> {
 		const user = await this.authService.validateUser(email, password);
 
 		return this.authService.loginUser(user);

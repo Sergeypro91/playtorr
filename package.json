@@ -8,7 +8,7 @@
     "reinstall:backend": "cd backend && npm run remove-node_modules && npm run remove-package-lock && npm run initial-installation",
     "install:frontend": "cd frontend && npm run initial-installation",
     "reinstall:frontend": "cd frontend && npm run remove-node_modules && npm run remove-package-lock && npm run initial-installation",
-    "start-docker-services": "cp envs/.env docker && cd docker && docker-compose -p playtorr_services -d up",
+    "start-docker-services": "cp envs/.env docker && cd docker && docker-compose -p playtorr_services up -d",
     "start:backend": "cd backend && npm run start",
     "start:dev:backend": "cd backend && npm run start:dev",
     "start:debug:backend": "cd backend && npm run start:debug",
