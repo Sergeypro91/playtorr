@@ -1,15 +1,9 @@
-import { IsEmail, IsString } from 'class-validator';
+import { LoginUserDto } from '@app/contracts';
 
 export namespace AuthJWTLogin {
 	export const topic = 'auth.jwtLogin.command';
 
-	export class Request {
-		@IsEmail()
-		email: string;
-
-		@IsString()
-		password: string;
-	}
+	export class Request extends LoginUserDto {}
 
 	export class Response {
 		access_token: string;

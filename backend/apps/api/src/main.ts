@@ -1,5 +1,5 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { ApiModule } from './api.module';
+import { ApiModule } from './modules/api.module';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
@@ -9,11 +9,11 @@ import * as passport from 'passport';
 
 async function bootstrap() {
 	const app = await NestFactory.create(ApiModule);
-	const logger = new Logger('App');
+	const logger = new Logger('API');
 	const globalPrefix = 'api';
 	const redisClient = new Redis();
 	const configService = await app.get(ConfigService);
-	const MAIN_API_PORT = Number(configService.get('MAIN_API_PORT'));
+	const MAIN_API_PORT = Number(configService.get('MAIN_API_PORT')) || 3000;
 	const REDIS_KEY = configService.get('REDIS_KEY');
 	const REDIS_TTL = Number(configService.get('REDIS_TTL'));
 
@@ -39,12 +39,9 @@ async function bootstrap() {
 		passport.initialize(),
 		passport.session(),
 	);
-
-	await app.listen(MAIN_API_PORT);
-
-	logger.log(
-		`Application start on - http://localhost/${globalPrefix}/${MAIN_API_PORT}`,
-	);
+	await app.listen(MAIN_API_PORT, async () => {
+		logger.log(`🚀 PROXY-API start on - ${await app.getUrl()}`);
+	});
 }
 
 bootstrap().then(() => {

@@ -1,20 +1,9 @@
-import { Role } from '@app/interfaces/user/user.interface';
-import { IsEmail, IsString } from 'class-validator';
+import { LoginUserDto, UserSession } from '@app/contracts';
 
 export namespace AuthLogin {
 	export const topic = 'auth.login.command';
 
-	export class Request {
-		@IsEmail()
-		email: string;
+	export class Request extends LoginUserDto {}
 
-		@IsString()
-		password: string;
-	}
-
-	export class Response {
-		email: string;
-		tgId: number;
-		role: Role;
-	}
+	export class Response extends UserSession {}
 }

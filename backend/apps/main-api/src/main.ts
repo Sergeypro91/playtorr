@@ -1,12 +1,15 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
-import { AppModule } from './app.module';
+import { AppModule } from './modules/app.module';
 
 async function bootstrap() {
+	const logger = new Logger('API');
 	const app = await NestFactory.create(AppModule);
 	await app.init();
-	Logger.log(`🚀 Account application is running`);
+	logger.log(`🚀 Account application is running`);
 }
 
-bootstrap();
+bootstrap().then(() => {
+	console.log('---------#|Start - API_SERVICE|#---------');
+});

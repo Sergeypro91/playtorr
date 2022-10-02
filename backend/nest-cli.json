@@ -18,24 +18,6 @@
         "tsConfigPath": "apps/main-api/tsconfig.app.json"
       }
     },
-    "movie-processing-api": {
-      "type": "application",
-      "root": "apps/movie-processing-api",
-      "entryFile": "main",
-      "sourceRoot": "apps/movie-processing-api/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/movie-processing-api/tsconfig.app.json"
-      }
-    },
-    "communication-api": {
-      "type": "application",
-      "root": "apps/communication-api",
-      "entryFile": "main",
-      "sourceRoot": "apps/communication-api/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/communication-api/tsconfig.app.json"
-      }
-    },
     "contracts": {
       "type": "library",
       "root": "libs/contracts",
@@ -61,15 +43,6 @@
       "sourceRoot": "libs/configs/src",
       "compilerOptions": {
         "tsConfigPath": "libs/configs/tsconfig.lib.json"
-      }
-    },
-    "dto": {
-      "type": "library",
-      "root": "libs/dto",
-      "entryFile": "index",
-      "sourceRoot": "libs/dto/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/dto/tsconfig.lib.json"
       }
     },
     "api": {

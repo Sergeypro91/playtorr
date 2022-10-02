@@ -1,3 +1,6 @@
+import { Request } from 'express';
+import { UserSession } from '@app/contracts';
+
 export enum Role {
 	ADMIN = 'admin',
 	GUEST = 'guest',
@@ -19,4 +22,8 @@ export interface IUser {
 	role: Role;
 	tgId?: number;
 	image?: string;
+}
+
+export interface RequestWithUserSession extends Request {
+	user: UserSession;
 }
