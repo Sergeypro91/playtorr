@@ -88,7 +88,7 @@ export class MinIOService {
 		return this.client.getObject(
 			bucketName,
 			filename,
-			async function (err, data) {
+			async function (err) {
 				if (err) {
 					return console.log(err);
 				}
@@ -102,7 +102,7 @@ export class MinIOService {
 		bucketName: undefined | string = this.options.bucketName,
 	) {
 		this.client.removeObject(bucketName, objetName, <NoResultCallback>(
-			function (err: any, res: any) {
+			function (err: any) {
 				if (err)
 					throw new HttpException(
 						'An error occurred when deleting!',

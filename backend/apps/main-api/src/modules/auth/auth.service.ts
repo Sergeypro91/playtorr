@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto, DBUserDto } from '@app/contracts/createUserDto';
 import { Role } from '@app/interfaces/user/user.interface';
-import { User } from '../user/models/user.model';
 import { compare } from 'bcryptjs';
 import {
 	ALREADY_REGISTERED_EMAIL_ERROR,

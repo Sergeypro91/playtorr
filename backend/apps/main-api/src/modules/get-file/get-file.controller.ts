@@ -1,6 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { GetFileService } from './get-file.service';
-import { IdValidationPipe } from '../../utils/pipes/id-validation.pipe';
 
 @Controller('get-file')
 export class GetFileController {
