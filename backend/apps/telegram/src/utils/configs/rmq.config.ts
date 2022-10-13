@@ -13,7 +13,8 @@ export const getRMQConfig = (): IRMQServiceAsyncOptions => ({
 				host: configService.get('RMQ_HOST') ?? '',
 			},
 		],
+		queueName: configService.get('RMQ_QUEUE') ?? '',
 		prefetchCount: 32,
-		serviceName: 'telegram',
+		serviceName: 'playtorr-telegram',
 	}),
 });

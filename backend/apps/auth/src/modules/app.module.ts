@@ -11,7 +11,7 @@ import { getRMQConfig } from '../utils/configs';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/main-api/src/envs/.env'],
+			envFilePath: ['../envs/.env', './apps/auth/src/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		MongooseModule.forRootAsync(getMongoConfig()),

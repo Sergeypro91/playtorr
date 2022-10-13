@@ -23,6 +23,7 @@ export class MinIOController {
 			mimetype: file.mimetype,
 			binaryBuffer: Buffer.from(file.buffer).toString('base64'),
 		};
+
 		try {
 			return await this.rmqService.send<
 				MinIOUploadFile.Request,

@@ -10,7 +10,7 @@ import { MinIOService } from './minio.service';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/telegram/src/envs/.env'],
+			envFilePath: ['../envs/.env', './apps/minio/src/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 	],

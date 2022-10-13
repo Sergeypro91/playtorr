@@ -7,9 +7,9 @@ async function bootstrap() {
 	const logger = new Logger('API');
 	const app = await NestFactory.create(AppModule);
 	await app.init();
-	logger.log(`🚀 Account application is running`);
+	logger.log(`🚀 Auth microservice is running`);
 }
 
 bootstrap().then(() => {
-	console.log('---------#|Start - API_SERVICE|#---------');
+	console.log('---------#|Start - AUTH_SERVICE|#---------');
 });
