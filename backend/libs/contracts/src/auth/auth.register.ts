@@ -1,4 +1,4 @@
-import { CreateUserDto, DBUserDto } from '@app/contracts/createUserDto';
+import { CreateUserDto, DBUserDto } from '@app/contracts/createUser.dto';
 
 export namespace AuthRegister {
 	export const topic = 'auth.register.command';

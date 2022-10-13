@@ -62,6 +62,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/telegram/tsconfig.app.json"
       }
+    },
+    "minio": {
+      "type": "application",
+      "root": "apps/minio",
+      "entryFile": "main",
+      "sourceRoot": "apps/minio/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/minio/tsconfig.app.json"
+      }
     }
   }
 }

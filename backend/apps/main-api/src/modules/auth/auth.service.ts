@@ -4,7 +4,7 @@ import {
 	Logger,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto, DBUserDto } from '@app/contracts/createUserDto';
+import { CreateUserDto, DBUserDto } from '@app/contracts/createUser.dto';
 import { Role } from '@app/interfaces/user/user.interface';
 import { compare } from 'bcryptjs';
 import {

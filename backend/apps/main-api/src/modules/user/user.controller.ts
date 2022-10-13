@@ -1,5 +1,5 @@
 import { Body, Controller, NotFoundException } from '@nestjs/common';
-import { UsersEmailDto } from '@app/contracts/createUserDto';
+import { UsersEmailDto } from '@app/contracts/createUser.dto';
 import { UserService } from './user.service';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {

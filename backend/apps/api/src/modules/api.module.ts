@@ -6,10 +6,10 @@ import { RedisDynamicModule, getRMQConfig } from '../utils/configs';
 import { JwtStrategy, LocalStrategy } from '../utils/strategies';
 import { SessionSerializer } from '../utils/session';
 import { RolesGuard } from '../utils/guards';
-import { AuthController, UserController } from './controllers';
+import { AuthController, UserController, MinIOController } from './controllers';
 
 @Module({
-	controllers: [AuthController, UserController],
+	controllers: [AuthController, UserController, MinIOController],
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true, envFilePath: '../envs/.env' }),
 		RMQModule.forRootAsync(getRMQConfig()),

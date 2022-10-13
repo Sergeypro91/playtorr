@@ -1,4 +1,4 @@
-import { DBUserDto } from '@app/contracts/createUserDto';
+import { DBUserDto } from '@app/contracts/createUser.dto';
 import { IsEmail } from 'class-validator';
 
 export namespace UserGetUser {
