@@ -107,7 +107,7 @@ export class EditUserDto {
 	image?: string;
 }
 
-export class UserSession {
+export class UserSessionDto {
 	@IsEmail()
 	email: string;
 
@@ -117,6 +117,14 @@ export class UserSession {
 
 	@IsEnum(Role)
 	role: Role;
+}
+
+export class FindUserByDto {
+	@IsString()
+	type: string;
+
+	@IsString()
+	id: string;
 }
 
 export class UsersEmailDto {

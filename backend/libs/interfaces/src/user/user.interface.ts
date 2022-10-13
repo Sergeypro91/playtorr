@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { UserSession } from '@app/contracts';
+import { UserSessionDto } from '@app/contracts';
 
 export enum Role {
 	ADMIN = 'admin',
@@ -25,5 +25,5 @@ export interface IUser {
 }
 
 export interface RequestWithUserSession extends Request {
-	user: UserSession;
+	user: UserSessionDto;
 }

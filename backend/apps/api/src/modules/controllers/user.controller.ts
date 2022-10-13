@@ -8,9 +8,10 @@ import {
 	UseGuards,
 	Controller,
 	UnauthorizedException,
+	HttpCode,
 } from '@nestjs/common';
 import { RequestWithUserSession, Role } from '@app/interfaces';
-import { EditUserDto, UsersEmailDto, UserSession } from '@app/contracts';
+import { EditUserDto, UsersEmailDto, UserSessionDto } from '@app/contracts';
 import { RMQService } from 'nestjs-rmq';
 import {
 	UserGetUser,
@@ -18,8 +19,8 @@ import {
 	UserEditUser,
 	UserDeleteUsers,
 } from '@app/contracts';
-import { Roles } from '../decorators';
-import { AuthenticatedGuard, RolesGuard } from '../guards';
+import { Roles } from '../../utils/decorators';
+import { AuthenticatedGuard, RolesGuard } from '../../utils/guards';
 
 @Controller('user')
 export class UserController {
@@ -27,12 +28,12 @@ export class UserController {
 
 	@UseGuards(AuthenticatedGuard)
 	@Get()
-	async getUser(@Req() { user: userSession }: { user: UserSession }) {
+	async getUser(@Req() { user: { email } }: { user: UserSessionDto }) {
 		try {
 			return await this.rmqService.send<
 				UserGetUser.Request,
 				UserGetUser.Response[]
-			>(UserGetUser.topic, userSession);
+			>(UserGetUser.topic, { email });
 		} catch (err) {
 			if (err instanceof Error) {
 				throw new UnauthorizedException(err.message);
@@ -42,6 +43,7 @@ export class UserController {
 
 	@Roles(Role.ADMIN)
 	@UseGuards(AuthenticatedGuard, RolesGuard)
+	@HttpCode(200)
 	@Post()
 	async getUsers(@Body() users: UserGetUsers.Request) {
 		try {

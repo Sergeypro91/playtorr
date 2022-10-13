@@ -1,11 +1,11 @@
-import { DBUserDto, EditUserDto, UserSession } from '@app/contracts';
+import { DBUserDto, EditUserDto, UserSessionDto } from '@app/contracts';
 
 export namespace UserEditUser {
 	export const topic = 'user.editUser.command';
 
 	export class Request {
 		user: EditUserDto;
-		userSession: UserSession;
+		userSession: UserSessionDto;
 	}
 
 	export class Response extends DBUserDto {}

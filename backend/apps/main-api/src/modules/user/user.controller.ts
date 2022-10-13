@@ -1,13 +1,15 @@
-import { Req, Body, Controller } from '@nestjs/common';
+import { Body, Controller, NotFoundException } from '@nestjs/common';
 import { UsersEmailDto } from '@app/contracts/createUserDto';
 import { UserService } from './user.service';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
-	UserGetUser,
-	UserGetUsers,
 	UserDeleteUsers,
 	UserEditUser,
+	UserFindUserBy,
+	UserGetUser,
+	UserGetUsers,
 } from '@app/contracts';
+import { USER_NOT_FOUND_ERROR } from '@app/constants';
 
 @Controller('user')
 export class UserController {
@@ -16,9 +18,9 @@ export class UserController {
 	@RMQValidate()
 	@RMQRoute(UserGetUser.topic)
 	async getUser(
-		@Req() user: UserGetUser.Request,
+		@Body() { email }: UserGetUser.Request,
 	): Promise<UserGetUser.Response[]> {
-		return this.userService.getUsers([user.email]);
+		return this.userService.getUsers({ users: [email] });
 	}
 
 	@RMQValidate()
@@ -26,7 +28,21 @@ export class UserController {
 	async getUsers(
 		@Body() { users }: UserGetUsers.Request,
 	): Promise<UserGetUsers.Response[]> {
-		return this.userService.getUsers(users);
+		return this.userService.getUsers({ users });
+	}
+
+	@RMQValidate()
+	@RMQRoute(UserFindUserBy.topic)
+	async findUserBy(
+		@Body() { type, id }: UserFindUserBy.Request,
+	): Promise<UserFindUserBy.Response> | null {
+		const existUser = await this.userService.findUserBy({ type, id });
+
+		if (!existUser) {
+			throw new NotFoundException(USER_NOT_FOUND_ERROR);
+		}
+
+		return existUser;
 	}
 
 	@RMQValidate()

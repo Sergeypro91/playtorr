@@ -6,7 +6,7 @@ import { RedisDynamicModule, getRMQConfig } from '../utils/configs';
 import { JwtStrategy, LocalStrategy } from '../utils/strategies';
 import { SessionSerializer } from '../utils/session';
 import { RolesGuard } from '../utils/guards';
-import { AuthController, UserController } from '../utils/controllers';
+import { AuthController, UserController } from './controllers';
 
 @Module({
 	controllers: [AuthController, UserController],

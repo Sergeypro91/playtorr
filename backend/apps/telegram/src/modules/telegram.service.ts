@@ -1,33 +1,24 @@
-import {
-	Logger,
-	Inject,
-	Injectable,
-	BadRequestException,
-} from '@nestjs/common';
+import { Logger, Injectable, BadRequestException } from '@nestjs/common';
 import { Markup, Scenes, session, Telegraf } from 'telegraf';
-import {
-	MyBotTelegramOptions,
-	User,
-} from '@app/interfaces/telegram/telegram.interface';
+import { User } from '@app/interfaces/telegram/telegram.interface';
 import {
 	START_PROMPT,
 	SORRY_STICKER,
 	CONGRATS_PROMPT,
 	CONGRATS_STICKER,
 	SOME_ERROR_HAPPENS,
-	TELEGRAM_MODULE_OPTIONS,
 } from '@app/constants/telegram/telegram.constants';
-import { UserService } from '../user/user.service';
-import { AuthService } from '../auth/auth.service';
 import { genStartScene } from './scenes/telegram.scene.start';
 import { genAuthScene } from './scenes/telegram.scene.auth';
 import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
 import { genAuthWizard } from './wizard/telegram.wizard.auth';
+import { RMQService } from 'nestjs-rmq';
+import { AuthRegister, FindUserByDto, UserFindUserBy } from '@app/contracts';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TelegramService {
 	bot: Telegraf<Scenes.SceneContext>;
-	options: MyBotTelegramOptions;
 	logger: Logger;
 	startScene: Scenes.BaseScene<Scenes.SceneContext<Scenes.SceneSessionData>>;
 	authScene: Scenes.BaseScene<Scenes.SceneContext<Scenes.SceneSessionData>>;
@@ -39,12 +30,12 @@ export class TelegramService {
 	>;
 
 	constructor(
-		@Inject(TELEGRAM_MODULE_OPTIONS) options: MyBotTelegramOptions,
-		private readonly authService: AuthService,
-		private readonly userService: UserService,
+		private readonly configService: ConfigService,
+		private readonly rmqService: RMQService,
 	) {
-		this.bot = new Telegraf<Scenes.SceneContext>(options.token);
-		this.options = options;
+		this.bot = new Telegraf<Scenes.SceneContext>(
+			this.configService.get('TELEGRAM_BOT_TOKEN'),
+		);
 		this.logger = new Logger('TelegramBot');
 		this.startScene = genStartScene.bind(this)();
 		this.authScene = genAuthScene.bind(this)();
@@ -92,7 +83,10 @@ export class TelegramService {
 		this.logger.warn('Telegram Bot is stopped');
 	}
 
-	async sendSticker(sticker: string, chatId: string = this.options.chatId) {
+	async sendSticker(
+		sticker: string,
+		chatId: string = this.configService.get('TELEGRAM_CHAT_ID'),
+	) {
 		try {
 			await this.bot.telegram.sendSticker(`${chatId}`, sticker);
 		} catch (err) {
@@ -150,13 +144,29 @@ export class TelegramService {
 		user: User,
 	) {
 		try {
-			await this.authService.createUser(user);
+			await this.rmqService.send<
+				AuthRegister.Request,
+				AuthRegister.Response
+			>(AuthRegister.topic, user);
 			await this.sendSticker(CONGRATS_STICKER);
 			await ctx.reply(CONGRATS_PROMPT);
 		} catch (err) {
 			await this.sendSticker(SORRY_STICKER);
 			await ctx.reply(SOME_ERROR_HAPPENS);
 			throw new BadRequestException(err.response.description, err);
+		}
+	}
+
+	async findUserInDB(query: FindUserByDto) {
+		try {
+			return await this.rmqService.send<
+				UserFindUserBy.Request,
+				UserFindUserBy.Response
+			>(UserFindUserBy.topic, query);
+		} catch (err) {
+			if (err instanceof Error) {
+				console.log(err.message);
+			}
 		}
 	}
 }

@@ -9,7 +9,7 @@ import {
 	Controller,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { LocalAuthGuard, AuthenticatedGuard } from '../guards';
+import { LocalAuthGuard, AuthenticatedGuard } from '../../utils/guards';
 import { AuthRegister, AuthJWTLogin } from '@app/contracts';
 import { RMQService } from 'nestjs-rmq';
 import { RequestWithUserSession } from '@app/interfaces';

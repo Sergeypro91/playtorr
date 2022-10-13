@@ -6,5 +6,6 @@ export * from './auth/auth.validateUser';
 export * from './auth/auth.jwtLogin';
 export * from './user/user.deleteUsers';
 export * from './user/user.editUser';
+export * from './user/user.findUserBy';
 export * from './user/user.getUsers';
 export * from './user/user.getUser';

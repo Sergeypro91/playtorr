@@ -15,10 +15,12 @@ export function genAuthScene() {
 		const tgUserInfo = ctx.from;
 
 		if (tgUserInfo) {
-			const dbUser = await this.userService.findUserBy({
+			const dbUser = await this.findUserInDB({
 				type: 'tgId',
-				id: tgUserInfo.id,
+				id: `${tgUserInfo.id}`,
 			});
+
+			console.log('USERDB', dbUser);
 
 			if (!dbUser) {
 				if (sceneButtons[0].length >= 2) {

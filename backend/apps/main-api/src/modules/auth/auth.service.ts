@@ -42,7 +42,7 @@ export class AuthService {
 		if (dto.tgId) {
 			const existTgIdUser = await this.userService.findUserBy({
 				type: 'tgId',
-				id: dto.tgId,
+				id: `${dto.tgId}`,
 			});
 
 			if (existTgIdUser) {
