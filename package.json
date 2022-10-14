@@ -1,19 +1,18 @@
 {
   "name": "playtor",
   "version": "0.0.1",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "private": true,
   "scripts": {
-    "install": "yarn --cwd api-communication && yarn --cwd playtorr-services/main-api-service && yarn --cwd playtorr-services/movie-processioning-service",
-    "start-communication-service": "yarn --cwd api-communication start",
-    "start-main-api-service": "yarn --cwd playtorr-services/main-api-service start",
-    "start-movie-processioning-service": "yarn --cwd playtorr-services/movie-processioning-service start",
-    "start": "yarn run start-communication-service & yarn run start-main-api-service &yarn run start-movie-processioning-service",
-    "start:dev-communication-service": "yarn --cwd api-communication start",
-    "start:dev-main-api-service": "yarn --cwd playtorr-services/main-api-service start",
-    "start:dev-movie-processioning-service": "yarn --cwd playtorr-services/movie-processioning-service start",
-    "start:dev": "yarn run start:dev-communication-service & yarn run start:dev-main-api-service &yarn run start:dev-movie-processioning-service"
-  },
-  "dependencies": {
-    "cwd": "^0.10.0"
+    "install:backend": "cd backend && npm run initial-installation",
+    "reinstall:backend": "cd backend && npm run remove-node_modules && npm run remove-package-lock && npm run initial-installation",
+    "install:frontend": "cd frontend && npm run initial-installation",
+    "reinstall:frontend": "cd frontend && npm run remove-node_modules && npm run remove-package-lock && npm run initial-installation",
+    "start-docker-services": "cp envs/.env docker && cd docker && docker-compose -p playtorr_services up -d",
+    "start:backend": "cd backend && npm run start",
+    "start:dev:backend": "cd backend && npm run start:dev",
+    "start:debug:backend": "cd backend && npm run start:debug",
+    "start:prod:backend": "cd backend && npm run start:prod",
+    "start:frontend": "cd frontend && npm run start"
   }
 }

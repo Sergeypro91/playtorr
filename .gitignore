@@ -38,6 +38,6 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 #db exclude
-**/storage-mongo/
-**/storage-redis/
-**/storage-minio/
+docker/storage-mongo/
+docker/storage-redis/
+docker/storage-minio/
