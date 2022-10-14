@@ -22,7 +22,7 @@ export class UserService {
 	logger: Logger;
 
 	constructor(private readonly userRepository: UserRepository) {
-		this.logger = new Logger('UserService');
+		this.logger = new Logger(UserService.name);
 	}
 
 	async countUsers() {

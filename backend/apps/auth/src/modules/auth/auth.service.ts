@@ -25,7 +25,7 @@ export class AuthService {
 		private readonly userService: UserService,
 		private readonly jwtService: JwtService,
 	) {
-		this.logger = new Logger('AuthService');
+		this.logger = new Logger(AuthService.name);
 	}
 
 	async registerUser(dto: CreateUserDto): Promise<DBUserDto> {

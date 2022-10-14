@@ -36,7 +36,7 @@ export class TelegramService {
 		this.bot = new Telegraf<Scenes.SceneContext>(
 			this.configService.get('TELEGRAM_BOT_TOKEN'),
 		);
-		this.logger = new Logger('TelegramBot');
+		this.logger = new Logger(TelegramService.name);
 		this.startScene = genStartScene.bind(this)();
 		this.authScene = genAuthScene.bind(this)();
 		this.addMovieScene = genAddMovieScene.bind(this)();

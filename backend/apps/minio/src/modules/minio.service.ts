@@ -22,7 +22,7 @@ export class MinIOService {
 	options: MinIOOptions;
 
 	constructor(private readonly configService: ConfigService) {
-		this.logger = new Logger('MinioService');
+		this.logger = new Logger(MinIOService.name);
 		this.options = getMinIOConfig(configService);
 		this.client = new Client(this.options);
 		this.createBucket('eu-central-1').catch((error) => {
@@ -79,23 +79,28 @@ export class MinIOService {
 			);
 		}
 
-		try {
-			this.client.putObject(
-				BUCKET_NAME,
-				FILE_NAME,
-				FILE_BUFFER,
-				FILE_META_DATA,
-			);
-		} catch (error) {
-			throw new HttpException(
-				FAILED_TO_UPLOAD,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
+		const handleResult = (error, success) => {
+			if (error) {
+				throw new HttpException(
+					FAILED_TO_UPLOAD,
+					HttpStatus.INTERNAL_SERVER_ERROR,
+				);
+			}
 
-		return {
-			url: `${ENDPOINT}:${PORT}/${BUCKET_NAME}/${FILE_NAME}`,
+			if (success) {
+				return {
+					url: `${ENDPOINT}:${PORT}/${BUCKET_NAME}/${FILE_NAME}`,
+				};
+			}
 		};
+
+		return this.client.putObject(
+			BUCKET_NAME,
+			FILE_NAME,
+			FILE_BUFFER,
+			FILE_META_DATA,
+			handleResult,
+		);
 	}
 
 	async delete(filename: string): Promise<MinIODeleteResponseDto> {
