@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { RMQModule } from 'nestjs-rmq';
-import { getRMQConfig } from '../utils/configs';
+import { getRMQConfig } from '@app/configs';
 import { MinioController } from './minio.controller';
 import { MinIOService } from './minio.service';
 

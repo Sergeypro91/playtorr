@@ -15,6 +15,6 @@ export const getRMQConfig = (): IRMQServiceAsyncOptions => ({
 		],
 		queueName: configService.get('RMQ_QUEUE') ?? '',
 		prefetchCount: 32,
-		serviceName: 'playtorr-auth',
+		serviceName: configService.get('RMQ_SERVICE') ?? '',
 	}),
 });

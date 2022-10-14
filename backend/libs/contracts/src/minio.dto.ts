@@ -23,8 +23,5 @@ export class MinIODeleteRequestDto {
 
 export class MinIODeleteResponseDto {
 	@IsString()
-	fileName: string;
-
-	@IsString()
 	message: string;
 }

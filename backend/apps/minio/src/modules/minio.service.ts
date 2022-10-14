@@ -1,5 +1,4 @@
 import { Logger, Injectable, HttpStatus, HttpException } from '@nestjs/common';
-import * as crypto from 'crypto';
 import { Client, Region } from 'minio';
 import { MinIOOptions } from '@app/interfaces/minio/minio.interface';
 import { getMinIOConfig } from '../utils/configs';
@@ -10,6 +9,11 @@ import {
 	MinIOUploadResponseDto,
 } from '@app/contracts';
 import { defineBucketPolicy } from '../utils/policy';
+import {
+	FAILED_TO_DELETE,
+	FAILED_TO_UPLOAD,
+	FILE_TYPE_UNSUPPORTED,
+} from '@app/constants';
 
 @Injectable()
 export class MinIOService {
@@ -22,16 +26,14 @@ export class MinIOService {
 		this.options = getMinIOConfig(configService);
 		this.client = new Client(this.options);
 		this.createBucket('eu-central-1').catch((error) => {
-			// TODO handle exceptions
-			console.log('MinIO ERROR', error);
+			this.logger.log(error.message);
 		});
 		this.client.setBucketPolicy(
 			this.options.bucketName,
 			JSON.stringify(defineBucketPolicy(this.options.bucketName)),
-			function (err) {
-				if (err) throw err;
-				// TODO handle exceptions
-				console.log('Bucket policy set');
+			(error) => {
+				if (error) throw error;
+				this.logger.log('Bucket policy set');
 			},
 		);
 	}
@@ -42,9 +44,9 @@ export class MinIOService {
 		);
 
 		if (!currBucket) {
-			this.client.makeBucket(this.options.bucketName, region, (err) => {
-				if (err) {
-					this.logger.error(err);
+			this.client.makeBucket(this.options.bucketName, region, (error) => {
+				if (error) {
+					this.logger.error(error);
 				} else {
 					this.logger.log(
 						`Bucket created successfully in "${region}".`,
@@ -58,58 +60,54 @@ export class MinIOService {
 
 	async upload(
 		fileDto: MinIOUploadRequestDto,
+		fileTypes: string[],
 	): Promise<MinIOUploadResponseDto> {
 		const PORT = this.options.port;
 		const ENDPOINT = this.options.endPoint;
 		const BUCKET_NAME = this.options.bucketName;
+		const FILE_NAME = fileDto.name;
+		const FILE_BUFFER = Buffer.from(fileDto.binaryBuffer, 'base64');
+		const FILE_MIME_TYPE = fileDto.mimetype.split('/')[1];
+		const FILE_META_DATA = {
+			'Content-Type': fileDto.mimetype,
+		};
 
-		if (
-			!(
-				fileDto.mimetype.includes('jpeg') ||
-				fileDto.mimetype.includes('png')
-			)
-		) {
+		if (!fileTypes.includes(FILE_MIME_TYPE)) {
 			throw new HttpException(
-				'File type not supported',
-				HttpStatus.BAD_REQUEST,
+				FILE_TYPE_UNSUPPORTED,
+				HttpStatus.UNSUPPORTED_MEDIA_TYPE,
 			);
 		}
 
-		const timestamp = Date.now().toString();
-		const hashedFileName = crypto
-			.createHash('md5')
-			.update(timestamp)
-			.digest('hex');
-		const extension = fileDto.name.substring(
-			fileDto.name.lastIndexOf('.'),
-			fileDto.name.length,
-		);
-		const metaData: { [key: string]: any } = {
-			'Content-Type': fileDto.mimetype,
-		};
-		const fileName = hashedFileName + extension;
-		const fileBuffer = Buffer.from(fileDto.binaryBuffer, 'base64');
-
-		this.client.putObject(BUCKET_NAME, fileName, fileBuffer, metaData);
+		try {
+			this.client.putObject(
+				BUCKET_NAME,
+				FILE_NAME,
+				FILE_BUFFER,
+				FILE_META_DATA,
+			);
+		} catch (error) {
+			throw new HttpException(
+				FAILED_TO_UPLOAD,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
 
 		return {
-			url: `${ENDPOINT}:${PORT}/${BUCKET_NAME}/${fileName}`,
+			url: `${ENDPOINT}:${PORT}/${BUCKET_NAME}/${FILE_NAME}`,
 		};
 	}
 
-	async delete(fileName: string): Promise<MinIODeleteResponseDto> {
-		await this.client.removeObject(
-			this.options.bucketName,
-			fileName,
-			(err: any) => {
-				if (err)
-					throw new HttpException(
-						'An error occurred when deleting!',
-						HttpStatus.BAD_REQUEST,
-					);
-			},
-		);
+	async delete(filename: string): Promise<MinIODeleteResponseDto> {
+		try {
+			await this.client.removeObject(this.options.bucketName, filename);
+		} catch (error) {
+			throw new HttpException(
+				FAILED_TO_DELETE,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
 
-		return { fileName, message: 'Файл был успешно удален' };
+		return { message: `Файл "${filename}" был успешно удален` };
 	}
 }
