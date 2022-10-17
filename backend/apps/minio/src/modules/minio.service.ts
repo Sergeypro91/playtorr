@@ -1,4 +1,10 @@
-import { Logger, Injectable, HttpStatus, HttpException } from '@nestjs/common';
+import {
+	Logger,
+	Injectable,
+	InternalServerErrorException,
+	UnsupportedMediaTypeException,
+	NotFoundException,
+} from '@nestjs/common';
 import { Client, Region } from 'minio';
 import { MinIOOptions } from '@app/interfaces/minio/minio.interface';
 import { getMinIOConfig } from '../utils/configs';
@@ -10,7 +16,7 @@ import {
 } from '@app/contracts';
 import { defineBucketPolicy } from '../utils/policy';
 import {
-	FAILED_TO_DELETE,
+	FILE_DOESNT_EXIST,
 	FAILED_TO_UPLOAD,
 	FILE_TYPE_UNSUPPORTED,
 } from '@app/constants';
@@ -68,51 +74,32 @@ export class MinIOService {
 		const FILE_NAME = fileDto.name;
 		const FILE_BUFFER = Buffer.from(fileDto.binaryBuffer, 'base64');
 		const FILE_MIME_TYPE = fileDto.mimetype.split('/')[1];
-		const FILE_META_DATA = {
-			'Content-Type': fileDto.mimetype,
-		};
 
 		if (!fileTypes.includes(FILE_MIME_TYPE)) {
-			throw new HttpException(
-				FILE_TYPE_UNSUPPORTED,
-				HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-			);
+			throw new UnsupportedMediaTypeException(FILE_TYPE_UNSUPPORTED);
 		}
 
-		const handleResult = (error, success) => {
-			if (error) {
-				throw new HttpException(
-					FAILED_TO_UPLOAD,
-					HttpStatus.INTERNAL_SERVER_ERROR,
-				);
+		try {
+			await this.client.putObject(BUCKET_NAME, FILE_NAME, FILE_BUFFER);
+			return {
+				url: `${ENDPOINT}:${PORT}/${BUCKET_NAME}/${FILE_NAME}`,
+			};
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new InternalServerErrorException(FAILED_TO_UPLOAD);
 			}
-
-			if (success) {
-				return {
-					url: `${ENDPOINT}:${PORT}/${BUCKET_NAME}/${FILE_NAME}`,
-				};
-			}
-		};
-
-		return this.client.putObject(
-			BUCKET_NAME,
-			FILE_NAME,
-			FILE_BUFFER,
-			FILE_META_DATA,
-			handleResult,
-		);
+		}
 	}
 
 	async delete(filename: string): Promise<MinIODeleteResponseDto> {
 		try {
+			await this.client.statObject(this.options.bucketName, filename);
 			await this.client.removeObject(this.options.bucketName, filename);
+			return { message: `Файл "${filename}" был успешно удален` };
 		} catch (error) {
-			throw new HttpException(
-				FAILED_TO_DELETE,
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
+			if (error instanceof Error) {
+				throw new NotFoundException(FILE_DOESNT_EXIST);
+			}
 		}
-
-		return { message: `Файл "${filename}" был успешно удален` };
 	}
 }

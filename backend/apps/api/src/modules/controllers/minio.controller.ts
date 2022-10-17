@@ -1,11 +1,11 @@
 import {
-	Controller,
-	UnauthorizedException,
 	Body,
 	Post,
-	UseInterceptors,
-	UploadedFile,
 	Delete,
+	Controller,
+	UploadedFile,
+	UseInterceptors,
+	InternalServerErrorException,
 } from '@nestjs/common';
 import { MinIODeleteFile, MinIOUploadFile } from '@app/contracts';
 import { RMQService } from 'nestjs-rmq';
@@ -29,9 +29,9 @@ export class MinIOController {
 				MinIOUploadFile.Request,
 				MinIOUploadFile.Response
 			>(MinIOUploadFile.topic, fileDto);
-		} catch (err) {
-			if (err instanceof Error) {
-				throw new UnauthorizedException(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new InternalServerErrorException(error.message);
 			}
 		}
 	}
@@ -43,9 +43,9 @@ export class MinIOController {
 				MinIODeleteFile.Request,
 				MinIODeleteFile.Response
 			>(MinIODeleteFile.topic, dto);
-		} catch (err) {
-			if (err instanceof Error) {
-				throw new UnauthorizedException(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new InternalServerErrorException(error.message);
 			}
 		}
 	}

@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { RMQModule } from 'nestjs-rmq';
-import { getRMQConfig } from '@app/configs';
+import { LoggerModule } from 'nestjs-pino';
+import { getRMQConfig, getPinoConfig } from '@app/configs';
 import { TelegramService } from './telegram.service';
 
 @Module({
@@ -11,6 +12,7 @@ import { TelegramService } from './telegram.service';
 			envFilePath: ['../envs/.env', './apps/telegram/src/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
+		LoggerModule.forRootAsync(getPinoConfig()),
 	],
 	providers: [TelegramService],
 })

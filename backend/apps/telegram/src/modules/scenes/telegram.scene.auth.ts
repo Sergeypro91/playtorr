@@ -20,8 +20,6 @@ export function genAuthScene() {
 				id: `${tgUserInfo.id}`,
 			});
 
-			console.log('USERDB', dbUser);
-
 			if (!dbUser) {
 				if (sceneButtons[0].length >= 2) {
 					sceneButtons[0].splice(0, 1, AUTH_BTN);

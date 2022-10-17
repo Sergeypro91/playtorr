@@ -5,6 +5,12 @@ import {
 	IsEmail,
 	IsEnum,
 } from 'class-validator';
+import {
+	PartialType,
+	OmitType,
+	PickType,
+	IntersectionType,
+} from '@nestjs/mapped-types';
 import { Role } from '@app/interfaces';
 
 export class LoginUserDto {
@@ -13,38 +19,6 @@ export class LoginUserDto {
 
 	@IsString()
 	password: string;
-}
-
-export class CreateUserDto {
-	@IsEmail()
-	email: string;
-
-	@IsString()
-	password: string;
-
-	@IsOptional()
-	@IsString()
-	nickname?: string;
-
-	@IsOptional()
-	@IsString()
-	firstName?: string;
-
-	@IsOptional()
-	@IsString()
-	lastName?: string;
-
-	@IsOptional()
-	@IsNumber()
-	tgId?: number;
-
-	@IsOptional()
-	@IsEnum(Role)
-	role?: Role;
-
-	@IsOptional()
-	@IsString()
-	image?: string;
 }
 
 export class DBUserDto {
@@ -78,46 +52,23 @@ export class DBUserDto {
 	image?: string;
 }
 
-export class EditUserDto {
-	@IsOptional()
-	@IsEmail()
-	email?: string;
-
-	@IsOptional()
+export class CreateUserDto extends IntersectionType(
+	OmitType(DBUserDto, ['passwordHash', 'role']),
+	PartialType(PickType(DBUserDto, ['role'])),
+) {
 	@IsString()
-	nickname?: string;
-
-	@IsOptional()
-	@IsString()
-	firstName?: string;
-
-	@IsOptional()
-	@IsString()
-	lastName?: string;
-
-	@IsOptional()
-	@IsNumber()
-	tgId?: number;
-
-	@IsEnum(Role)
-	role: Role;
-
-	@IsOptional()
-	@IsString()
-	image?: string;
+	password: string;
 }
 
-export class UserSessionDto {
-	@IsEmail()
-	email: string;
+export class EditUserDto extends OmitType(PartialType(DBUserDto), [
+	'passwordHash',
+]) {}
 
-	@IsOptional()
-	@IsNumber()
-	tgId?: number;
-
-	@IsEnum(Role)
-	role: Role;
-}
+export class UserSessionDto extends PickType(DBUserDto, [
+	'email',
+	'tgId',
+	'role',
+]) {}
 
 export class FindUserByDto {
 	@IsString()

@@ -17,9 +17,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 					AuthValidateUser.Request,
 					AuthValidateUser.Response
 				>(AuthValidateUser.topic, { email, password });
-			} catch (err) {
-				if (err instanceof Error) {
-					throw new UnauthorizedException(err.message);
+			} catch (error) {
+				if (error instanceof Error) {
+					throw new UnauthorizedException(error.message);
 				}
 			}
 		};

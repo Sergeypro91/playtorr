@@ -11,7 +11,7 @@ export class SessionSerializer extends PassportSerializer {
 	serializeUser(
 		user: Pick<AuthRegister.Request, 'email' | 'tgId' | 'role'>,
 		done: (
-			err: null | Error,
+			error: null | Error,
 			user: Pick<AuthRegister.Request, 'email' | 'tgId' | 'role'>,
 		) => void,
 	) {
@@ -21,7 +21,7 @@ export class SessionSerializer extends PassportSerializer {
 	async deserializeUser(
 		payload: Pick<AuthRegister.Request, 'email' | 'tgId' | 'role'>,
 		done: (
-			err: null | Error,
+			error: null | Error,
 			payload: Pick<AuthRegister.Request, 'email' | 'tgId' | 'role'>,
 		) => void,
 	) {
