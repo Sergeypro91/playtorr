@@ -15,8 +15,8 @@ export const RedisDynamicModule = RedisModule.registerAsync({
 			onClientReady: (client) => {
 				logger.log('Redis client ready');
 
-				client.on('error', (err) => {
-					logger.error('Redis Client Error: ', err);
+				client.on('error', (error) => {
+					logger.error('Redis Client Error: ', error);
 				});
 
 				client.on('connect', () => {

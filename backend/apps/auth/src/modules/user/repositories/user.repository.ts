@@ -49,7 +49,7 @@ export class UserRepository {
 					new: true,
 				})
 				.exec();
-		} catch (err) {
+		} catch (error) {
 			throw new NotFoundException(USER_NOT_CHANGE_ERROR);
 		}
 	}

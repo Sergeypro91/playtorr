@@ -7,16 +7,20 @@ import {
 	HttpCode,
 	UseGuards,
 	Controller,
-	UnauthorizedException,
+	InternalServerErrorException,
 } from '@nestjs/common';
-import { LocalAuthGuard, AuthenticatedGuard } from '../../utils/guards';
+import { Logger as PinoLogger } from 'nestjs-pino';
 import { AuthRegister, AuthJWTLogin } from '@app/contracts';
 import { RMQService } from 'nestjs-rmq';
 import { RequestWithUserSession } from '@app/interfaces';
+import { LocalAuthGuard, AuthenticatedGuard } from '../../utils/guards';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly rmqService: RMQService) {}
+	constructor(
+		private readonly rmqService: RMQService,
+		private readonly pinoLogger: PinoLogger,
+	) {}
 
 	@Post('register')
 	async registerUser(@Body() dto: AuthRegister.Request) {
@@ -25,9 +29,9 @@ export class AuthController {
 				AuthRegister.Request,
 				AuthRegister.Response
 			>(AuthRegister.topic, dto);
-		} catch (err) {
-			if (err instanceof Error) {
-				throw new UnauthorizedException(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new InternalServerErrorException(error.message);
 			}
 		}
 	}
@@ -36,6 +40,8 @@ export class AuthController {
 	@HttpCode(200)
 	@Post('login')
 	async loginUserBySession(@Session() { passport: { user } }) {
+		// TODO Test output of log
+		this.pinoLogger.log('Test log');
 		return user;
 	}
 
@@ -63,9 +69,9 @@ export class AuthController {
 				AuthJWTLogin.Request,
 				AuthJWTLogin.Response
 			>(AuthJWTLogin.topic, { email, password });
-		} catch (err) {
-			if (err instanceof Error) {
-				throw new UnauthorizedException(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new InternalServerErrorException(error.message);
 			}
 		}
 	}

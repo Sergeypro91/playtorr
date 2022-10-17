@@ -34,9 +34,9 @@ export class UserController {
 				UserGetUser.Request,
 				UserGetUser.Response[]
 			>(UserGetUser.topic, { email });
-		} catch (err) {
-			if (err instanceof Error) {
-				throw new UnauthorizedException(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new UnauthorizedException(error.message);
 			}
 		}
 	}
@@ -51,9 +51,9 @@ export class UserController {
 				UserGetUsers.Request,
 				UserGetUsers.Response[]
 			>(UserGetUsers.topic, users);
-		} catch (err) {
-			if (err instanceof Error) {
-				throw new UnauthorizedException(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new UnauthorizedException(error.message);
 			}
 		}
 	}
@@ -69,9 +69,9 @@ export class UserController {
 				UserEditUser.Request,
 				UserEditUser.Response[]
 			>(UserEditUser.topic, { user, userSession });
-		} catch (err) {
-			if (err instanceof Error) {
-				throw new UnauthorizedException(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new UnauthorizedException(error.message);
 			}
 		}
 	}
@@ -85,9 +85,9 @@ export class UserController {
 				UserDeleteUsers.Request,
 				UserDeleteUsers.Response[]
 			>(UserDeleteUsers.topic, { users });
-		} catch (err) {
-			if (err instanceof Error) {
-				throw new UnauthorizedException(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new UnauthorizedException(error.message);
 			}
 		}
 	}

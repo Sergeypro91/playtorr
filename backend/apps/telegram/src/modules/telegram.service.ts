@@ -1,4 +1,5 @@
 import { Logger, Injectable, BadRequestException } from '@nestjs/common';
+import { Logger as PinoLogger } from 'nestjs-pino';
 import { Markup, Scenes, session, Telegraf } from 'telegraf';
 import { User } from '@app/interfaces/telegram/telegram.interface';
 import {
@@ -32,6 +33,7 @@ export class TelegramService {
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly rmqService: RMQService,
+		private readonly pinoLogger: PinoLogger,
 	) {
 		this.bot = new Telegraf<Scenes.SceneContext>(
 			this.configService.get('TELEGRAM_BOT_TOKEN'),
@@ -67,8 +69,8 @@ export class TelegramService {
 			.then(() => {
 				this.logger.log('Telegram Bot is started');
 			})
-			.catch((err) => {
-				throw err;
+			.catch((error) => {
+				throw error;
 			});
 	}
 
@@ -89,8 +91,8 @@ export class TelegramService {
 	) {
 		try {
 			await this.bot.telegram.sendSticker(`${chatId}`, sticker);
-		} catch (err) {
-			throw new BadRequestException(err.response.description, err);
+		} catch (error) {
+			throw new BadRequestException(error.response.description, error);
 		}
 	}
 
@@ -107,8 +109,8 @@ export class TelegramService {
 					);
 					return href;
 				});
-		} catch (err) {
-			throw new BadRequestException(err.response.description, err);
+		} catch (error) {
+			throw new BadRequestException(error.response.description, error);
 		}
 
 		return userImage;
@@ -133,8 +135,11 @@ export class TelegramService {
 					ctx.message.message_id,
 				);
 				await ctx.reply('******');
-			} catch (err) {
-				throw new BadRequestException(err.response.description, err);
+			} catch (error) {
+				throw new BadRequestException(
+					error.response.description,
+					error,
+				);
 			}
 		}
 	}
@@ -150,10 +155,12 @@ export class TelegramService {
 			>(AuthRegister.topic, user);
 			await this.sendSticker(CONGRATS_STICKER);
 			await ctx.reply(CONGRATS_PROMPT);
-		} catch (err) {
+		} catch (error) {
 			await this.sendSticker(SORRY_STICKER);
 			await ctx.reply(SOME_ERROR_HAPPENS);
-			throw new BadRequestException(err.response.description, err);
+			if (error instanceof Error) {
+				this.pinoLogger.error(error.message);
+			}
 		}
 	}
 
@@ -163,9 +170,9 @@ export class TelegramService {
 				UserFindUserBy.Request,
 				UserFindUserBy.Response
 			>(UserFindUserBy.topic, query);
-		} catch (err) {
-			if (err instanceof Error) {
-				console.log(err.message);
+		} catch (error) {
+			if (error instanceof Error) {
+				this.pinoLogger.error(error.message);
 			}
 		}
 	}
