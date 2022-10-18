@@ -1,9 +1,9 @@
-import { MinIOUploadRequestDto, MinIOUploadResponseDto } from '@app/contracts';
+import { MinIOFileDto, MinIOFileUrlDto } from '@app/contracts';
 
 export namespace MinIOUploadFile {
 	export const topic = 'minio.uploadFile.command';
 
-	export class Request extends MinIOUploadRequestDto {}
+	export class Request extends MinIOFileDto {}
 
-	export class Response extends MinIOUploadResponseDto {}
+	export class Response extends MinIOFileUrlDto {}
 }

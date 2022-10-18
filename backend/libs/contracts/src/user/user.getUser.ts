@@ -1,13 +1,9 @@
-import { DBUserDto } from '@app/contracts/createUser.dto';
-import { IsEmail } from 'class-validator';
+import { UserEmailDto, DBUserDto } from '@app/contracts';
 
 export namespace UserGetUser {
 	export const topic = 'user.getUser.command';
 
-	export class Request {
-		@IsEmail()
-		email: string;
-	}
+	export class Request extends UserEmailDto {}
 
 	export class Response extends DBUserDto {}
 }

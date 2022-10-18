@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class MinIOUploadRequestDto {
+export class MinIOFileDto {
 	@IsString()
 	name: string;
 
@@ -11,17 +11,17 @@ export class MinIOUploadRequestDto {
 	binaryBuffer: string;
 }
 
-export class MinIOUploadResponseDto {
+export class MinIOFileUrlDto {
 	@IsString()
 	url: string;
 }
 
-export class MinIODeleteRequestDto {
+export class MinIODeletedFileDto {
 	@IsString()
 	filename: string;
 }
 
-export class MinIODeleteResponseDto {
+export class MinIODeletingConfirmDto {
 	@IsString()
 	message: string;
 }

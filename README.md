@@ -65,7 +65,6 @@ npm run install:backend
 # clear instalation / reinstall packages
 npm run reinstall:backend
 ```
-
 <hr />
 
 ### Step 3
@@ -74,7 +73,6 @@ Running <b>Docker</b> services:
 ```
 npm run start-docker-services
 ```
-
 <hr />
 
 ### Step 4
@@ -93,7 +91,6 @@ npm run start:debug:backend
 # production mode
 npm run start:prod:backend
 ```
-
 <hr />
 
 ### Step 5
@@ -106,7 +103,6 @@ npm run install:frontend
 # clear instalation / reinstall packages
 npm run reinstall:frontend
 ```
-
 <hr />
 
 ### Step 6
@@ -118,13 +114,14 @@ npm run start:frontend
 # watch mode
 npm run start:dev:frontend
 ```
-
 <hr />
 
 ## App build
+<hr />
 
+## API documentation
+<a href="http://localhost:3000/swagger">http://localhost:3000/swagger
 <hr />
 
 ### License
-
 PlayTorr is [MIT licensed](LICENSE).

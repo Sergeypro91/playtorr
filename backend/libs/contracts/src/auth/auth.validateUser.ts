@@ -1,4 +1,4 @@
-import { DBUserDto, LoginUserDto } from '@app/contracts/createUser.dto';
+import { LoginUserDto, DBUserDto } from '@app/contracts';
 
 export namespace AuthValidateUser {
 	export const topic = 'auth.validateUser.command';

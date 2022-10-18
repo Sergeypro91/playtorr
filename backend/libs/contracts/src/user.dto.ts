@@ -4,24 +4,26 @@ import {
 	IsNumber,
 	IsEmail,
 	IsEnum,
+	IsMongoId,
 } from 'class-validator';
+import { Role } from '@app/interfaces';
 import {
 	PartialType,
 	OmitType,
 	PickType,
 	IntersectionType,
-} from '@nestjs/mapped-types';
-import { Role } from '@app/interfaces';
-
-export class LoginUserDto {
-	@IsEmail()
-	email: string;
-
-	@IsString()
-	password: string;
-}
+} from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class DBUserDto {
+	@IsOptional()
+	@IsMongoId()
+	_id?: string;
+
+	@IsOptional()
+	@IsNumber()
+	__v?: number;
+
 	@IsEmail()
 	email: string;
 
@@ -52,8 +54,10 @@ export class DBUserDto {
 	image?: string;
 }
 
-export class CreateUserDto extends IntersectionType(
-	OmitType(DBUserDto, ['passwordHash', 'role']),
+export class DBUserProtectDto extends OmitType(DBUserDto, ['passwordHash']) {}
+
+export class UserDto extends IntersectionType(
+	OmitType(DBUserDto, ['passwordHash', 'role', '_id', '__v']),
 	PartialType(PickType(DBUserDto, ['role'])),
 ) {
 	@IsString()
@@ -62,6 +66,8 @@ export class CreateUserDto extends IntersectionType(
 
 export class EditUserDto extends OmitType(PartialType(DBUserDto), [
 	'passwordHash',
+	'_id',
+	'__v',
 ]) {}
 
 export class UserSessionDto extends PickType(DBUserDto, [
@@ -81,4 +87,12 @@ export class FindUserByDto {
 export class UsersEmailDto {
 	@IsEmail({}, { each: true })
 	users: string[];
+}
+
+export class EditUserSessionDto {
+	@Type(() => EditUserDto)
+	user: EditUserDto;
+
+	@Type(() => UserSessionDto)
+	userSession: UserSessionDto;
 }

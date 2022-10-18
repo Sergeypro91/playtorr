@@ -1,22 +1,25 @@
 import {
 	Logger,
-	ConflictException,
 	Injectable,
-	ForbiddenException,
 	NotFoundException,
+	ConflictException,
+	ForbiddenException,
 } from '@nestjs/common';
-import { UserRepository } from './repositories/user.repository';
-import { UserEntity } from './entities/user.entity';
+import { UserEntity } from './entities';
+import { UserRepository } from './repositories';
 import {
 	EditUserDto,
 	UsersEmailDto,
-	UserSessionDto,
 	FindUserByDto,
+	UserSessionDto,
 } from '@app/contracts';
-import { Role } from '@app/interfaces/user/user.interface';
-import { USER_NOT_FOUND_ERROR } from '@app/constants/auth/auth.constants';
-import { USER_WITH_TGID_EXIST_ERROR } from '@app/constants/user/user.constants';
+import { Role } from '@app/interfaces';
+import {
+	USER_NOT_FOUND_ERROR,
+	USER_WITH_TGID_EXIST_ERROR,
+} from '@app/constants';
 
+// TODO Remove "passwordHash" from user DB response
 @Injectable()
 export class UserService {
 	logger: Logger;
