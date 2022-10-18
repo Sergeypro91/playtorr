@@ -1,11 +1,9 @@
-import { LoginUserDto } from '@app/contracts';
+import { JWTDto, LoginUserDto } from '@app/contracts';
 
 export namespace AuthJWTLogin {
 	export const topic = 'auth.jwtLogin.command';
 
 	export class Request extends LoginUserDto {}
 
-	export class Response {
-		access_token: string;
-	}
+	export class Response extends JWTDto {}
 }

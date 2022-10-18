@@ -3,7 +3,7 @@ import { User } from '../models/user.model';
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
-import { EditUserDto } from '@app/contracts/createUser.dto';
+import { EditUserDto } from '@app/contracts/user.dto';
 import { USER_NOT_CHANGE_ERROR } from '@app/constants/user/user.constants';
 
 @Injectable()

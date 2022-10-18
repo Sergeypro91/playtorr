@@ -1,4 +1,4 @@
-import { DBUserDto, UsersEmailDto } from '@app/contracts/createUser.dto';
+import { DBUserDto, UsersEmailDto } from '@app/contracts';
 
 export namespace UserGetUsers {
 	export const topic = 'user.getUsers.command';

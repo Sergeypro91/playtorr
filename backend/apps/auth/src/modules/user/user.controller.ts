@@ -1,5 +1,4 @@
 import { Body, Controller, NotFoundException } from '@nestjs/common';
-import { UsersEmailDto } from '@app/contracts/createUser.dto';
 import { UserService } from './user.service';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
@@ -55,7 +54,7 @@ export class UserController {
 
 	@RMQValidate()
 	@RMQRoute(UserDeleteUsers.topic)
-	async deleteUsers(@Body() { users }: UsersEmailDto) {
+	async deleteUsers(@Body() { users }: UserDeleteUsers.Request) {
 		return this.userService.deleteUsers(users);
 	}
 }

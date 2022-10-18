@@ -10,9 +10,9 @@ import { MinIOOptions } from '@app/interfaces/minio/minio.interface';
 import { getMinIOConfig } from '../utils/configs';
 import { ConfigService } from '@nestjs/config';
 import {
-	MinIODeleteResponseDto,
-	MinIOUploadRequestDto,
-	MinIOUploadResponseDto,
+	MinIODeletingConfirmDto,
+	MinIOFileDto,
+	MinIOFileUrlDto,
 } from '@app/contracts';
 import { defineBucketPolicy } from '../utils/policy';
 import {
@@ -65,9 +65,9 @@ export class MinIOService {
 	}
 
 	async upload(
-		fileDto: MinIOUploadRequestDto,
+		fileDto: MinIOFileDto,
 		fileTypes: string[],
-	): Promise<MinIOUploadResponseDto> {
+	): Promise<MinIOFileUrlDto> {
 		const PORT = this.options.port;
 		const ENDPOINT = this.options.endPoint;
 		const BUCKET_NAME = this.options.bucketName;
@@ -91,7 +91,7 @@ export class MinIOService {
 		}
 	}
 
-	async delete(filename: string): Promise<MinIODeleteResponseDto> {
+	async delete(filename: string): Promise<MinIODeletingConfirmDto> {
 		try {
 			await this.client.statObject(this.options.bucketName, filename);
 			await this.client.removeObject(this.options.bucketName, filename);

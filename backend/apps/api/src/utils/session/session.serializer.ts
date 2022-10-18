@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
-import { AuthRegister } from '@app/contracts';
+import { UserDto } from '@app/contracts';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
@@ -9,20 +9,20 @@ export class SessionSerializer extends PassportSerializer {
 	}
 
 	serializeUser(
-		user: Pick<AuthRegister.Request, 'email' | 'tgId' | 'role'>,
+		user: Pick<UserDto, 'email' | 'tgId' | 'role'>,
 		done: (
 			error: null | Error,
-			user: Pick<AuthRegister.Request, 'email' | 'tgId' | 'role'>,
+			user: Pick<UserDto, 'email' | 'tgId' | 'role'>,
 		) => void,
 	) {
 		done(null, user);
 	}
 
 	async deserializeUser(
-		payload: Pick<AuthRegister.Request, 'email' | 'tgId' | 'role'>,
+		payload: Pick<UserDto, 'email' | 'tgId' | 'role'>,
 		done: (
 			error: null | Error,
-			payload: Pick<AuthRegister.Request, 'email' | 'tgId' | 'role'>,
+			payload: Pick<UserDto, 'email' | 'tgId' | 'role'>,
 		) => void,
 	) {
 		return done(null, payload);

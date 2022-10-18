@@ -4,7 +4,7 @@ import {
 	Logger,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto, DBUserDto } from '@app/contracts/createUser.dto';
+import { UserDto, DBUserDto } from '@app/contracts/user.dto';
 import { Role } from '@app/interfaces/user/user.interface';
 import { compare } from 'bcryptjs';
 import {
@@ -28,20 +28,20 @@ export class AuthService {
 		this.logger = new Logger(AuthService.name);
 	}
 
-	async registerUser(dto: CreateUserDto): Promise<DBUserDto> {
+	async registerUser(newUser: UserDto): Promise<DBUserDto> {
 		const existEmailUser = await this.userService.findUserBy({
 			type: 'email',
-			id: dto.email,
+			id: newUser.email,
 		});
 
 		if (existEmailUser) {
 			throw new BadRequestException(ALREADY_REGISTERED_EMAIL_ERROR);
 		}
 
-		if (dto.tgId) {
+		if (newUser.tgId) {
 			const existTgIdUser = await this.userService.findUserBy({
 				type: 'tgId',
-				id: `${dto.tgId}`,
+				id: `${newUser.tgId}`,
 			});
 
 			if (existTgIdUser) {
@@ -49,13 +49,13 @@ export class AuthService {
 			}
 		}
 
-		return this.createUser(dto);
+		return this.createUser(newUser);
 	}
 
 	async createUser({
 		password,
 		...newUserData
-	}: CreateUserDto): Promise<DBUserDto> {
+	}: UserDto): Promise<DBUserDto> {
 		const usersCount = await this.userService.countUsers();
 		const newUserEntity = await new UserEntity({
 			...newUserData,
