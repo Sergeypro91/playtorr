@@ -15,7 +15,7 @@ import {
 } from '@app/constants/auth/auth.constants';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities';
 
 @Injectable()
 export class AuthService {

@@ -4,6 +4,7 @@ import {
 	IsNumber,
 	IsEmail,
 	IsEnum,
+	IsMongoId,
 } from 'class-validator';
 import { Role } from '@app/interfaces';
 import {
@@ -15,6 +16,14 @@ import {
 import { Type } from 'class-transformer';
 
 export class DBUserDto {
+	@IsOptional()
+	@IsMongoId()
+	_id?: string;
+
+	@IsOptional()
+	@IsNumber()
+	__v?: number;
+
 	@IsEmail()
 	email: string;
 
@@ -48,7 +57,7 @@ export class DBUserDto {
 export class DBUserProtectDto extends OmitType(DBUserDto, ['passwordHash']) {}
 
 export class UserDto extends IntersectionType(
-	OmitType(DBUserDto, ['passwordHash', 'role']),
+	OmitType(DBUserDto, ['passwordHash', 'role', '_id', '__v']),
 	PartialType(PickType(DBUserDto, ['role'])),
 ) {
 	@IsString()
@@ -57,6 +66,8 @@ export class UserDto extends IntersectionType(
 
 export class EditUserDto extends OmitType(PartialType(DBUserDto), [
 	'passwordHash',
+	'_id',
+	'__v',
 ]) {}
 
 export class UserSessionDto extends PickType(DBUserDto, [
