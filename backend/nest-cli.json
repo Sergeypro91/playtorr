@@ -15,7 +15,7 @@
 			"type": "application",
 			"root": "apps/api",
 			"entryFile": "main",
-			"sourceRoot": "apps/api/src",
+			"sourceRoot": "apps/api",
 			"compilerOptions": {
 				"tsConfigPath": "apps/api/tsconfig.app.json"
 			}
@@ -24,16 +24,25 @@
 			"type": "application",
 			"root": "apps/auth",
 			"entryFile": "main",
-			"sourceRoot": "apps/auth/src",
+			"sourceRoot": "apps/auth",
 			"compilerOptions": {
 				"tsConfigPath": "apps/auth/tsconfig.app.json"
+			}
+		},
+		"user": {
+			"type": "application",
+			"root": "apps/user",
+			"entryFile": "main",
+			"sourceRoot": "apps/user",
+			"compilerOptions": {
+				"tsConfigPath": "apps/user/tsconfig.app.json"
 			}
 		},
 		"telegram": {
 			"type": "application",
 			"root": "apps/telegram",
 			"entryFile": "main",
-			"sourceRoot": "apps/telegram/src",
+			"sourceRoot": "apps/telegram",
 			"compilerOptions": {
 				"tsConfigPath": "apps/telegram/tsconfig.app.json"
 			}
@@ -42,7 +51,7 @@
 			"type": "application",
 			"root": "apps/minio",
 			"entryFile": "main",
-			"sourceRoot": "apps/minio/src",
+			"sourceRoot": "apps/minio",
 			"compilerOptions": {
 				"tsConfigPath": "apps/minio/tsconfig.app.json"
 			}
@@ -51,7 +60,7 @@
 			"type": "library",
 			"root": "libs/contracts",
 			"entryFile": "index",
-			"sourceRoot": "libs/contracts/src",
+			"sourceRoot": "libs/contracts",
 			"compilerOptions": {
 				"tsConfigPath": "libs/contracts/tsconfig.lib.json"
 			}
@@ -60,7 +69,7 @@
 			"type": "library",
 			"root": "libs/interfaces",
 			"entryFile": "index",
-			"sourceRoot": "libs/interfaces/src",
+			"sourceRoot": "libs/interfaces",
 			"compilerOptions": {
 				"tsConfigPath": "libs/interfaces/tsconfig.lib.json"
 			}
@@ -69,7 +78,7 @@
 			"type": "library",
 			"root": "libs/configs",
 			"entryFile": "index",
-			"sourceRoot": "libs/configs/src",
+			"sourceRoot": "libs/configs",
 			"compilerOptions": {
 				"tsConfigPath": "libs/configs/tsconfig.lib.json"
 			}

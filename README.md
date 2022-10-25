@@ -1,12 +1,12 @@
-<p align="center">
+<p style="text-align: center">
   <img src="frontend/src/assets/images/svg/pt.svg" width="200" alt="PlayTorr Logo" />
 </p>
 
 [circleci-image]: frontend/src/assets/images/svg/pt.svg
 
-<h1 align="center">PlayTorr</h1>
-<h3 align="center">App for watcing torrent movies by MPEG-DASH stream.</h3>
-<p align="center">Build on top of <br /><a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="16" alt="Nest Logo" /> Nest.js</a></p>
+<h1 style="text-align: center">PlayTorr</h1>
+<h3 style="text-align: center">App for watching torrent movies by MPEG-DASH stream.</h3>
+<p style="text-align: center">Build on top of <br /><a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="16" alt="Nest Logo" /> Nest.js</a></p>
 
 ## Description
 The backend part consists of 4 microservices:
@@ -21,6 +21,7 @@ The backend part consists of 4 microservices:
 To run the application, you need to create an `.env` file in the `./envs` directory with the following variables (note that some values need to be personalized):
 ```
 MAIN_API_PORT=3000
+LOGS_FOLDER_NAME=logs
 
 MONGO_LOGIN=mongoLogin
 MONGO_PASSWORD=mongoPassword
@@ -124,4 +125,4 @@ npm run start:dev:frontend
 <hr />
 
 ### License
-PlayTorr is [MIT licensed](LICENSE).
+PlayTorr is [MIT licensed].
