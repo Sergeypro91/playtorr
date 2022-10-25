@@ -7,14 +7,14 @@ import {
 } from '@nestjs/common';
 import { Client, Region } from 'minio';
 import { MinIOOptions } from '@app/interfaces/minio/minio.interface';
-import { getMinIOConfig } from '../common/configs';
+import { getMinIOConfig } from './configs';
 import { ConfigService } from '@nestjs/config';
 import {
 	MinIODeletingConfirmDto,
 	MinIOFileDto,
 	MinIOFileUrlDto,
 } from '@app/contracts';
-import { defineBucketPolicy } from '../common/policy';
+import { defineBucketPolicy } from './policy';
 import {
 	FILE_DOESNT_EXIST,
 	FAILED_TO_UPLOAD,

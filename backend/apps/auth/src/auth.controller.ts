@@ -1,19 +1,31 @@
-import { Body, Controller } from '@nestjs/common';
-import { RMQRoute, RMQValidate } from 'nestjs-rmq';
-import { AuthRegister, AuthValidateUser } from '@app/contracts';
+import { Body, Controller, InternalServerErrorException } from '@nestjs/common';
+import { RMQRoute, RMQService, RMQValidate } from 'nestjs-rmq';
+import { AuthRegister, AuthValidateUser, UserRegister } from '@app/contracts';
 import { AuthJWTLogin } from '@app/contracts';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly rmqService: RMQService,
+		private readonly authService: AuthService,
+	) {}
 
 	@RMQValidate()
 	@RMQRoute(AuthRegister.topic)
 	async registerUser(
-		@Body() dto: AuthRegister.Request,
+		@Body() newUser: AuthRegister.Request,
 	): Promise<AuthRegister.Response> {
-		return this.authService.registerUser(dto);
+		try {
+			return await this.rmqService.send<
+				UserRegister.Request,
+				UserRegister.Response
+			>(UserRegister.topic, newUser);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new InternalServerErrorException(error.message);
+			}
+		}
 	}
 
 	@RMQValidate()

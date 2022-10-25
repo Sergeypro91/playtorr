@@ -34,8 +34,8 @@ import {
 	UserEditUser,
 	UserDeleteUsers,
 } from '@app/contracts';
-import { Roles } from '../../common/decorators';
-import { AuthenticatedGuard, RolesGuard } from '../../common/guards';
+import { Roles } from '../decorators';
+import { AuthenticatedGuard, RolesGuard } from '../guards';
 
 @ApiTags('User')
 @Controller('user')

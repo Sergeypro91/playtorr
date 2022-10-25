@@ -31,7 +31,7 @@ import {
 	ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
 import { RMQService } from 'nestjs-rmq';
-import { LocalAuthGuard, AuthenticatedGuard } from '../../common/guards';
+import { LocalAuthGuard, AuthenticatedGuard } from '../guards';
 
 @ApiTags('Auth')
 @Controller('auth')

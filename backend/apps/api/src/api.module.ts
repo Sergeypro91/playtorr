@@ -4,10 +4,10 @@ import { LoggerModule } from 'nestjs-pino';
 import { RMQModule } from 'nestjs-rmq';
 import { PassportModule } from '@nestjs/passport';
 import { getRMQConfig, getPinoConfig } from '@app/configs';
-import { RedisDynamicModule } from '../common/configs';
-import { JwtStrategy, LocalStrategy } from '../common/strategies';
-import { SessionSerializer } from '../common/session';
-import { RolesGuard } from '../common/guards';
+import { RedisDynamicModule } from './configs';
+import { JwtStrategy, LocalStrategy } from './strategies';
+import { SessionSerializer } from './session';
+import { RolesGuard } from './guards';
 import { AuthController, UserController, MinIOController } from './controllers';
 
 @Module({

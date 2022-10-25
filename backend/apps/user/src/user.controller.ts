@@ -6,6 +6,7 @@ import {
 	UserFindUserBy,
 	UserGetUser,
 	UserGetUsers,
+	UserRegister,
 } from '@app/contracts';
 import { USER_NOT_FOUND_ERROR } from '@app/constants';
 import { UserService } from './user.service';
@@ -13,6 +14,15 @@ import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
+
+	@RMQValidate()
+	@RMQRoute(UserRegister.topic)
+	async registerUser(
+		@Body() newUserData: UserRegister.Request,
+	): Promise<UserRegister.Response> {
+		console.log('ENTER', newUserData);
+		return this.userService.registerUser(newUserData);
+	}
 
 	@RMQValidate()
 	@RMQRoute(UserGetUser.topic)

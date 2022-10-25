@@ -7,10 +7,7 @@ import {
 	NOT_VALID_PASSWORD_PROMPT,
 	ADD_MOVIE_MENU,
 } from '@app/constants/telegram/telegram.constants';
-import {
-	emailValidator,
-	passwordValidator,
-} from '../../common/validators/validators';
+import { emailValidator, passwordValidator } from '../validators/validators';
 import { User } from '@app/interfaces/telegram/telegram.interface';
 
 interface MyWizardSession extends Scenes.WizardSessionData {
