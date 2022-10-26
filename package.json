@@ -4,6 +4,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "prepare": "husky install",
     "install:backend": "cd backend && npm run initial-installation",
     "reinstall:backend": "cd backend && npm run remove-node_modules && npm run remove-package-lock && npm run initial-installation",
     "install:frontend": "cd frontend && npm run initial-installation",
@@ -16,14 +17,13 @@
     "start:frontend": "cd frontend && npm run start",
     "lint-staged:backend": "cd backend && npm run lint-staged",
     "lint-staged:frontend": "cd frontend && npm run lint-staged",
-    "lint-staged": "npm run lint-staged:backend",
-    "prepare": "husky install"
+    "lint-staged": "lint-staged --no-stash"
   },
   "devDependencies": {
     "husky": "^8.0.0",
     "lint-staged": "^13.0.3"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "npm run lint-staged"
+    "**/*.{js,jsx,ts,tsx}": "npm run lint-staged"
   }
 }
