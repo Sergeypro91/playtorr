@@ -46,7 +46,7 @@
 		"lint-staged:user": "cd apps/user && lint-staged --no-stash",
 		"lint-staged:minio": "cd apps/minio && lint-staged --no-stash",
 		"lint-staged:telegram": "cd apps/telegram && lint-staged --no-stash",
-		"lint-staged": "npm run lint-staged:api & npm run lint-staged:auth & npm run lint-staged:user & npm run lint-staged:telegram & npm run lint-staged:minio",
+		"lint-staged": "npm run lint-staged:api && npm run lint-staged:auth && npm run lint-staged:user && npm run lint-staged:telegram && npm run lint-staged:minio",
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
 		"check-types:api": "cd apps/api && tsc --noEmit",
 		"check-types:auth": "cd apps/auth && tsc --noEmit",
