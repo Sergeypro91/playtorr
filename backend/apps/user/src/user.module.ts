@@ -7,13 +7,14 @@ import { User, UserSchema } from './models';
 import { UserRepository } from './repositories';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+g;
 
 @Module({
 	controllers: [UserController],
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/auth/src/envs/.env'],
+			envFilePath: ['../envs/.env', './apps/user/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		MongooseModule.forRootAsync(getMongoConfig()),

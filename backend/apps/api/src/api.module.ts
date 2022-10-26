@@ -10,8 +10,6 @@ import { SessionSerializer } from './session';
 import { RolesGuard } from './guards';
 import { AuthController, UserController, MinIOController } from './controllers';
 
-const test9;
-
 @Module({
 	controllers: [AuthController, UserController, MinIOController],
 	imports: [

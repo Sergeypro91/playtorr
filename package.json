@@ -17,11 +17,12 @@
     "start:frontend": "cd frontend && npm run start",
     "lint-staged:backend": "cd backend && npm run lint-staged",
     "lint-staged:frontend": "cd frontend && npm run lint-staged",
-    "lint-staged": "lint-staged --no-stash"
+    "lint-staged": "npm run lint-staged:backend"
   },
   "devDependencies": {
     "husky": "^8.0.0",
-    "lint-staged": "^13.0.3"
+    "lint-staged": "^13.0.3",
+    "tsc-files": "^1.1.3"
   },
   "husky": {
     "hooks": {
@@ -29,10 +30,6 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "npm run lint:fix",
-      "git add",
-      "npm run lint-staged"
-    ]
+    "**/*.ts": "tsc-files --noEmit"
   }
 }

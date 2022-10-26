@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 
-import { MinIOModule } from './src/minio.module';
+import { MinIOModule } from './minio.module';
 
 async function bootstrap() {
 	const logger = new Logger('MINIO');

@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { TelegramModule } from './src/telegram.module';
+import { TelegramModule } from './telegram.module';
 import { Logger } from '@nestjs/common';
 
 async function bootstrap() {

@@ -1,5 +1,5 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { ApiModule } from './src/api.module';
+import { ApiModule } from './api.module';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';

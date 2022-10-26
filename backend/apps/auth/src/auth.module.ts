@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/auth/src/envs/.env'],
+			envFilePath: ['../envs/.env', './apps/auth/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		JwtModule.registerAsync({
