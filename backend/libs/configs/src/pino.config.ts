@@ -15,8 +15,7 @@ const checkDirExist = async (directory: string) => {
 const definedParams = async (
 	configService: ConfigService<Record<string, unknown>, false>,
 ) => {
-	const directoryName =
-		(await configService.get('LOGS_FOLDER_NAME')) || 'logs';
+	const directoryName = await configService.get('LOGS_FOLDER_NAME', 'logs');
 
 	await checkDirExist(`./${directoryName}`);
 
