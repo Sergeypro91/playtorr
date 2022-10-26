@@ -151,9 +151,7 @@
 		}
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx}": [
-			"npm run lint"
-		],
-		"**/*.ts": "tsc-files --noEmit"
+		"*.{js,jsx,ts,tsx}": "npm run lint",
+		"*.ts": "tsc-files --noEmit"
 	}
 }
