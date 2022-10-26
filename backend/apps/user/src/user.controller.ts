@@ -20,7 +20,6 @@ export class UserController {
 	async registerUser(
 		@Body() newUserData: UserRegister.Request,
 	): Promise<UserRegister.Response> {
-		console.log('ENTER', newUserData);
 		return this.userService.registerUser(newUserData);
 	}
 

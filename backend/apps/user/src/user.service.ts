@@ -1,27 +1,22 @@
-import {
-	Logger,
-	Injectable,
-	NotFoundException,
-	ConflictException,
-	ForbiddenException,
-	BadRequestException,
-} from '@nestjs/common';
+import { Injectable, HttpStatus, Logger } from '@nestjs/common';
+import { RMQError } from 'nestjs-rmq';
 import { UserEntity } from './entities';
 import { UserRepository } from './repositories';
 import {
-	EditUserDto,
-	UsersEmailDto,
-	FindUserByDto,
-	UserSessionDto,
-	UserDto,
 	DBUserDto,
+	EditUserDto,
+	FindUserByDto,
+	UserDto,
+	UsersEmailDto,
+	UserSessionDto,
 } from '@app/contracts';
 import { Role } from '@app/interfaces';
 import {
 	ALREADY_REGISTERED_EMAIL_ERROR,
 	ALREADY_REGISTERED_TGID_ERROR,
-	USER_NOT_FOUND_ERROR,
 	USER_WITH_TGID_EXIST_ERROR,
+	USER_FORBIDDEN_ERROR,
+	USER_NOT_FOUND_ERROR,
 } from '@app/constants';
 
 // TODO Remove "passwordHash" from user DB response
@@ -44,7 +39,11 @@ export class UserService {
 		});
 
 		if (existEmailUser) {
-			throw new BadRequestException(ALREADY_REGISTERED_EMAIL_ERROR);
+			throw new RMQError(
+				ALREADY_REGISTERED_EMAIL_ERROR,
+				undefined,
+				HttpStatus.CONFLICT,
+			);
 		}
 
 		if (newUser.tgId) {
@@ -54,7 +53,11 @@ export class UserService {
 			});
 
 			if (existTgIdUser) {
-				throw new BadRequestException(ALREADY_REGISTERED_TGID_ERROR);
+				throw new RMQError(
+					ALREADY_REGISTERED_TGID_ERROR,
+					undefined,
+					HttpStatus.CONFLICT,
+				);
 			}
 		}
 
@@ -87,7 +90,7 @@ export class UserService {
 			case 'tgId':
 				return this.userRepository.findUserByTgId(parseInt(id, 10));
 			default:
-				throw new ConflictException();
+				break;
 		}
 	}
 
@@ -100,7 +103,11 @@ export class UserService {
 
 		if (editingUser.email !== editableUser.email) {
 			if (!isEditingUserAdmin) {
-				throw new ForbiddenException();
+				throw new RMQError(
+					USER_FORBIDDEN_ERROR,
+					undefined,
+					HttpStatus.FORBIDDEN,
+				);
 			}
 		}
 
@@ -111,7 +118,11 @@ export class UserService {
 		});
 
 		if (!editedUser) {
-			throw new NotFoundException(USER_NOT_FOUND_ERROR);
+			throw new RMQError(
+				USER_NOT_FOUND_ERROR,
+				undefined,
+				HttpStatus.NOT_FOUND,
+			);
 		}
 
 		if (editableUser.tgId) {
@@ -124,13 +135,21 @@ export class UserService {
 				existingTgIdUser &&
 				existingTgIdUser.email !== editableUser.email
 			) {
-				throw new ConflictException(USER_WITH_TGID_EXIST_ERROR);
+				throw new RMQError(
+					USER_WITH_TGID_EXIST_ERROR,
+					undefined,
+					HttpStatus.CONFLICT,
+				);
 			}
 		}
 
 		if (editableUser.role) {
 			if (!isEditingUserAdmin) {
-				throw new ForbiddenException();
+				throw new RMQError(
+					USER_FORBIDDEN_ERROR,
+					undefined,
+					HttpStatus.FORBIDDEN,
+				);
 			}
 		}
 

@@ -5,8 +5,7 @@ import {
 	Controller,
 	UploadedFile,
 	UseInterceptors,
-	NotFoundException,
-	InternalServerErrorException,
+	HttpException,
 } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Logger as PinoLogger } from 'nestjs-pino/Logger';
@@ -27,7 +26,7 @@ import {
 	MinIODeletedFileDto,
 	MinIODeletingConfirmDto,
 } from '@app/contracts';
-import { RMQService } from 'nestjs-rmq';
+import { RMQError, RMQService } from 'nestjs-rmq';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('File')
@@ -71,8 +70,8 @@ export class MinIOController {
 				MinIOUploadFile.Response
 			>(MinIOUploadFile.topic, fileDto);
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new InternalServerErrorException(error.message);
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}
@@ -90,8 +89,8 @@ export class MinIOController {
 				MinIODeleteFile.Response
 			>(MinIODeleteFile.topic, filename);
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new NotFoundException(error.message);
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}

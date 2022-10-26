@@ -7,8 +7,7 @@ import {
 	HttpCode,
 	UseGuards,
 	Controller,
-	UnauthorizedException,
-	InternalServerErrorException,
+	HttpException,
 } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Logger as PinoLogger } from 'nestjs-pino';
@@ -30,7 +29,7 @@ import {
 	ApiUnauthorizedResponse,
 	ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
-import { RMQService } from 'nestjs-rmq';
+import { RMQError, RMQService } from 'nestjs-rmq';
 import { LocalAuthGuard, AuthenticatedGuard } from '../guards';
 
 @ApiTags('Auth')
@@ -53,8 +52,8 @@ export class AuthController {
 				AuthRegister.Response
 			>(AuthRegister.topic, newUser);
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new InternalServerErrorException(error.message);
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}
@@ -88,8 +87,8 @@ export class AuthController {
 				message: `User session for - ${userSession.email} is end`,
 			};
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new UnauthorizedException();
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}
@@ -120,8 +119,8 @@ export class AuthController {
 				AuthJWTLogin.Response
 			>(AuthJWTLogin.topic, { email, password });
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new UnauthorizedException(error.message);
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}

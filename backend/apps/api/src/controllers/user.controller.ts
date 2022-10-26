@@ -8,7 +8,7 @@ import {
 	HttpCode,
 	UseGuards,
 	Controller,
-	UnauthorizedException,
+	HttpException,
 } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Logger as PinoLogger } from 'nestjs-pino/Logger';
@@ -26,7 +26,7 @@ import {
 	UsersEmailDto,
 	UserSessionDto,
 } from '@app/contracts';
-import { RMQService } from 'nestjs-rmq';
+import { RMQError, RMQService } from 'nestjs-rmq';
 import {
 	ErrorDto,
 	UserGetUser,
@@ -59,8 +59,8 @@ export class UserController {
 				UserGetUser.Response[]
 			>(UserGetUser.topic, { email });
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new UnauthorizedException(error.message);
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}
@@ -81,8 +81,8 @@ export class UserController {
 				UserGetUsers.Response[]
 			>(UserGetUsers.topic, users);
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new UnauthorizedException(error.message);
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}
@@ -103,8 +103,8 @@ export class UserController {
 				UserEditUser.Response[]
 			>(UserEditUser.topic, { user, userSession });
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new UnauthorizedException(error.message);
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}
@@ -124,8 +124,8 @@ export class UserController {
 				UserDeleteUsers.Response[]
 			>(UserDeleteUsers.topic, { users });
 		} catch (error) {
-			if (error instanceof Error) {
-				throw new UnauthorizedException(error.message);
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
 			}
 		}
 	}

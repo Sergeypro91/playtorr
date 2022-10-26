@@ -1,13 +1,9 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { DBUserDto } from '@app/contracts/user.dto';
 import { compare } from 'bcryptjs';
-import {
-	USER_NOT_FOUND_ERROR,
-	WRONG_PASSWORD_ERROR,
-} from '@app/constants/auth/auth.constants';
 import { JwtService } from '@nestjs/jwt';
-import { UserFindUserBy } from '@app/contracts';
 import { RMQService } from 'nestjs-rmq';
+import { DBUserDto, UserFindUserBy } from '@app/contracts';
+import { USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from '@app/constants';
 
 @Injectable()
 export class AuthService {

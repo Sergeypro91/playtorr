@@ -1,10 +1,4 @@
-import {
-	Logger,
-	Injectable,
-	InternalServerErrorException,
-	UnsupportedMediaTypeException,
-	NotFoundException,
-} from '@nestjs/common';
+import { Logger, Injectable, HttpStatus } from '@nestjs/common';
 import { Client, Region } from 'minio';
 import { MinIOOptions } from '@app/interfaces/minio/minio.interface';
 import { getMinIOConfig } from './configs';
@@ -20,6 +14,7 @@ import {
 	FAILED_TO_UPLOAD,
 	FILE_TYPE_UNSUPPORTED,
 } from '@app/constants';
+import { RMQError } from 'nestjs-rmq';
 
 @Injectable()
 export class MinIOService {
@@ -38,7 +33,10 @@ export class MinIOService {
 			this.options.bucketName,
 			JSON.stringify(defineBucketPolicy(this.options.bucketName)),
 			(error) => {
-				if (error) throw error;
+				if (error) {
+					throw error;
+				}
+
 				this.logger.log('Bucket policy set');
 			},
 		);
@@ -76,7 +74,11 @@ export class MinIOService {
 		const FILE_MIME_TYPE = fileDto.mimetype.split('/')[1];
 
 		if (!fileTypes.includes(FILE_MIME_TYPE)) {
-			throw new UnsupportedMediaTypeException(FILE_TYPE_UNSUPPORTED);
+			throw new RMQError(
+				FILE_TYPE_UNSUPPORTED,
+				undefined,
+				HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+			);
 		}
 
 		try {
@@ -86,7 +88,11 @@ export class MinIOService {
 			};
 		} catch (error) {
 			if (error instanceof Error) {
-				throw new InternalServerErrorException(FAILED_TO_UPLOAD);
+				throw new RMQError(
+					FAILED_TO_UPLOAD,
+					undefined,
+					HttpStatus.BAD_REQUEST,
+				);
 			}
 		}
 	}
@@ -95,10 +101,14 @@ export class MinIOService {
 		try {
 			await this.client.statObject(this.options.bucketName, filename);
 			await this.client.removeObject(this.options.bucketName, filename);
-			return { message: `Файл "${filename}" был успешно удален` };
+			return { message: `${filename} - был успешно удален` };
 		} catch (error) {
 			if (error instanceof Error) {
-				throw new NotFoundException(FILE_DOESNT_EXIST);
+				throw new RMQError(
+					FILE_DOESNT_EXIST,
+					undefined,
+					HttpStatus.NOT_FOUND,
+				);
 			}
 		}
 	}
