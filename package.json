@@ -24,10 +24,7 @@
     "lint-staged": "^13.0.3",
     "tsc-files": "^1.1.3"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": "npm run lint-staged"
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "npm run lint-staged"
+  }
 }

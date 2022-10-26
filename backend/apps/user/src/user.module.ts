@@ -7,7 +7,6 @@ import { User, UserSchema } from './models';
 import { UserRepository } from './repositories';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-gg3;
 
 @Module({
 	controllers: [UserController],
