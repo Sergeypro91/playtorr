@@ -152,6 +152,6 @@
 	},
 	"lint-staged": {
 		"*.{js,jsx,ts,tsx}": "npm run lint",
-		"*.ts": "tsc-files --noEmit"
+		"*.ts": "tsc-files --noEmit -p ./tsconfig.app.json"
 	}
 }
