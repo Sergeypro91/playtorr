@@ -9,7 +9,7 @@ import { TelegramService } from './telegram.service';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/telegram/src/envs/.env'],
+			envFilePath: ['../envs/.env', './apps/telegram/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		LoggerModule.forRootAsync(getPinoConfig()),
