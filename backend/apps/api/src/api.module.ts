@@ -10,7 +10,7 @@ import { SessionSerializer } from './session';
 import { RolesGuard } from './guards';
 import { AuthController, UserController, MinIOController } from './controllers';
 
-const test4;
+const test4
 
 @Module({
 	controllers: [AuthController, UserController, MinIOController],
