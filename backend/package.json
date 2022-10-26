@@ -152,8 +152,8 @@
 	},
 	"lint-staged": {
 		"*.{js,jsx,ts,tsx}": [
-			"npm run lint",
-			"npm run check-types"
-		]
+			"npm run lint"
+		],
+		"**/*.ts": "tsc-files --noEmit"
 	}
 }
