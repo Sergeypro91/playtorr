@@ -16,19 +16,15 @@ import {
 import { Type } from 'class-transformer';
 
 export class DBUserDto {
-	@IsOptional()
 	@IsMongoId()
-	_id?: string;
-
-	@IsOptional()
-	@IsNumber()
-	__v?: number;
+	id: string;
 
 	@IsEmail()
 	email: string;
 
+	@IsOptional()
 	@IsString()
-	passwordHash: string;
+	passwordHash?: string;
 
 	@IsOptional()
 	@IsString()
@@ -54,21 +50,29 @@ export class DBUserDto {
 	image?: string;
 }
 
-export class DBUserProtectDto extends OmitType(DBUserDto, ['passwordHash']) {}
-
 export class UserDto extends IntersectionType(
-	OmitType(DBUserDto, ['passwordHash', 'role', '_id', '__v']),
+	OmitType(DBUserDto, ['id', 'passwordHash', 'role']),
 	PartialType(PickType(DBUserDto, ['role'])),
 ) {
 	@IsString()
 	password: string;
 }
 
-export class EditUserDto extends OmitType(PartialType(DBUserDto), [
-	'passwordHash',
-	'_id',
-	'__v',
-]) {}
+export class TelegramUserDto extends IntersectionType(
+	OmitType(DBUserDto, ['id', 'passwordHash', 'role', 'tgId']),
+	PartialType(PickType(DBUserDto, ['role'])),
+) {
+	@IsString()
+	password: string;
+
+	@IsNumber()
+	tgId: number;
+}
+
+export class EditUserDto extends IntersectionType(
+	PickType(DBUserDto, ['email']),
+	PartialType(OmitType(DBUserDto, ['id', 'email', 'passwordHash'])),
+) {}
 
 export class UserSessionDto extends PickType(DBUserDto, [
 	'email',
@@ -91,8 +95,8 @@ export class UsersEmailDto {
 
 export class EditUserSessionDto {
 	@Type(() => EditUserDto)
-	user: EditUserDto;
+	editableUser: EditUserDto;
 
 	@Type(() => UserSessionDto)
-	userSession: UserSessionDto;
+	editingUser: UserSessionDto;
 }

@@ -3,7 +3,7 @@ import { User } from '../models';
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserEntity } from '../entities';
-import { EditUserDto } from '@app/contracts';
+import { EditUserDto, UserEmailDto } from '@app/contracts';
 import { USER_NOT_CHANGE_ERROR } from '@app/constants';
 
 @Injectable()
@@ -54,9 +54,7 @@ export class UserRepository {
 		}
 	}
 
-	async deleteUsers(users: string[]) {
-		return await this.userModel
-			.deleteMany({ email: { $in: users } })
-			.exec();
+	async deleteUsersByEmail(email: string) {
+		return this.userModel.deleteOne({ email: { $in: email } }).exec();
 	}
 }

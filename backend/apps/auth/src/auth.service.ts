@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RMQService } from 'nestjs-rmq';
 import { DBUserDto, UserFindUserBy } from '@app/contracts';
 import { USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from '@app/constants';
+import { User } from 'apps/user/src/models';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,7 @@ export class AuthService {
 		this.logger = new Logger(AuthService.name);
 	}
 
-	async validateUser(email: string, password: string): Promise<DBUserDto> {
+	async validateUser(email: string, password: string): Promise<User> {
 		const user = await this.rmqService.send<
 			UserFindUserBy.Request,
 			UserFindUserBy.Response
@@ -38,7 +39,7 @@ export class AuthService {
 		return user;
 	}
 
-	async loginUser(user: DBUserDto): Promise<{ access_token: string }> {
+	async loginUser(user: User): Promise<{ access_token: string }> {
 		const { email, role } = user;
 
 		return {

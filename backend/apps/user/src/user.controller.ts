@@ -1,7 +1,7 @@
 import { Body, Controller, NotFoundException } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
-	UserDeleteUsers,
+	UserDeleteUser,
 	UserEditUser,
 	UserFindUserBy,
 	UserGetUser,
@@ -56,14 +56,16 @@ export class UserController {
 	@RMQValidate()
 	@RMQRoute(UserEditUser.topic)
 	async editUser(
-		@Body() { user, userSession }: UserEditUser.Request,
+		@Body() { editableUser, editingUser }: UserEditUser.Request,
 	): Promise<UserEditUser.Response> {
-		return this.userService.editUser(user, userSession);
+		return this.userService.editUser(editableUser, editingUser);
 	}
 
 	@RMQValidate()
-	@RMQRoute(UserDeleteUsers.topic)
-	async deleteUsers(@Body() { users }: UserDeleteUsers.Request) {
-		return this.userService.deleteUsers(users);
+	@RMQRoute(UserDeleteUser.topic)
+	async deleteUser(
+		@Body() user: UserDeleteUser.Request,
+	): Promise<UserDeleteUser.Response> {
+		return this.userService.deleteUser(user);
 	}
 }

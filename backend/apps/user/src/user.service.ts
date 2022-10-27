@@ -1,12 +1,11 @@
 import { Injectable, HttpStatus, Logger } from '@nestjs/common';
 import { RMQError } from 'nestjs-rmq';
-import { UserEntity } from './entities';
-import { UserRepository } from './repositories';
 import {
 	DBUserDto,
 	EditUserDto,
 	FindUserByDto,
 	UserDto,
+	UserEmailDto,
 	UsersEmailDto,
 	UserSessionDto,
 } from '@app/contracts';
@@ -17,9 +16,13 @@ import {
 	USER_WITH_TGID_EXIST_ERROR,
 	USER_FORBIDDEN_ERROR,
 	USER_NOT_FOUND_ERROR,
+	USER_NOT_FOUND,
+	USER_NOT_DELETE_ERROR,
 } from '@app/constants';
+import { User } from './models';
+import { UserEntity } from './entities';
+import { UserRepository } from './repositories';
 
-// TODO Remove "passwordHash" from user DB response
 @Injectable()
 export class UserService {
 	logger: Logger;
@@ -28,7 +31,39 @@ export class UserService {
 		this.logger = new Logger(UserService.name);
 	}
 
-	async countUsers() {
+	private handlingUserDB(user: User): DBUserDto {
+		return {
+			id: user._id,
+			email: user.email,
+			role: user.role,
+			nickname: user.nickname,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			image: user.image,
+			tgId: user.tgId,
+		};
+	}
+
+	private async createUser({
+		password,
+		...newUserData
+	}: UserDto): Promise<DBUserDto> {
+		const usersCount = await this.countUsers();
+		const newUserEntity = await new UserEntity({
+			...newUserData,
+			role: usersCount ? Role.GUEST : Role.ADMIN,
+		}).setPassword(password);
+
+		const newUser = await this.userRepository
+			.createUser(newUserEntity)
+			.then(this.handlingUserDB);
+
+		this.logger.log(`New user: ${newUser.email} - added to DB`);
+
+		return newUser;
+	}
+
+	public async countUsers() {
 		return this.userRepository.countUsers();
 	}
 
@@ -64,24 +99,7 @@ export class UserService {
 		return this.createUser(newUser);
 	}
 
-	async createUser({
-		password,
-		...newUserData
-	}: UserDto): Promise<DBUserDto> {
-		const usersCount = await this.countUsers();
-		const newUserEntity = await new UserEntity({
-			...newUserData,
-			role: usersCount ? Role.GUEST : Role.ADMIN,
-		}).setPassword(password);
-
-		const newUser = await this.userRepository.createUser(newUserEntity);
-
-		this.logger.log(`New user: ${newUser.email} - added to DB`);
-
-		return newUser;
-	}
-
-	async findUserBy({ type, id }: FindUserByDto) {
+	async findUserBy({ type, id }: FindUserByDto): Promise<User> {
 		switch (type) {
 			case 'email':
 				return this.userRepository.findUserByEmail(id);
@@ -94,14 +112,29 @@ export class UserService {
 		}
 	}
 
-	async getUsers({ users }: UsersEmailDto) {
-		return this.userRepository.getUsers(users);
+	async getUsers({ users }: UsersEmailDto): Promise<DBUserDto[]> {
+		return this.userRepository
+			.getUsers(users)
+			.then((usersArr) => usersArr.map(this.handlingUserDB));
 	}
 
-	async editUser(editableUser: EditUserDto, editingUser: UserSessionDto) {
+	/**
+	 * Метод изменения данных существующего пользователя.
+	 * Используется как для редактирования пользователя самого себя,
+	 * так и для редактирования пользователя Администратором, путем
+	 * сопоставления email пользователя текущей активной сессии с
+	 * переданными в редактируемых данных.
+	 * @param editableUser - Данные редактируемого пользователя.
+	 * @param editingUser - Сессия редактирующего пользователя.
+	 * */
+	async editUser(
+		editableUser: EditUserDto,
+		editingUser: UserSessionDto,
+	): Promise<DBUserDto> {
 		const isEditingUserAdmin = editingUser.role === Role.ADMIN;
 
 		if (editingUser.email !== editableUser.email) {
+			/* Если редактирующий пользователь не является редактируемым и у него нет Админ прав. */
 			if (!isEditingUserAdmin) {
 				throw new RMQError(
 					USER_FORBIDDEN_ERROR,
@@ -111,12 +144,14 @@ export class UserService {
 			}
 		}
 
-		const editableUserEmail = editableUser.email || editingUser.email;
+		const editableUserEmail = editableUser.email;
 		const editedUser = await this.findUserBy({
 			type: 'email',
 			id: editableUserEmail,
 		});
 
+		/* Возможный сценарий, если пользователя с таким email нет, или если в
+		 аргументе "editingUser" не был передан "email". */
 		if (!editedUser) {
 			throw new RMQError(
 				USER_NOT_FOUND_ERROR,
@@ -135,6 +170,7 @@ export class UserService {
 				existingTgIdUser &&
 				existingTgIdUser.email !== editableUser.email
 			) {
+				/* Если редактируемый пользователь содержит "tgId" ранее использованный кем-то другим. */
 				throw new RMQError(
 					USER_WITH_TGID_EXIST_ERROR,
 					undefined,
@@ -153,13 +189,33 @@ export class UserService {
 			}
 		}
 
-		return this.userRepository.updateUserData(
-			editableUser.email,
-			editableUser,
-		);
+		return this.userRepository
+			.updateUserData(editableUser.email, editableUser)
+			.then(this.handlingUserDB);
 	}
 
-	async deleteUsers(users: string[]) {
-		return this.userRepository.deleteUsers(users);
+	async deleteUser(user: UserEmailDto): Promise<DBUserDto> {
+		const deletingUserData = await this.findUserBy({
+			type: 'email',
+			id: user.email,
+		}).then(this.handlingUserDB);
+
+		if (!deletingUserData) {
+			throw new RMQError(USER_NOT_FOUND, undefined, HttpStatus.NOT_FOUND);
+		}
+
+		const { deletedCount } = await this.userRepository.deleteUsersByEmail(
+			user.email,
+		);
+
+		if (!deletedCount) {
+			throw new RMQError(
+				USER_NOT_DELETE_ERROR,
+				undefined,
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+
+		return deletingUserData;
 	}
 }

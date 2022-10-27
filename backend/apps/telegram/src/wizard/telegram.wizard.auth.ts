@@ -6,13 +6,13 @@ import {
 	PASSWORD_REQUEST_PROMPT,
 	NOT_VALID_PASSWORD_PROMPT,
 	ADD_MOVIE_MENU,
-} from '@app/constants/telegram/telegram.constants';
-import { emailValidator, passwordValidator } from '../validators/validators';
-import { User } from '@app/interfaces/telegram/telegram.interface';
+} from '@app/constants';
+import { TelegramUserDto } from '@app/contracts';
+import { emailValidator, passwordValidator } from '../validators';
 
 interface MyWizardSession extends Scenes.WizardSessionData {
 	wizardSession: {
-		user: User;
+		user: TelegramUserDto;
 	};
 }
 

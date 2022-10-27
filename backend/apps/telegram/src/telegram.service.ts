@@ -1,7 +1,6 @@
 import { Logger, Injectable, BadRequestException } from '@nestjs/common';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import { Markup, Scenes, session, Telegraf } from 'telegraf';
-import { User } from '@app/interfaces/telegram/telegram.interface';
 import {
 	START_PROMPT,
 	SORRY_STICKER,
@@ -14,7 +13,12 @@ import { genAuthScene } from './scenes/telegram.scene.auth';
 import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
 import { genAuthWizard } from './wizard/telegram.wizard.auth';
 import { RMQService } from 'nestjs-rmq';
-import { AuthRegister, FindUserByDto, UserFindUserBy } from '@app/contracts';
+import {
+	AuthRegister,
+	FindUserByDto,
+	TelegramUserDto,
+	UserFindUserBy,
+} from '@app/contracts';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -146,7 +150,7 @@ export class TelegramService {
 
 	async authNewUser(
 		ctx: Scenes.SceneContext<Scenes.SceneSessionData>,
-		user: User,
+		user: TelegramUserDto,
 	) {
 		try {
 			await this.rmqService.send<

@@ -23,6 +23,7 @@ import { RequestWithUserSession, Role } from '@app/interfaces';
 import {
 	DBUserDto,
 	EditUserDto,
+	UserEmailDto,
 	UsersEmailDto,
 	UserSessionDto,
 } from '@app/contracts';
@@ -32,7 +33,7 @@ import {
 	UserGetUser,
 	UserGetUsers,
 	UserEditUser,
-	UserDeleteUsers,
+	UserDeleteUser,
 } from '@app/contracts';
 import { Roles } from '../decorators';
 import { AuthenticatedGuard, RolesGuard } from '../guards';
@@ -93,15 +94,18 @@ export class UserController {
 	@UseGuards(AuthenticatedGuard)
 	@Put()
 	async editUser(
-		@Body() user: EditUserDto,
-		@Req() { user: userSession }: RequestWithUserSession,
+		@Body() editableUser: EditUserDto,
+		@Req() { user: editingUser }: RequestWithUserSession,
 	): Promise<DBUserDto[]> {
 		this.pinoLogger.log(`editUser_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				UserEditUser.Request,
 				UserEditUser.Response[]
-			>(UserEditUser.topic, { user, userSession });
+			>(UserEditUser.topic, {
+				editableUser,
+				editingUser,
+			});
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);
@@ -116,13 +120,13 @@ export class UserController {
 	@Roles(Role.ADMIN)
 	@UseGuards(AuthenticatedGuard, RolesGuard)
 	@Delete()
-	async deleteUsers(@Body() { users }: UsersEmailDto): Promise<DBUserDto[]> {
+	async deleteUser(@Body() user: UserEmailDto): Promise<DBUserDto> {
 		this.pinoLogger.log(`deleteUsers_${uuid()}`);
 		try {
 			return await this.rmqService.send<
-				UserDeleteUsers.Request,
-				UserDeleteUsers.Response[]
-			>(UserDeleteUsers.topic, { users });
+				UserDeleteUser.Request,
+				UserDeleteUser.Response
+			>(UserDeleteUser.topic, user);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);

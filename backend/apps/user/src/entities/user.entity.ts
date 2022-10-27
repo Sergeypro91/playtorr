@@ -2,29 +2,21 @@ import { Role, IUser } from '@app/interfaces/user/user.interface';
 import { compare, genSalt, hash } from 'bcryptjs';
 
 export class UserEntity implements IUser {
-	_id?: string;
-	__v?: number;
-	createdAt?: string;
-	updatedAt?: string;
 	email: string;
 	passwordHash: string;
+	role: Role;
 	nickname?: string;
 	firstName?: string;
 	lastName?: string;
-	role: Role;
 	tgId?: number;
 	image?: string;
 
 	constructor(user: Omit<IUser, 'passwordHash'>) {
-		this._id = user._id;
-		this.__v = user.__v;
-		this.createdAt = user.createdAt;
-		this.updatedAt = user.updatedAt;
 		this.email = user.email;
+		this.role = user.role;
 		this.nickname = user.nickname;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
-		this.role = user.role;
 		this.tgId = user.tgId;
 		this.image = user.image;
 	}

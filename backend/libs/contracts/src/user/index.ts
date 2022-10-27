@@ -1,4 +1,4 @@
-export * from './user.deleteUsers';
+export * from './user.deleteUser';
 export * from './user.editUser';
 export * from './user.findUserBy';
 export * from './user.getUsers';
