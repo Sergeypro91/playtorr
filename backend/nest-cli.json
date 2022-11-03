@@ -38,15 +38,6 @@
 				"tsConfigPath": "apps/user/tsconfig.app.json"
 			}
 		},
-		"telegram": {
-			"type": "application",
-			"root": "apps/telegram",
-			"entryFile": "main",
-			"sourceRoot": "apps/telegram/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/telegram/tsconfig.app.json"
-			}
-		},
 		"minio": {
 			"type": "application",
 			"root": "apps/minio",
@@ -54,6 +45,24 @@
 			"sourceRoot": "apps/minio/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/minio/tsconfig.app.json"
+			}
+		},
+		"parser": {
+			"type": "application",
+			"root": "apps/parser",
+			"entryFile": "main",
+			"sourceRoot": "apps/parser/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/parser/tsconfig.app.json"
+			}
+		},
+		"telegram": {
+			"type": "application",
+			"root": "apps/telegram",
+			"entryFile": "main",
+			"sourceRoot": "apps/telegram/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/telegram/tsconfig.app.json"
 			}
 		},
 		"contracts": {

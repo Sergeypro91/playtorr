@@ -1,4 +1,4 @@
-import { DBUserDto, FindUserByDto } from '@app/contracts';
+import { FindUserByDto } from '@app/contracts';
 import { User } from 'apps/user/src/models';
 
 export namespace UserFindUserBy {

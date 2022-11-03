@@ -1,23 +1,23 @@
 import { Injectable, HttpStatus, Logger } from '@nestjs/common';
 import { RMQError } from 'nestjs-rmq';
 import {
+	UserDto,
 	DBUserDto,
 	EditUserDto,
-	FindUserByDto,
-	UserDto,
 	UserEmailDto,
+	FindUserByDto,
 	UsersEmailDto,
 	UserSessionDto,
 } from '@app/contracts';
 import { Role } from '@app/interfaces';
 import {
-	ALREADY_REGISTERED_EMAIL_ERROR,
-	ALREADY_REGISTERED_TGID_ERROR,
-	USER_WITH_TGID_EXIST_ERROR,
+	USER_NOT_FOUND,
 	USER_FORBIDDEN_ERROR,
 	USER_NOT_FOUND_ERROR,
-	USER_NOT_FOUND,
 	USER_NOT_DELETE_ERROR,
+	USER_WITH_TGID_EXIST_ERROR,
+	ALREADY_REGISTERED_TGID_ERROR,
+	ALREADY_REGISTERED_EMAIL_ERROR,
 } from '@app/constants';
 import { User } from './models';
 import { UserEntity } from './entities';
@@ -44,30 +44,36 @@ export class UserService {
 		};
 	}
 
-	private async createUser({
-		password,
-		...newUserData
-	}: UserDto): Promise<DBUserDto> {
+	private async createUser(newUser: UserDto): Promise<DBUserDto> {
 		const usersCount = await this.countUsers();
 		const newUserEntity = await new UserEntity({
-			...newUserData,
+			...newUser,
 			role: usersCount ? Role.GUEST : Role.ADMIN,
-		}).setPassword(password);
+		}).setPassword(newUser.password);
 
-		const newUser = await this.userRepository
+		return this.userRepository
 			.createUser(newUserEntity)
 			.then(this.handlingUserDB);
-
-		this.logger.log(`New user: ${newUser.email} - added to DB`);
-
-		return newUser;
 	}
 
 	public async countUsers() {
 		return this.userRepository.countUsers();
 	}
 
-	async registerUser(newUser: UserDto): Promise<DBUserDto> {
+	public async findUserBy({ type, id }: FindUserByDto): Promise<User> {
+		switch (type) {
+			case 'email':
+				return this.userRepository.findUserByEmail(id);
+			case 'id':
+				return this.userRepository.findUserById(id);
+			case 'tgId':
+				return this.userRepository.findUserByTgId(parseInt(id, 10));
+			default:
+				break;
+		}
+	}
+
+	public async registerUser(newUser: UserDto): Promise<DBUserDto> {
 		const existEmailUser = await this.findUserBy({
 			type: 'email',
 			id: newUser.email,
@@ -99,20 +105,7 @@ export class UserService {
 		return this.createUser(newUser);
 	}
 
-	async findUserBy({ type, id }: FindUserByDto): Promise<User> {
-		switch (type) {
-			case 'email':
-				return this.userRepository.findUserByEmail(id);
-			case 'id':
-				return this.userRepository.findUserById(id);
-			case 'tgId':
-				return this.userRepository.findUserByTgId(parseInt(id, 10));
-			default:
-				break;
-		}
-	}
-
-	async getUsers({ users }: UsersEmailDto): Promise<DBUserDto[]> {
+	public async getUsers({ users }: UsersEmailDto): Promise<DBUserDto[]> {
 		return this.userRepository
 			.getUsers(users)
 			.then((usersArr) => usersArr.map(this.handlingUserDB));
@@ -127,21 +120,19 @@ export class UserService {
 	 * @param editableUser - Данные редактируемого пользователя.
 	 * @param editingUser - Сессия редактирующего пользователя.
 	 * */
-	async editUser(
+	public async editUser(
 		editableUser: EditUserDto,
 		editingUser: UserSessionDto,
 	): Promise<DBUserDto> {
 		const isEditingUserAdmin = editingUser.role === Role.ADMIN;
 
-		if (editingUser.email !== editableUser.email) {
-			/* Если редактирующий пользователь не является редактируемым и у него нет Админ прав. */
-			if (!isEditingUserAdmin) {
-				throw new RMQError(
-					USER_FORBIDDEN_ERROR,
-					undefined,
-					HttpStatus.FORBIDDEN,
-				);
-			}
+		/* Если редактирующий пользователь не является редактируемым и у него нет Админ прав. */
+		if (editingUser.email !== editableUser.email && !isEditingUserAdmin) {
+			throw new RMQError(
+				USER_FORBIDDEN_ERROR,
+				undefined,
+				HttpStatus.FORBIDDEN,
+			);
 		}
 
 		const editableUserEmail = editableUser.email;
@@ -150,8 +141,6 @@ export class UserService {
 			id: editableUserEmail,
 		});
 
-		/* Возможный сценарий, если пользователя с таким email нет, или если в
-		 аргументе "editingUser" не был передан "email". */
 		if (!editedUser) {
 			throw new RMQError(
 				USER_NOT_FOUND_ERROR,
@@ -179,14 +168,13 @@ export class UserService {
 			}
 		}
 
-		if (editableUser.role) {
-			if (!isEditingUserAdmin) {
-				throw new RMQError(
-					USER_FORBIDDEN_ERROR,
-					undefined,
-					HttpStatus.FORBIDDEN,
-				);
-			}
+		/* Если редактируемый пользователь содержит "role", а у редактирующего нет Админ прав. */
+		if (editableUser.role && !isEditingUserAdmin) {
+			throw new RMQError(
+				USER_FORBIDDEN_ERROR,
+				undefined,
+				HttpStatus.FORBIDDEN,
+			);
 		}
 
 		return this.userRepository
@@ -194,7 +182,7 @@ export class UserService {
 			.then(this.handlingUserDB);
 	}
 
-	async deleteUser(user: UserEmailDto): Promise<DBUserDto> {
+	public async deleteUser(user: UserEmailDto): Promise<DBUserDto> {
 		const deletingUserData = await this.findUserBy({
 			type: 'email',
 			id: user.email,

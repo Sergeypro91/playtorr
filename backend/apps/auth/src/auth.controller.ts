@@ -35,8 +35,8 @@ export class AuthController {
 	async loginUserByJwt(
 		@Body() { email, password }: AuthJWTLogin.Request,
 	): Promise<AuthJWTLogin.Response> {
-		const user = await this.authService.validateUser(email, password);
-
-		return this.authService.loginUser(user);
+		return this.authService.loginUser(
+			this.authService.validateUser(email, password),
+		);
 	}
 }

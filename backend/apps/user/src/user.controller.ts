@@ -1,4 +1,4 @@
-import { Body, Controller, NotFoundException } from '@nestjs/common';
+import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
 	UserDeleteUser,
@@ -8,7 +8,6 @@ import {
 	UserGetUsers,
 	UserRegister,
 } from '@app/contracts';
-import { USER_NOT_FOUND_ERROR } from '@app/constants';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -44,13 +43,7 @@ export class UserController {
 	async findUserBy(
 		@Body() { type, id }: UserFindUserBy.Request,
 	): Promise<UserFindUserBy.Response> | null {
-		const existUser = await this.userService.findUserBy({ type, id });
-
-		if (!existUser) {
-			throw new NotFoundException(USER_NOT_FOUND_ERROR);
-		}
-
-		return existUser;
+		return this.userService.findUserBy({ type, id });
 	}
 
 	@RMQValidate()
