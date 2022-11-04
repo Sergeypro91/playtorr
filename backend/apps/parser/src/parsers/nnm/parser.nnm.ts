@@ -1,7 +1,5 @@
 import puppeteer from 'puppeteer-extra';
-// TODO Решить вопрос с импортом стейлс плагина
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const hidden = require('puppeteer-extra-plugin-stealth');
+import stealthMode from 'puppeteer-extra-plugin-stealth';
 import { executablePath, ElementHandle, Browser } from 'puppeteer';
 import {
 	authBtn,
@@ -31,12 +29,12 @@ import { LABEL, DELAY } from './parser.nnm.constants';
 
 export type ParserNnm = {
 	url: string;
-	user: NnmUser;
+	user: UserNnm;
 	searchQuery: string;
 	chromeDir?: string;
 };
 
-export type NnmUser = {
+export type UserNnm = {
 	login: string;
 	password: string;
 };
@@ -50,26 +48,27 @@ export type ParserNnmReturn = {
 	leechers: string;
 }[];
 
-const timeoutInterrupter = (
-	delay: number,
-	message: string,
-	browser: Browser,
-) => {
-	return setTimeout(async () => {
-		await browser.close();
-		console.log(message);
-	}, delay);
-};
+const stepHandling = async (fn: () => void, browser: Browser, name?: string) =>
+	new Promise(async (res, rej) => {
+		let timeoutMessage = '';
 
-const stepHandling = async (name: string, fn: () => void, browser: Browser) => {
-	const navigateToAuthPageInterrupter = timeoutInterrupter(
-		DELAY,
-		`Timeout exceeded on \"${name}\" step. ${DELAY} ms`,
-		browser,
-	);
-	await fn();
-	clearTimeout(navigateToAuthPageInterrupter);
-};
+		const timeout = setTimeout(async () => {
+			timeoutMessage = `Step \"${name}\". Waiting failed: ${DELAY}ms exceeded`;
+			await browser.close();
+		}, DELAY);
+
+		try {
+			await fn();
+		} catch (error) {
+			rej(timeoutMessage || error.message);
+			return;
+		}
+
+		clearTimeout(timeout);
+		res(true);
+	}).catch((error) => {
+		throw new Error(error.message);
+	});
 
 export const parseNnm = async ({
 	url,
@@ -77,8 +76,9 @@ export const parseNnm = async ({
 	searchQuery,
 	chromeDir,
 }: ParserNnm): Promise<ParserNnmReturn> => {
-	puppeteer.use(hidden());
+	puppeteer.use(stealthMode());
 
+	// Browser startup
 	const browser = await puppeteer.launch({
 		args: ['--no-sandbox'],
 		headless: false,
@@ -89,17 +89,17 @@ export const parseNnm = async ({
 
 	// Open page
 	await stepHandling(
-		'Open page',
 		async () => {
 			await page.goto(url, { waitUntil: 'domcontentloaded' });
 			const authBtnElem = await page.waitForXPath(authBtn);
 			await (authBtnElem as ElementHandle<HTMLElement>).click();
 		},
 		browser,
+		'Open page',
 	);
+
 	// Navigate to authorization page
 	await stepHandling(
-		'Navigate to authorization page',
 		async () => {
 			const loginElem = await page.waitForXPath(loginField);
 			const passwordElem = await page.waitForXPath(passwordField);
@@ -109,10 +109,11 @@ export const parseNnm = async ({
 			await (enterBtnElem as ElementHandle<HTMLElement>).click();
 		},
 		browser,
+		'Navigate to authorization page',
 	);
+
 	// Navigate to search page
 	await stepHandling(
-		'Navigate to search page',
 		async () => {
 			const toSearchPageBtnElem = await page.waitForXPath(
 				toSearchPageBtn,
@@ -120,10 +121,11 @@ export const parseNnm = async ({
 			await (toSearchPageBtnElem as ElementHandle<HTMLElement>).click();
 		},
 		browser,
+		'Navigate to search page',
 	);
+
 	// Setup search queries
 	await stepHandling(
-		'Setup search queries',
 		async () => {
 			const searchFieldElem = await page.waitForXPath(searchField);
 			const resetFilterBtnElem = await page.waitForXPath(resetFilterBtn);
@@ -148,10 +150,11 @@ export const parseNnm = async ({
 			await (searchBtnElem as ElementHandle<HTMLElement>).click();
 		},
 		browser,
+		'Setup search queries',
 	);
+
 	// Getting search result
 	await stepHandling(
-		'Getting search result',
 		async () => {
 			const sizeTableHeaderElem = await page.waitForXPath(
 				sizeTableHeader,
@@ -160,11 +163,12 @@ export const parseNnm = async ({
 			await (sizeTableHeaderElem as ElementHandle<HTMLElement>).click();
 		},
 		browser,
+		'Getting search result',
 	);
+
 	// Handling result table data
 	const resultingPagesUrl = [];
 	await stepHandling(
-		'Handling result table data',
 		async () => {
 			const checkingNextPageResultBtn = async () => {
 				const resultPageNavElem = await page.waitForXPath(
@@ -183,22 +187,22 @@ export const parseNnm = async ({
 				resultingPagesUrl.push(...currResultPagesUrl);
 
 				if (nextPageTitle && nextPageTitle.match(/след/i)) {
-					await resultPageNavElem.evaluate((elem) =>
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						elem.lastChild.click(),
-					);
+					const nextBtn = (await resultPageNavElem.evaluate(
+						(elem) => elem.lastChild,
+					)) as HTMLElement;
+					nextBtn.click();
 					await checkingNextPageResultBtn();
 				}
 			};
 			await checkingNextPageResultBtn();
 		},
 		browser,
+		'Handling result table data',
 	);
+
 	// Data collection
 	const responseData = [];
 	await stepHandling(
-		'Data collection',
 		async () => {
 			for (let i = 0; i < resultingPagesUrl.length; i++) {
 				await page.goto(resultingPagesUrl[i], {
@@ -239,9 +243,12 @@ export const parseNnm = async ({
 			}
 		},
 		browser,
+		'Data collection',
 	);
+
 	// Close browser
 	await browser.close();
+
 	// Return result
 	return responseData;
 };
