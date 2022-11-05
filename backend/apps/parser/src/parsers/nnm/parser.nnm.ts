@@ -26,6 +26,7 @@ import {
 	torrentLeechers,
 } from './parser.nnm.selectors';
 import { LABEL, DELAY } from './parser.nnm.constants';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export type ParserNnm = {
 	url: string;
@@ -67,7 +68,10 @@ const stepHandling = async (fn: () => void, browser: Browser, name?: string) =>
 		clearTimeout(timeout);
 		res(true);
 	}).catch((error) => {
-		throw new Error(error.message);
+		throw new HttpException(
+			error.message,
+			error.code || HttpStatus.REQUEST_TIMEOUT,
+		);
 	});
 
 export const parseNnm = async ({

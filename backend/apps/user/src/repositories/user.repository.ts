@@ -1,10 +1,10 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { User } from '../models';
 import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UserEntity } from '../entities';
 import { EditUserDto } from '@app/contracts';
 import { USER_NOT_CHANGE_ERROR } from '@app/constants';
+import { UserEntity } from '../entities';
+import { User } from '../models';
 
 @Injectable()
 export class UserRepository {

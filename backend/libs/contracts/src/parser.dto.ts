@@ -1,26 +1,66 @@
-import { IsString } from 'class-validator';
+import {
+	IsEnum,
+	IsArray,
+	IsString,
+	IsOptional,
+	IsDateString,
+	ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { SearchStatus } from '@app/interfaces';
+
+export class DBPictureTorrentsDto {
+	@IsString()
+	imdbId: string;
+
+	@IsDateString()
+	searchRequests: SearchQueryDto[];
+}
+
+export class SearchQueryDto {
+	@IsString()
+	searchQuery: string;
+
+	@IsDateString()
+	lastUpdate: string;
+
+	@IsEnum(SearchStatus)
+	searchStatus: SearchStatus;
+
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => TorrentFileDto)
+	torrentFiles: TorrentFileDto[];
+}
 
 export class GetTorrentsDto {
 	@IsString()
-	search: string;
+	imdbId: string;
+
+	@IsString()
+	searchQuery: string;
 }
 
-export class TorrentDto {
+export class TorrentFileDto {
 	@IsString()
 	torrentLabel: string;
 
 	@IsString()
 	name: string;
 
+	@IsOptional()
 	@IsString()
-	size: string;
+	size?: string;
 
+	@IsOptional()
 	@IsString()
-	magnet: string;
+	magnet?: string;
 
+	@IsOptional()
 	@IsString()
-	seeders: string;
+	seeders?: string;
 
+	@IsOptional()
 	@IsString()
-	leechers: string;
+	leechers?: string;
 }

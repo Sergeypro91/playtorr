@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { RMQModule } from 'nestjs-rmq';
-import { getRMQConfig } from '@app/configs';
+import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { getMongoConfig, getRMQConfig } from '@app/configs';
 import { ParserController } from './parser.controller';
 import { ParserService } from './parser.service';
+import { PictureTorrents, PictureTorrentsSchema } from './models';
 
 @Module({
 	controllers: [ParserController],
@@ -13,6 +15,10 @@ import { ParserService } from './parser.service';
 			envFilePath: ['../envs/.env', './apps/parser/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
+		MongooseModule.forRootAsync(getMongoConfig()),
+		MongooseModule.forFeature([
+			{ name: PictureTorrents.name, schema: PictureTorrentsSchema },
+		]),
 	],
 	providers: [ParserService],
 })
