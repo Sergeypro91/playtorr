@@ -6,6 +6,7 @@ import { getMongoConfig, getRMQConfig } from '@app/configs';
 import { ParserController } from './parser.controller';
 import { ParserService } from './parser.service';
 import { PictureTorrents, PictureTorrentsSchema } from './models';
+import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
 
 @Module({
 	controllers: [ParserController],
@@ -20,6 +21,6 @@ import { PictureTorrents, PictureTorrentsSchema } from './models';
 			{ name: PictureTorrents.name, schema: PictureTorrentsSchema },
 		]),
 	],
-	providers: [ParserService],
+	providers: [ParserService, PictureTorrentsRepository],
 })
 export class ParserModule {}

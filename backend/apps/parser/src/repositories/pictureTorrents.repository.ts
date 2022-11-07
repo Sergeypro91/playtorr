@@ -5,7 +5,7 @@ import { PictureTorrentsEntity } from '../entities';
 import { PictureTorrents } from '../models';
 
 @Injectable()
-export class UserRepository {
+export class PictureTorrentsRepository {
 	constructor(
 		@InjectModel(PictureTorrents.name)
 		private readonly pictureTorrentsModel: Model<PictureTorrents>,
