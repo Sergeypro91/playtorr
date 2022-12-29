@@ -1,26 +1,34 @@
-export enum SearchStatus {
+export enum EnumStatus {
 	CREATED = 'created',
 	UPDATING = 'updating',
 	FINISHED = 'finished',
+	WARNING = 'warning',
+	ERROR = 'error',
 }
 
-export interface ISearchQuery {
+export interface ISearchQueryData {
 	searchQuery: string;
 	lastUpdate: string;
-	searchStatus: SearchStatus;
+	searchStatus: EnumStatus;
+	torrents: ITorrent[];
+}
+
+export interface ITorrent {
+	torrentLabel: string;
 	torrentFiles: ITorrentFile[];
+	torrentStatus: EnumStatus;
+	torrentStatusMessage?: string;
 }
 
 export interface ITorrentFile {
-	torrentLabel: string;
 	name: string;
 	size?: string;
 	magnet?: string;
 	seeders?: string;
-	leechers?: string;
+	leeches?: string;
 }
 
 export interface IPictureTorrents {
 	imdbId: string;
-	searchRequests: ISearchQuery[];
+	searchRequests: ISearchQueryData[];
 }

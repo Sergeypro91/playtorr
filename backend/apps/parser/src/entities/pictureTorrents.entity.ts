@@ -1,8 +1,8 @@
-import { IPictureTorrents, ISearchQuery, SearchStatus } from '@app/interfaces';
+import { IPictureTorrents, ISearchQueryData } from '@app/interfaces';
 
 export class PictureTorrentsEntity implements IPictureTorrents {
 	imdbId: string;
-	searchRequests: ISearchQuery[];
+	searchRequests: ISearchQueryData[];
 
 	constructor(pictureTorrents) {
 		this.imdbId = pictureTorrents.imdbId;

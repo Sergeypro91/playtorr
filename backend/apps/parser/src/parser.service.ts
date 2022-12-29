@@ -3,14 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import {
 	DBPictureTorrentsDto,
 	GetTorrentsDto,
-	TorrentFileDto,
+	TorrentInfoDto,
 } from '@app/contracts';
-import { parseNnm } from './parsers/nnm/parser.nnm';
-import { CHROME_DIR, NNM_URL } from '@app/constants/parser/parser.constants';
 import { RMQError } from 'nestjs-rmq';
 import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
-import { SearchStatus } from '@app/interfaces';
+import { EnumStatus } from '@app/interfaces';
 import { PictureTorrentsEntity } from './entities';
+import { parsers } from './parsers';
 
 @Injectable()
 export class ParserService {
@@ -22,7 +21,7 @@ export class ParserService {
 	public async getTorrents({
 		imdbId,
 		searchQuery,
-	}: GetTorrentsDto): Promise<TorrentFileDto[]> {
+	}: GetTorrentsDto): Promise<TorrentInfoDto> {
 		const user = {
 			login: this.configService.get('NNM_LOGIN'),
 			password: this.configService.get('NNM_PASSWORD'),
@@ -31,7 +30,6 @@ export class ParserService {
 			await this.pictureTorrentsRepository.findPictureTorrentsByImdbId(
 				imdbId,
 			);
-		let updatedTorrentFiles: TorrentFileDto[] = [];
 
 		if (!currPictureTorrents) {
 			const newPictureTorrents = new PictureTorrentsEntity({
@@ -45,57 +43,62 @@ export class ParserService {
 				);
 		}
 
-		const [currSearchQuery] = currPictureTorrents.searchRequests.filter(
-			(searchRequest) => searchRequest.searchQuery === searchQuery,
-		);
-
-		const newSearchQuery = {
+		const newSearchQueryData = {
 			searchQuery,
 			lastUpdate: new Date().toISOString(),
-			searchStatus: SearchStatus.CREATED,
-			torrentFiles: [],
+			searchStatus: EnumStatus.CREATED,
+			message: undefined,
+			torrents: [],
 		};
 
-		const { lastUpdate, searchStatus, torrentFiles } =
-			currSearchQuery || newSearchQuery;
+		const [oldSearchQueryData] = currPictureTorrents.searchRequests.filter(
+			(searchQueryData) => searchQueryData.searchQuery === searchQuery,
+		);
 
-		const hoursDiffDate =
-			Math.abs(new Date(lastUpdate).getTime() - new Date().getTime()) /
-			(60 * 60 * 1000);
+		const searchQueryData = oldSearchQueryData || newSearchQueryData;
 
-		if (hoursDiffDate < 24 && searchStatus !== SearchStatus.CREATED) {
-			return torrentFiles;
+		const hoursDiffDate = Math.round(
+			(new Date().getTime() -
+				new Date(searchQueryData.lastUpdate).getTime()) /
+				(60 * 60 * 1000),
+		);
+
+		// If the torrent search was launched less than 24 hours ago
+		if (
+			hoursDiffDate < 24 &&
+			searchQueryData.searchStatus !== EnumStatus.CREATED
+		) {
+			return searchQueryData;
 		}
 
+		// If the torrent search was launched more than 24 hours ago
 		try {
-			updatedTorrentFiles = await parseNnm({
-				url: NNM_URL,
+			await parsers({
 				user,
 				searchQuery,
-				chromeDir: CHROME_DIR,
+				searchQueryData,
 			});
-			const updatedSearchRequests = (() => {
-				if (currSearchQuery) {
-					currSearchQuery.lastUpdate = new Date().toISOString();
-					currSearchQuery.searchStatus = SearchStatus.FINISHED;
-					currSearchQuery.torrentFiles = updatedTorrentFiles;
-				} else {
-					newSearchQuery.lastUpdate = new Date().toISOString();
-					newSearchQuery.searchStatus = SearchStatus.FINISHED;
-					newSearchQuery.torrentFiles = updatedTorrentFiles;
-					currPictureTorrents.searchRequests.push(newSearchQuery);
-				}
-				return currPictureTorrents.searchRequests;
-			})();
+
+			const { searchRequests } = currPictureTorrents;
+			const currSearchQueryDataId = searchRequests.findIndex(
+				(searchQueryData) =>
+					searchQueryData.searchQuery === searchQuery,
+			);
+
+			if (currSearchQueryDataId >= 0) {
+				searchRequests[currSearchQueryDataId] = searchQueryData;
+			} else {
+				searchRequests.push(searchQueryData);
+			}
 
 			await this.pictureTorrentsRepository.updatePictureTorrents({
 				imdbId,
-				searchRequests: updatedSearchRequests,
+				searchRequests,
 			});
 		} catch (error) {
 			throw new RMQError(error.message, undefined, error.code);
 		}
 
-		return updatedTorrentFiles;
+		return searchQueryData;
 	}
 }

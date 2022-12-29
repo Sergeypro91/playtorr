@@ -1,10 +1,11 @@
 import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
-	SearchStatus,
-	ISearchQuery,
+	EnumStatus,
+	ISearchQueryData,
 	ITorrentFile,
 	IPictureTorrents,
+	ITorrent,
 } from '@app/interfaces';
 
 @Schema()
@@ -25,35 +26,53 @@ export class TorrentFile extends Document implements ITorrentFile {
 	seeders?: string;
 
 	@Prop()
-	leechers?: string;
+	leeches?: string;
 }
 
 export const TorrentFileSchema = SchemaFactory.createForClass(TorrentFile);
 
 @Schema()
-export class SearchQuery extends Document implements ISearchQuery {
+export class Torrent extends Document implements ITorrent {
+	@Prop()
+	torrentLabel: string;
+
+	@Prop({ required: true, type: [TorrentFileSchema] })
+	torrentFiles: Types.Array<TorrentFile>;
+
+	@Prop({ required: true, enum: EnumStatus, default: EnumStatus.CREATED })
+	torrentStatus: EnumStatus;
+
+	@Prop()
+	torrentStatusMessage?: string;
+}
+
+export const TorrentSchema = SchemaFactory.createForClass(Torrent);
+
+@Schema()
+export class SearchQueryData extends Document implements ISearchQueryData {
 	@Prop({ required: true })
 	searchQuery: string;
 
 	@Prop({ required: true })
 	lastUpdate: string;
 
-	@Prop({ required: true, enum: SearchStatus, default: SearchStatus.CREATED })
-	searchStatus: SearchStatus;
+	@Prop({ required: true, enum: EnumStatus, default: EnumStatus.CREATED })
+	searchStatus: EnumStatus;
 
-	@Prop({ required: true, type: [TorrentFileSchema] })
-	torrentFiles: Types.Array<TorrentFile>;
+	@Prop({ required: true, type: [TorrentSchema] })
+	torrents: Types.Array<Torrent>;
 }
 
-export const SearchQuerySchema = SchemaFactory.createForClass(SearchQuery);
+export const SearchQueryDataSchema =
+	SchemaFactory.createForClass(SearchQueryData);
 
 @Schema()
 export class PictureTorrents extends Document implements IPictureTorrents {
 	@Prop({ unique: true, required: true })
 	imdbId: string;
 
-	@Prop({ required: true, type: [SearchQuerySchema] })
-	searchRequests: Types.Array<SearchQuery>;
+	@Prop({ required: true, type: [SearchQueryDataSchema] })
+	searchRequests: Types.Array<SearchQueryData>;
 }
 
 export const PictureTorrentsSchema =

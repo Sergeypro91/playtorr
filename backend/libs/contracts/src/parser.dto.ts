@@ -7,44 +7,51 @@ import {
 	ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { SearchStatus } from '@app/interfaces';
+import { EnumStatus } from '@app/interfaces';
 
 export class DBPictureTorrentsDto {
 	@IsString()
 	imdbId: string;
 
-	@IsDateString()
-	searchRequests: SearchQueryDto[];
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => SearchQueryDataDto)
+	searchRequests: SearchQueryDataDto[];
 }
 
-export class SearchQueryDto {
+export class SearchQueryDataDto {
 	@IsString()
 	searchQuery: string;
 
 	@IsDateString()
 	lastUpdate: string;
 
-	@IsEnum(SearchStatus)
-	searchStatus: SearchStatus;
+	@IsEnum(EnumStatus)
+	searchStatus: EnumStatus;
+
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => TorrentDto)
+	torrents: TorrentDto[];
+}
+
+export class TorrentDto {
+	@IsString()
+	torrentLabel: string;
 
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => TorrentFileDto)
 	torrentFiles: TorrentFileDto[];
-}
 
-export class GetTorrentsDto {
-	@IsString()
-	imdbId: string;
+	@IsEnum(EnumStatus)
+	torrentStatus: EnumStatus;
 
 	@IsString()
-	searchQuery: string;
+	torrentStatusMessage?: string;
 }
 
 export class TorrentFileDto {
-	@IsString()
-	torrentLabel: string;
-
 	@IsString()
 	name: string;
 
@@ -62,5 +69,19 @@ export class TorrentFileDto {
 
 	@IsOptional()
 	@IsString()
-	leechers?: string;
+	leeches?: string;
+}
+
+export class GetTorrentsDto {
+	@IsString()
+	imdbId: string;
+
+	@IsString()
+	searchQuery: string;
+}
+
+export class TorrentInfoDto extends SearchQueryDataDto {
+	@IsOptional()
+	@IsString()
+	message?: string;
 }

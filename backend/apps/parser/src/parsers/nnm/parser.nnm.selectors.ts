@@ -1,22 +1,25 @@
-export const authBtn =
+export const nnmAuthBtn =
 	'/html/body/div[1]/table/tbody/tr[1]/td/table/tbody/tr[1]/td/table/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr[2]/td[6]/a';
-export const loginField =
+export const nnmLoginField =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/input';
-export const passwordField =
+export const nnmPasswordField =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[2]/td/table/tbody/tr[3]/td[2]/input';
-export const enterBtn =
+export const nnmLoginBtn =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[2]/td/table/tbody/tr[5]/td/input[3]';
-export const toSearchPageBtn =
+export const nnmSearchPage =
 	'/html/body/div[1]/table/tbody/tr[1]/td/table/tbody/tr[2]/td/table[2]/tbody/tr/td[2]/form/input[3]';
-export const searchField =
+export const nnmSearchField =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[2]/td/table[2]/tbody/tr/td[4]/div/fieldset/div/input';
-export const resetFilterBtn =
+export const nnmResetFilterBtn =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[3]/td/span[2]/input';
-export const activityFilter =
+export const nnmSortSelector =
+	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[2]/td/table[1]/tbody/tr/td[3]/div[1]/fieldset/div/div[1]/select';
+export const nnmSortSelectorElem = '7';
+export const nnmActivityFilter =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[2]/td/table[1]/tbody/tr/td[4]/div[1]/fieldset/div/div[1]/nobr/label[1]/input';
-export const seederExistFilter =
+export const nnmSeederExistFilter =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[2]/td/table[1]/tbody/tr/td[4]/div[1]/fieldset/div/div[1]/nobr/label[3]/input';
-export const searchCatSelector =
+export const nnmSearchCatSelector =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[2]/td/table[1]/tbody/tr/td[2]/fieldset/div/select';
 export const searchCatMovie = [
 	'216',
@@ -218,19 +221,9 @@ export const searchCatAnime = [
 	'639',
 	'640',
 ];
-export const searchBtn =
+export const nnmSearchBtn =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[2]/tbody/tr[3]/td/span[1]/input';
-export const sizeTableHeader =
-	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[3]/thead/tr/th[6]';
-export const resultPageNav =
+export const nnmTbody =
+	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[3]/tbody';
+export const nnmResultPageNav =
 	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/form/table[4]/tbody/tr/td[2]/span';
-export const torrentName =
-	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/table[1]/tbody/tr/td[1]/h1/a';
-export const torrentSize =
-	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/table[5]/tbody/tr[2]/td[2]/table/tbody/tr[4]/td/table/tbody/tr[4]/td[2]/span[1]';
-export const torrentFile =
-	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/table[5]/tbody/tr[2]/td[2]/table/tbody/tr[4]/td/table/tbody/tr[2]/td[3]/span/b/a';
-export const torrentSeeders =
-	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/table[3]/tbody/tr[2]/td/table/tbody/tr[1]/td[2]/span/b';
-export const torrentLeechers =
-	'/html/body/div[1]/table/tbody/tr[2]/td/table/tbody/tr/td/table[3]/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/span/b';

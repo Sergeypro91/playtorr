@@ -11,7 +11,7 @@ export class ParserController {
 	@RMQRoute(ParserGetTorrents.topic)
 	async getTorrents(
 		@Body() query: ParserGetTorrents.Request,
-	): Promise<ParserGetTorrents.Response[]> {
+	): Promise<ParserGetTorrents.Response> {
 		return this.parserService.getTorrents(query);
 	}
 }

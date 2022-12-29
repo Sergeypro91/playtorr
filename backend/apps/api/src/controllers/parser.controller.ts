@@ -13,6 +13,7 @@ import {
 	ParserGetTorrents,
 	TorrentFileDto,
 	GetTorrentsDto,
+	TorrentInfoDto,
 } from '@app/contracts';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import { AuthenticatedGuard } from '../guards';
@@ -29,7 +30,7 @@ export class ParserController {
 	@ApiNotFoundResponse({ type: TorrentFileDto })
 	@UseGuards(AuthenticatedGuard)
 	@Get()
-	async getTorrents(@Body() query: GetTorrentsDto): Promise<TorrentFileDto> {
+	async getTorrents(@Body() query: GetTorrentsDto): Promise<TorrentInfoDto> {
 		this.pinoLogger.log(`getTorrents_${uuid()}`);
 		try {
 			return await this.rmqService.send<
