@@ -9,7 +9,9 @@ export class MinioController {
 
 	@RMQValidate()
 	@RMQRoute(MinIOUploadFile.topic)
-	async uploadFile(@Body() fileDto: MinIOUploadFile.Request) {
+	async uploadFile(
+		@Body() fileDto: MinIOUploadFile.Request,
+	): Promise<MinIOUploadFile.Response> {
 		return this.minIOService.upload(fileDto, ['jpeg', 'png']);
 	}
 

@@ -1,4 +1,4 @@
-import { LoginUserDto, DBUserDto } from '@app/contracts';
+import { LoginUserDto } from '@app/contracts';
 import { User } from 'apps/user/src/models';
 
 export namespace AuthValidateUser {

@@ -1,10 +1,10 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { User } from '../models';
 import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UserEntity } from '../entities';
-import { EditUserDto, UserEmailDto } from '@app/contracts';
+import { EditUserDto } from '@app/contracts';
 import { USER_NOT_CHANGE_ERROR } from '@app/constants';
+import { UserEntity } from '../entities';
+import { User } from '../models';
 
 @Injectable()
 export class UserRepository {
@@ -22,12 +22,12 @@ export class UserRepository {
 		return newUser.save();
 	}
 
-	async findUserByEmail(email: string) {
-		return this.userModel.findOne({ email }).exec();
-	}
-
 	async findUserById(id: string) {
 		return this.userModel.findById(id).exec();
+	}
+
+	async findUserByEmail(email: string) {
+		return this.userModel.findOne({ email }).exec();
 	}
 
 	async findUserByTgId(tgId: number) {
@@ -35,19 +35,19 @@ export class UserRepository {
 	}
 
 	async getUsers(users: string[]) {
-		if (!users.length) {
-			return await this.userModel.find().exec();
-		}
-
 		return await this.userModel.find({ email: { $in: users } }).exec();
 	}
 
 	async updateUserData(email: string, userData: EditUserDto) {
 		try {
 			return await this.userModel
-				.findOneAndUpdate({ email }, userData, {
-					new: true,
-				})
+				.findOneAndUpdate(
+					{ email },
+					{ $set: userData },
+					{
+						new: true,
+					},
+				)
 				.exec();
 		} catch (error) {
 			throw new NotFoundException(USER_NOT_CHANGE_ERROR);
