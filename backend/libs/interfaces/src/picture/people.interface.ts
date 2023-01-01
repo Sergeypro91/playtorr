@@ -3,6 +3,6 @@ export interface IPeople {
 	position: string;
 	name: string;
 	originalName: string;
-	photo: string;
+	photo?: string;
 	character?: string;
 }

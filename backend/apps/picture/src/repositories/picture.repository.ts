@@ -8,27 +8,27 @@ import { Picture } from '../models';
 export class PictureRepository {
 	constructor(
 		@InjectModel(Picture.name)
-		private readonly pictureTorrentsModel: Model<Picture>,
+		private readonly pictureModel: Model<Picture>,
 	) {}
 
-	async createPicture(pictureTorrents: PictureEntity) {
-		const newPictureTorrents = new this.pictureTorrentsModel(
-			pictureTorrents,
-		);
+	async savePicture(picture: PictureEntity) {
+		const newPicture = new this.pictureModel(picture);
 
-		return newPictureTorrents.save();
+		return newPicture.save();
 	}
 
 	async findPictureByImdbId(imdbId: string) {
-		return this.pictureTorrentsModel
-			.findOne({ imdbId: { $in: imdbId } })
-			.exec();
+		return this.pictureModel.findOne({ imdbId: { $in: imdbId } }).exec();
 	}
 
-	async updatePicture({ imdbId, ...rest }: PictureEntity) {
-		return this.pictureTorrentsModel
+	async findPictureByTmdbId(tmdbId: number) {
+		return this.pictureModel.findOne({ tmdbId: { $in: tmdbId } }).exec();
+	}
+
+	async updatePicture({ tmdbId, ...rest }: PictureEntity) {
+		return this.pictureModel
 			.findOneAndUpdate(
-				{ imdbId },
+				{ tmdbId },
 				{ $set: rest },
 				{
 					new: true,
@@ -37,9 +37,7 @@ export class PictureRepository {
 			.exec();
 	}
 
-	async deletePicture(imdbId: string) {
-		return this.pictureTorrentsModel
-			.deleteOne({ imdbId: { $in: imdbId } })
-			.exec();
+	async deletePicture(tmdbId: string) {
+		return this.pictureModel.deleteOne({ tmdbId: { $in: tmdbId } }).exec();
 	}
 }

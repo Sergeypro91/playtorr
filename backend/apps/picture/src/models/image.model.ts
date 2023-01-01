@@ -10,11 +10,11 @@ export class Image extends Document implements IImage {
 	@Prop({ required: true })
 	height: number;
 
-	@Prop({ required: true })
-	iso: string;
+	@Prop()
+	iso?: string;
 
-	@Prop({ required: true })
-	filePath: string;
+	@Prop()
+	filePath?: string;
 
 	@Prop({ required: true })
 	voteAverage: number;

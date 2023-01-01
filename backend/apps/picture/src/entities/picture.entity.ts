@@ -18,12 +18,12 @@ export class PictureEntity implements IPictureDetail {
 	genres: number[];
 	voteAverage: number;
 	voteCount: number;
-	backdropPath: string;
-	posterPath: string;
-	releaseDate: string;
-	productionCompanies: ICompany[];
+	backdropPath?: string;
+	posterPath?: string;
+	releaseDate?: string;
+	productionCompanies?: ICompany[];
 	networks?: ICompany[];
-	tagline: string;
+	tagline?: string;
 	runtime?: number; // MOVIE
 	budget?: number; // MOVIE
 	revenue?: number; // MOVIE
@@ -32,8 +32,8 @@ export class PictureEntity implements IPictureDetail {
 	seasons?: ISeason[]; // TV
 	seasonsCount?: number; // TV
 	episodesCount?: number; // TV
-	next_episode_to_air?: string; // TV
-	video: IVideo[];
+	nextEpisodeDate?: string; // TV
+	videos: IVideo[];
 	credits: ICredits;
 	images: IImages;
 	lastUpdate: string;
@@ -62,8 +62,8 @@ export class PictureEntity implements IPictureDetail {
 		this.seasons = picture.seasons;
 		this.seasonsCount = picture.seasonsCount;
 		this.episodesCount = picture.episodesCount;
-		this.next_episode_to_air = picture.next_episode_to_air;
-		this.video = picture.video;
+		this.nextEpisodeDate = picture.nextEpisodeDate;
+		this.videos = picture.videos;
 		this.credits = picture.credits;
 		this.images = picture.images;
 		this.lastUpdate = picture.lastUpdate;

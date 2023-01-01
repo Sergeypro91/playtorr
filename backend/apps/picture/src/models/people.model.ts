@@ -16,10 +16,10 @@ export class People extends Document implements IPeople {
 	@Prop({ required: true })
 	originalName: string;
 
-	@Prop({ required: true })
-	photo: string;
+	@Prop()
+	photo?: string;
 
-	@Prop({})
+	@Prop()
 	character?: string;
 }
 

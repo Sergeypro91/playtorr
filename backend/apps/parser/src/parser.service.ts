@@ -6,8 +6,9 @@ import {
 	TorrentInfoDto,
 } from '@app/contracts';
 import { RMQError } from 'nestjs-rmq';
-import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
 import { EnumStatus } from '@app/interfaces';
+import { hoursPassed } from '@app/utils';
+import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
 import { PictureTorrentsEntity } from './entities';
 import { parsers } from './parsers';
 
@@ -50,17 +51,13 @@ export class ParserService {
 			message: undefined,
 			torrents: [],
 		};
-
 		const [oldSearchQueryData] = currPictureTorrents.searchRequests.filter(
 			(searchQueryData) => searchQueryData.searchQuery === searchQuery,
 		);
-
 		const searchQueryData = oldSearchQueryData || newSearchQueryData;
-
-		const hoursDiffDate = Math.round(
-			(new Date().getTime() -
-				new Date(searchQueryData.lastUpdate).getTime()) /
-				(60 * 60 * 1000),
+		const hoursDiffDate = hoursPassed(
+			new Date(),
+			searchQueryData.lastUpdate,
 		);
 
 		// If the torrent search was launched less than 24 hours ago

@@ -4,8 +4,8 @@ import { IVideo } from '@app/interfaces';
 
 @Schema()
 export class Video extends Document implements IVideo {
-	@Prop({ required: true })
-	iso: string;
+	@Prop()
+	iso?: string;
 
 	@Prop({ required: true })
 	name: string;

@@ -36,23 +36,23 @@ export class Picture extends Document implements IPictureDetail {
 	@Prop({ required: true })
 	voteCount: number;
 
-	@Prop({ required: true })
+	@Prop()
 	backdropPath: string;
 
-	@Prop({ required: true })
-	posterPath: string;
+	@Prop()
+	posterPath?: string;
 
-	@Prop({ required: true })
-	releaseDate: string;
+	@Prop()
+	releaseDate?: string;
 
-	@Prop({ required: true, type: [CompanySchema] })
-	productionCompanies: Types.Array<Company>;
+	@Prop({ type: [CompanySchema] })
+	productionCompanies?: Types.Array<Company>;
 
 	@Prop({ type: [CompanySchema] })
 	networks?: Types.Array<Company>;
 
-	@Prop({ required: true })
-	tagline: string;
+	@Prop()
+	tagline?: string;
 
 	@Prop()
 	runtime?: number;
@@ -82,7 +82,7 @@ export class Picture extends Document implements IPictureDetail {
 	nextEpisodeDate?: string;
 
 	@Prop({ required: true, type: [VideoSchema] })
-	video: Types.Array<Video>;
+	videos: Types.Array<Video>;
 
 	@Prop({ required: true, type: CreditsSchema })
 	credits: Credits;

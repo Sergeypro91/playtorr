@@ -1,4 +1,4 @@
 export interface ICompany {
-	logoPath: string;
+	logoPath?: string;
 	name: string;
 }

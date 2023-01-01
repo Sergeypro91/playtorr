@@ -20,9 +20,22 @@ import {
 } from '@app/interfaces';
 import { Type } from 'class-transformer';
 
-export class CompanyDto implements ICompany {
+export class TmdbGetRequestDto {
+	@IsNumber()
+	apiVersion: number;
+
 	@IsString()
-	logoPath: string;
+	apiRoute: string;
+
+	@IsOptional()
+	@IsArray()
+	queries?: string[];
+}
+
+export class CompanyDto implements ICompany {
+	@IsOptional()
+	@IsString()
+	logoPath?: string;
 
 	@IsString()
 	name: string;
@@ -49,8 +62,9 @@ export class SeasonDto implements ISeason {
 }
 
 export class VideoDto implements IVideo {
+	@IsOptional()
 	@IsString()
-	iso: string;
+	iso?: string;
 
 	@IsString()
 	name: string;
@@ -87,8 +101,9 @@ export class PeopleDto implements IPeople {
 	@IsString()
 	originalName: string;
 
+	@IsOptional()
 	@IsString()
-	photo: string;
+	photo?: string;
 
 	@IsOptional()
 	@IsString()
@@ -114,11 +129,13 @@ export class ImageDto implements IImage {
 	@IsNumber()
 	height: number;
 
-	@IsArray()
-	iso: string;
+	@IsOptional()
+	@IsString()
+	iso?: string;
 
-	@IsArray()
-	filePath: string;
+	@IsOptional()
+	@IsString()
+	filePath?: string;
 
 	@IsNumber()
 	voteAverage: number;
@@ -184,19 +201,23 @@ export class PictureDataDto implements IPictureDetail {
 	@IsNumber()
 	voteCount: number;
 
+	@IsOptional()
 	@IsString()
-	backdropPath: string;
+	backdropPath?: string;
 
+	@IsOptional()
 	@IsString()
-	posterPath: string;
+	posterPath?: string;
 
+	@IsOptional()
 	@IsString()
-	releaseDate: string;
+	releaseDate?: string;
 
+	@IsOptional()
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CompanyDto)
-	productionCompanies: CompanyDto[];
+	productionCompanies?: CompanyDto[];
 
 	@IsOptional()
 	@IsArray()
@@ -204,8 +225,9 @@ export class PictureDataDto implements IPictureDetail {
 	@Type(() => CompanyDto)
 	networks?: CompanyDto[];
 
+	@IsOptional()
 	@IsString()
-	tagline: string;
+	tagline?: string;
 
 	@IsOptional()
 	@IsNumber()
@@ -248,7 +270,7 @@ export class PictureDataDto implements IPictureDetail {
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => VideoDto)
-	video: VideoDto[];
+	videos: VideoDto[];
 
 	@IsObject()
 	@ValidateNested()

@@ -4,8 +4,8 @@ import { ICompany } from '@app/interfaces';
 
 @Schema()
 export class Company extends Document implements ICompany {
-	@Prop({ required: true })
-	logoPath: string;
+	@Prop()
+	logoPath?: string;
 
 	@Prop({ required: true })
 	name: string;

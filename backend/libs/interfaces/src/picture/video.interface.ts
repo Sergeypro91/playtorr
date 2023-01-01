@@ -1,5 +1,5 @@
 export interface IVideo {
-	iso: string;
+	iso?: string;
 	name: string;
 	key: string;
 	site: string;

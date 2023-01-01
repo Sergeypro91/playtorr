@@ -91,7 +91,7 @@
       "entryFile": "index",
       "sourceRoot": "libs/constants",
       "compilerOptions": {
-        "tsConfigPath": "libs/contracts/tsconfig.lib.json"
+        "tsConfigPath": "libs/constants/tsconfig.lib.json"
       }
     },
     "interfaces": {
@@ -110,6 +110,15 @@
       "sourceRoot": "libs/configs",
       "compilerOptions": {
         "tsConfigPath": "libs/configs/tsconfig.lib.json"
+      }
+    },
+    "utils": {
+      "type": "library",
+      "root": "libs/utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/utils",
+      "compilerOptions": {
+        "tsConfigPath": "libs/utils/tsconfig.lib.json"
       }
     }
   }
