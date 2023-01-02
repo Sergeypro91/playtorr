@@ -13,6 +13,7 @@ import {
 	UserController,
 	MinIOController,
 	ParserController,
+	PictureController,
 } from './controllers';
 
 @Module({
@@ -21,6 +22,7 @@ import {
 		UserController,
 		MinIOController,
 		ParserController,
+		PictureController,
 	],
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true, envFilePath: '../envs/.env' }),
