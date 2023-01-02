@@ -8,6 +8,7 @@ import {
 	FindUserByDto,
 	UsersEmailDto,
 	UserSessionDto,
+	PushUserRecentViewDto,
 } from '@app/contracts';
 import { Role } from '@app/interfaces';
 import {
@@ -205,5 +206,14 @@ export class UserService {
 		}
 
 		return deletingUserData;
+	}
+
+	public async pushUserRecentView(recentView: PushUserRecentViewDto) {
+		try {
+			await this.userRepository.pushRecentView(recentView);
+			return recentView;
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
 	}
 }

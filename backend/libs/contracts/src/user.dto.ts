@@ -6,7 +6,7 @@ import {
 	IsEnum,
 	IsMongoId,
 } from 'class-validator';
-import { Role } from '@app/interfaces';
+import { MediaType, Role } from '@app/interfaces';
 import {
 	PartialType,
 	OmitType,
@@ -99,4 +99,15 @@ export class EditUserSessionDto {
 
 	@Type(() => UserSessionDto)
 	editingUser: UserSessionDto;
+}
+
+export class PushUserRecentViewDto {
+	@IsEmail()
+	email: string;
+
+	@IsString()
+	tmdbId: string;
+
+	@IsString()
+	mediaType: MediaType;
 }

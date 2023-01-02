@@ -6,6 +6,7 @@ import {
 	UserFindUserBy,
 	UserGetUser,
 	UserGetUsers,
+	UserPushUserRecentView,
 	UserRegister,
 } from '@app/contracts';
 import { UserService } from './user.service';
@@ -60,5 +61,13 @@ export class UserController {
 		@Body() user: UserDeleteUser.Request,
 	): Promise<UserDeleteUser.Response> {
 		return this.userService.deleteUser(user);
+	}
+
+	@RMQValidate()
+	@RMQRoute(UserPushUserRecentView.topic)
+	async pushRecentView(
+		@Body() recentView: UserPushUserRecentView.Request,
+	): Promise<UserPushUserRecentView.Response> {
+		return this.userService.pushUserRecentView(recentView);
 	}
 }

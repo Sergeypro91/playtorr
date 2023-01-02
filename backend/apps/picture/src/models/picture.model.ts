@@ -30,10 +30,10 @@ export class Picture extends Document implements IPictureDetail {
 	@Prop({ required: true, type: [Number] })
 	genres: Types.Array<number>;
 
-	@Prop({ required: true })
+	@Prop({ required: true, default: 0 })
 	voteAverage: number;
 
-	@Prop({ required: true })
+	@Prop({ required: true, default: 0 })
 	voteCount: number;
 
 	@Prop()

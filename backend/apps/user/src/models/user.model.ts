@@ -1,6 +1,7 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IUser, Role } from '@app/interfaces';
+import { RecentView, RecentViewSchema } from './recentView.model';
 
 @Schema()
 export class User extends Document implements IUser {
@@ -27,6 +28,9 @@ export class User extends Document implements IUser {
 
 	@Prop()
 	image?: string;
+
+	@Prop({ type: [RecentViewSchema], default: [] })
+	recentViews?: Types.Array<RecentView>;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

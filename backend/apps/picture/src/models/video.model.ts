@@ -22,7 +22,7 @@ export class Video extends Document implements IVideo {
 	@Prop({ required: true })
 	type: string;
 
-	@Prop({ required: true })
+	@Prop({ required: true, default: false })
 	official: boolean;
 
 	@Prop({ required: true })

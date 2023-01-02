@@ -129,11 +129,13 @@ export class SeasonDto implements ISeason {
 	@IsString()
 	name: string;
 
+	@IsOptional()
 	@IsString()
-	overview: string;
+	overview?: string;
 
+	@IsOptional()
 	@IsString()
-	posterPath: string;
+	posterPath?: string;
 
 	@IsString()
 	seasonNumber: number;

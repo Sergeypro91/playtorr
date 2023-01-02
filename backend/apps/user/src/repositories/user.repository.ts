@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EditUserDto } from '@app/contracts';
+import { EditUserDto, PushUserRecentViewDto } from '@app/contracts';
 import { USER_NOT_CHANGE_ERROR } from '@app/constants';
 import { UserEntity } from '../entities';
 import { User } from '../models';
@@ -52,6 +52,16 @@ export class UserRepository {
 		} catch (error) {
 			throw new NotFoundException(USER_NOT_CHANGE_ERROR);
 		}
+	}
+
+	async pushRecentView({ email, ...rest }: PushUserRecentViewDto) {
+		await this.userModel
+			.updateOne({ email }, { $pull: { recentViews: rest } })
+			.exec();
+
+		return this.userModel
+			.updateOne({ email }, { $push: { recentViews: rest } })
+			.exec();
 	}
 
 	async deleteUsersByEmail(email: string) {
