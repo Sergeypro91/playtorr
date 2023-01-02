@@ -13,12 +13,90 @@ import {
 	IImage,
 	IImages,
 	IPeople,
+	IPicture,
 	IPictureDetail,
 	ISeason,
 	IVideo,
 	MediaType,
+	TimeWindow,
 } from '@app/interfaces';
 import { Type } from 'class-transformer';
+
+export class SearchPictureDto {
+	@IsString()
+	query: string;
+
+	@IsOptional()
+	@IsString()
+	page?: string;
+}
+
+export class GetPictureTrendsDto {
+	@IsString()
+	mediaType: MediaType;
+
+	@IsString()
+	timeWindow: TimeWindow;
+
+	@IsOptional()
+	@IsString()
+	page?: string;
+}
+
+export class PicturePageDto {
+	@IsNumber()
+	page: number;
+
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => PictureDataDto)
+	results: PictureDataDto[];
+
+	@IsNumber()
+	totalPages: number;
+
+	@IsNumber()
+	totalResults: number;
+}
+
+export class PictureDataDto implements IPicture {
+	@IsString()
+	tmdbId: string;
+
+	@IsString()
+	// TODO Find way to lock on union types mismatch
+	mediaType: MediaType;
+
+	@IsString()
+	title: string;
+
+	@IsString()
+	originalTitle: string;
+
+	@IsString()
+	overview: string;
+
+	@IsArray()
+	genres: number[];
+
+	@IsNumber()
+	voteAverage: number;
+
+	@IsNumber()
+	voteCount: number;
+
+	@IsOptional()
+	@IsString()
+	backdropPath?: string;
+
+	@IsOptional()
+	@IsString()
+	posterPath?: string;
+
+	@IsOptional()
+	@IsString()
+	releaseDate?: string;
+}
 
 export class TmdbGetRequestDto {
 	@IsNumber()
@@ -165,53 +243,19 @@ export class ImagesDto implements IImages {
 }
 
 export class GetPictureDataDto {
-	@IsNumber()
-	tmdbId: number;
+	@IsString()
+	tmdbId: string;
 
 	@IsString()
 	mediaType: MediaType;
 }
 
-export class PictureDataDto implements IPictureDetail {
+export class PictureDetailDataDto
+	extends PictureDataDto
+	implements IPictureDetail
+{
 	@IsString()
 	imdbId: string;
-
-	@IsNumber()
-	tmdbId: number;
-
-	@IsString()
-	// TODO Find way to lock on union types mismatch
-	mediaType: MediaType;
-
-	@IsString()
-	title: string;
-
-	@IsString()
-	originalTitle: string;
-
-	@IsString()
-	overview: string;
-
-	@IsArray()
-	genres: number[];
-
-	@IsNumber()
-	voteAverage: number;
-
-	@IsNumber()
-	voteCount: number;
-
-	@IsOptional()
-	@IsString()
-	backdropPath?: string;
-
-	@IsOptional()
-	@IsString()
-	posterPath?: string;
-
-	@IsOptional()
-	@IsString()
-	releaseDate?: string;
 
 	@IsOptional()
 	@IsArray()

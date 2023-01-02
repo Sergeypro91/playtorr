@@ -6,6 +6,7 @@ import {
 	ITorrentFile,
 	IPictureTorrents,
 	ITorrent,
+	MediaType,
 } from '@app/interfaces';
 
 @Schema()
@@ -70,6 +71,12 @@ export const SearchQueryDataSchema =
 export class PictureTorrents extends Document implements IPictureTorrents {
 	@Prop({ unique: true, required: true })
 	imdbId: string;
+
+	@Prop({ required: true })
+	tmdbId: string;
+
+	@Prop({ required: true })
+	mediaType: MediaType;
 
 	@Prop({ required: true, type: [SearchQueryDataSchema] })
 	searchRequests: Types.Array<SearchQueryData>;

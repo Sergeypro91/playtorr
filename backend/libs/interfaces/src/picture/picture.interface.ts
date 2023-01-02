@@ -1,9 +1,10 @@
 import { ICompany, ICredits, IImages, ISeason, IVideo } from '@app/interfaces';
 
 export type MediaType = 'movie' | 'tv';
+export type TimeWindow = 'day' | 'week';
 
 export interface IPicture {
-	tmdbId: number;
+	tmdbId: string;
 	mediaType: MediaType;
 	title: string;
 	originalTitle: string;

@@ -11,9 +11,9 @@ import { Logger as PinoLogger } from 'nestjs-pino/Logger';
 import { ApiTags, ApiOperation, ApiNotFoundResponse } from '@nestjs/swagger';
 import {
 	ParserGetTorrents,
-	TorrentFileDto,
 	GetTorrentsDto,
 	TorrentInfoDto,
+	ErrorDto,
 } from '@app/contracts';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import { AuthenticatedGuard } from '../guards';
@@ -27,7 +27,7 @@ export class ParserController {
 	) {}
 
 	@ApiOperation({ summary: 'Получение торрент файлов по заданному запросу' })
-	@ApiNotFoundResponse({ type: TorrentFileDto })
+	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
 	@Get()
 	async getTorrents(@Body() query: GetTorrentsDto): Promise<TorrentInfoDto> {

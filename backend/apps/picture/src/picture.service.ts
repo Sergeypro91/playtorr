@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PictureRepository } from './repositories/picture.repository';
+import { ApiError } from '@app/constants/common';
 import {
 	GetPictureDataDto,
-	PictureDataDto,
+	GetPictureTrendsDto,
+	PictureDetailDataDto,
+	SearchPictureDto,
+	PicturePageDto,
 	TmdbGetRequestDto,
 } from '@app/contracts';
 import { ConfigService } from '@nestjs/config';
 import { RMQError } from 'nestjs-rmq';
-import { convertTmdbToLocalPicture } from './utils';
+import {
+	convertTmdbToLocalPicture,
+	convertTmdbToLocalPictureDetail,
+} from './utils';
 import { daysPassed } from '@app/utils';
 
 @Injectable()
@@ -17,14 +24,11 @@ export class PictureService {
 		private readonly pictureRepository: PictureRepository,
 	) {}
 
-	tmdbGetRequest({ apiVersion, apiRoute, queries }: TmdbGetRequestDto) {
+	async tmdbGetRequest({ apiVersion, apiRoute, queries }: TmdbGetRequestDto) {
 		const apiUrl = this.configService.get('TMDB_URL');
 		const apiKey = `api_key=${this.configService.get('TMDB_API_KEY')}`;
 		const stringifyQueries = queries?.length
-			? queries.reduce(
-					(queriesStr, query) => queriesStr.concat(`${query}&`),
-					'',
-			  )
+			? queries.join('&').concat('&')
 			: '';
 
 		console.log(
@@ -32,27 +36,41 @@ export class PictureService {
 			`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
 		);
 
-		return fetch(
-			`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
-		)
-			.then((response) => response.json())
-			.catch((error) => {
-				throw new RMQError(error.message, undefined, error.code);
+		try {
+			return await fetch(
+				`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
+			).then(async (response) => {
+				if (response.ok) {
+					return response.json();
+				}
+
+				const { status_message } = await response.json();
+
+				throw new ApiError(
+					response.statusText,
+					response.status,
+					status_message,
+				);
 			});
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
 	}
 
 	async getPictureData({
 		tmdbId,
 		mediaType,
-	}: GetPictureDataDto): Promise<PictureDataDto> {
+	}: GetPictureDataDto): Promise<PictureDetailDataDto> {
 		let currDbPicture = await this.pictureRepository
-			.findPictureByTmdbId(tmdbId)
+			.findPictureByTmdbId(tmdbId, mediaType)
 			.catch((error) => {
 				throw new RMQError(error.message, undefined, error.code);
 			});
 		const getNewPicture = async () => {
-			const language = 'language=ru';
-			const append = 'append_to_response=videos,images,credits';
+			const queries = new URLSearchParams({
+				language: 'ru',
+				append_to_response: 'videos,images,credits',
+			}).toString();
 			const { imdb_id: imdbId } = await this.tmdbGetRequest({
 				apiVersion: 3,
 				apiRoute: `${mediaType}/${tmdbId}/external_ids`,
@@ -60,13 +78,12 @@ export class PictureService {
 			const picture = await this.tmdbGetRequest({
 				apiVersion: 3,
 				apiRoute: `${mediaType}/${tmdbId}`,
-				queries: [language, append],
+				queries: [queries],
 			});
 
-			return convertTmdbToLocalPicture({
+			return convertTmdbToLocalPictureDetail({
 				picture,
 				tmdbId,
-				// TODO Need auto update "PictureTorrens" imdbId when "Picture" imdbId change
 				imdbId,
 				mediaType,
 			});
@@ -92,5 +109,53 @@ export class PictureService {
 		}
 
 		return currDbPicture;
+	}
+
+	async searchPicture(query: SearchPictureDto): Promise<PicturePageDto> {
+		const queries = new URLSearchParams({
+			...query,
+			language: 'ru',
+		}).toString();
+		const page = await this.tmdbGetRequest({
+			apiVersion: 3,
+			apiRoute: 'search/multi',
+			queries: [queries],
+		});
+
+		try {
+			page.results = page.results.map((picture) =>
+				convertTmdbToLocalPicture(picture),
+			);
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
+
+		return page;
+	}
+
+	async getPictureTrends({
+		mediaType,
+		timeWindow,
+		page,
+	}: GetPictureTrendsDto): Promise<PicturePageDto> {
+		const queries = new URLSearchParams({
+			language: 'ru',
+			page,
+		}).toString();
+		const picturesPage = await this.tmdbGetRequest({
+			apiVersion: 3,
+			apiRoute: `trending/${mediaType}/${timeWindow}`,
+			queries: [queries],
+		});
+
+		try {
+			picturesPage.results = picturesPage.results.map((picture) =>
+				convertTmdbToLocalPicture(picture),
+			);
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
+
+		return picturesPage;
 	}
 }

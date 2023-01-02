@@ -1,1 +1,1 @@
-export * from './convertTmdbToLocalPicture';
+export * from './convertTmdbToLocalPictureDetail';

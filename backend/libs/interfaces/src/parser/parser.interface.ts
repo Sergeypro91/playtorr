@@ -1,3 +1,5 @@
+import { MediaType } from '@app/interfaces/picture';
+
 export enum EnumStatus {
 	CREATED = 'created',
 	UPDATING = 'updating',
@@ -30,5 +32,7 @@ export interface ITorrentFile {
 
 export interface IPictureTorrents {
 	imdbId: string;
+	tmdbId: string;
+	mediaType: MediaType;
 	searchRequests: ISearchQueryData[];
 }

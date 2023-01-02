@@ -1,6 +1,7 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
+import { MediaType } from '@app/interfaces';
 import { PictureTorrentsEntity } from '../entities';
 import { PictureTorrents } from '../models';
 
@@ -20,15 +21,36 @@ export class PictureTorrentsRepository {
 	}
 
 	async findPictureTorrentsByImdbId(imdbId: string) {
-		return this.pictureTorrentsModel
-			.findOne({ imdbId: { $in: imdbId } })
-			.exec();
+		return this.pictureTorrentsModel.findOne({ imdbId }).exec();
 	}
 
-	async updatePictureTorrents({ imdbId, ...rest }: PictureTorrentsEntity) {
+	async findPictureTorrentsByTmdbId(tmdbId: string, mediaType: MediaType) {
+		return this.pictureTorrentsModel.findOne({ tmdbId, mediaType }).exec();
+	}
+
+	async updatePictureTorrentsByImdbId({
+		imdbId,
+		...rest
+	}: PictureTorrentsEntity) {
 		return this.pictureTorrentsModel
 			.findOneAndUpdate(
 				{ imdbId },
+				{ $set: rest },
+				{
+					new: true,
+				},
+			)
+			.exec();
+	}
+
+	async updatePictureTorrentsByTmdbId({
+		tmdbId,
+		mediaType,
+		...rest
+	}: PictureTorrentsEntity) {
+		return this.pictureTorrentsModel
+			.findOneAndUpdate(
+				{ tmdbId, mediaType },
 				{ $set: rest },
 				{
 					new: true,

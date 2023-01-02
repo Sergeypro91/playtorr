@@ -10,7 +10,7 @@ import {
 
 export class PictureEntity implements IPictureDetail {
 	imdbId: string;
-	tmdbId: number;
+	tmdbId: string;
 	mediaType: MediaType;
 	title: string;
 	originalTitle: string;

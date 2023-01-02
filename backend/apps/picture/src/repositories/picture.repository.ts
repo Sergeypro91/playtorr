@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { PictureEntity } from '../entities';
 import { Picture } from '../models';
+import { MediaType } from '@app/interfaces';
 
 @Injectable()
 export class PictureRepository {
@@ -18,17 +19,17 @@ export class PictureRepository {
 	}
 
 	async findPictureByImdbId(imdbId: string) {
-		return this.pictureModel.findOne({ imdbId: { $in: imdbId } }).exec();
+		return this.pictureModel.findOne({ imdbId }).exec();
 	}
 
-	async findPictureByTmdbId(tmdbId: number) {
-		return this.pictureModel.findOne({ tmdbId: { $in: tmdbId } }).exec();
+	async findPictureByTmdbId(tmdbId: string, mediaType: MediaType) {
+		return this.pictureModel.findOne({ tmdbId, mediaType }).exec();
 	}
 
-	async updatePicture({ tmdbId, ...rest }: PictureEntity) {
+	async updatePicture({ tmdbId, mediaType, ...rest }: PictureEntity) {
 		return this.pictureModel
 			.findOneAndUpdate(
-				{ tmdbId },
+				{ tmdbId, mediaType },
 				{ $set: rest },
 				{
 					new: true,
@@ -37,7 +38,7 @@ export class PictureRepository {
 			.exec();
 	}
 
-	async deletePicture(tmdbId: string) {
-		return this.pictureModel.deleteOne({ tmdbId: { $in: tmdbId } }).exec();
+	async deletePicture(tmdbId: string, mediaType: MediaType) {
+		return this.pictureModel.deleteOne({ tmdbId, mediaType }).exec();
 	}
 }

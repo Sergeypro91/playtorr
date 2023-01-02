@@ -12,8 +12,8 @@ export class Picture extends Document implements IPictureDetail {
 	@Prop({ unique: true, required: true })
 	imdbId: string;
 
-	@Prop({ unique: true, required: true })
-	tmdbId: number;
+	@Prop({ required: true })
+	tmdbId: string;
 
 	@Prop({ required: true })
 	mediaType: MediaType;

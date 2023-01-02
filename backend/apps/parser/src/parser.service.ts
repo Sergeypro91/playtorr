@@ -21,6 +21,8 @@ export class ParserService {
 
 	public async getTorrents({
 		imdbId,
+		tmdbId,
+		mediaType,
 		searchQuery,
 	}: GetTorrentsDto): Promise<TorrentInfoDto> {
 		const user = {
@@ -28,13 +30,16 @@ export class ParserService {
 			password: this.configService.get('NNM_PASSWORD'),
 		};
 		let currPictureTorrents: DBPictureTorrentsDto =
-			await this.pictureTorrentsRepository.findPictureTorrentsByImdbId(
-				imdbId,
+			await this.pictureTorrentsRepository.findPictureTorrentsByTmdbId(
+				tmdbId,
+				mediaType,
 			);
 
 		if (!currPictureTorrents) {
 			const newPictureTorrents = new PictureTorrentsEntity({
 				imdbId,
+				tmdbId,
+				mediaType,
 				searchRequests: [],
 			});
 
@@ -88,8 +93,10 @@ export class ParserService {
 				searchRequests.push(searchQueryData);
 			}
 
-			await this.pictureTorrentsRepository.updatePictureTorrents({
+			await this.pictureTorrentsRepository.updatePictureTorrentsByTmdbId({
 				imdbId,
+				tmdbId,
+				mediaType,
 				searchRequests,
 			});
 		} catch (error) {

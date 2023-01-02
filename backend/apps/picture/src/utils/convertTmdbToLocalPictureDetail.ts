@@ -2,6 +2,7 @@ import {
 	ICompany,
 	IImage,
 	IPeople,
+	IPicture,
 	IPictureDetail,
 	ISeason,
 	IVideo,
@@ -10,12 +11,12 @@ import {
 
 export type ConvertTmdbToLocalPictureArgs = {
 	picture: { unknown };
-	tmdbId: number;
-	imdbId: string;
+	tmdbId: string;
+	imdbId?: string;
 	mediaType: MediaType;
 };
 
-const convertCompany = (company?: []): ICompany[] | undefined => {
+const convertCompany = (company = []): ICompany[] | undefined => {
 	return company
 		? company.map((company) => ({
 				logoPath: company['logo_path'] || '',
@@ -24,7 +25,7 @@ const convertCompany = (company?: []): ICompany[] | undefined => {
 		: undefined;
 };
 
-const convertSeason = (seasons?: []): ISeason[] | undefined => {
+const convertSeason = (seasons = []): ISeason[] | undefined => {
 	return seasons
 		? seasons.map((season) => ({
 				releaseDate: season['air_date'] || '',
@@ -37,7 +38,7 @@ const convertSeason = (seasons?: []): ISeason[] | undefined => {
 		: undefined;
 };
 
-const convertVideo = (videos?: []): IVideo[] => {
+const convertVideo = (videos = []): IVideo[] => {
 	return videos
 		? videos.map((video) => ({
 				iso: video['iso_639_1'],
@@ -52,37 +53,41 @@ const convertVideo = (videos?: []): IVideo[] => {
 		: [];
 };
 
-const convertCredit = (credits: []): IPeople[] => {
-	return credits.map((credit) => ({
-		peopleId: credit['id'],
-		position: credit['known_for_department'],
-		name: credit['name'],
-		originalName: credit['original_name'],
-		photo: credit['profile_path'],
-		character: credit['character'],
-	}));
+const convertCredit = (credits = []): IPeople[] => {
+	return credits.length
+		? credits.map((credit) => ({
+				peopleId: credit['id'],
+				position: credit['known_for_department'],
+				name: credit['name'],
+				originalName: credit['original_name'],
+				photo: credit['profile_path'],
+				character: credit['character'],
+		  }))
+		: [];
 };
 
-const convertImage = (images: []): IImage[] => {
-	return images.map((image) => ({
-		aspectRatio: image['aspect_ratio'],
-		height: image['height'],
-		iso: image['iso_639_1'],
-		filePath: image['file_path'],
-		voteAverage: image['vote_average'],
-		voteCount: image['vote_count'],
-		width: image['width'],
-	}));
+const convertImage = (images = []): IImage[] => {
+	return images
+		? images.map((image) => ({
+				aspectRatio: image['aspect_ratio'],
+				height: image['height'],
+				iso: image['iso_639_1'],
+				filePath: image['file_path'],
+				voteAverage: image['vote_average'],
+				voteCount: image['vote_count'],
+				width: image['width'],
+		  }))
+		: [];
 };
 
-export const convertTmdbToLocalPicture = ({
+export const convertTmdbToLocalPictureDetail = ({
 	picture,
 	tmdbId,
 	imdbId,
 	mediaType,
 }: ConvertTmdbToLocalPictureArgs): IPictureDetail => {
 	return {
-		imdbId: imdbId ? imdbId : `temp_id_${tmdbId}`,
+		imdbId: imdbId ? imdbId : `temp_id_${mediaType}_${tmdbId}`,
 		tmdbId,
 		mediaType,
 		title: picture['title'] || picture['name'],
@@ -108,16 +113,32 @@ export const convertTmdbToLocalPicture = ({
 		seasonsCount: picture['seasons_count'],
 		episodesCount: picture['episodes_count'],
 		nextEpisodeDate: picture['next_episode_to_air'],
-		videos: convertVideo(picture['videos'].results),
+		videos: convertVideo(picture['videos']?.results),
 		credits: {
-			cast: convertCredit(picture['credits'].cast),
-			crew: convertCredit(picture['credits'].crew),
+			cast: convertCredit(picture['credits']?.cast),
+			crew: convertCredit(picture['credits']?.crew),
 		},
 		images: {
-			backdrops: convertImage(picture['images'].backdrops),
-			logos: convertImage(picture['images'].logos),
-			posters: convertImage(picture['images'].posters),
+			backdrops: convertImage(picture['images']?.backdrops),
+			logos: convertImage(picture['images']?.logos),
+			posters: convertImage(picture['images']?.posters),
 		},
 		lastUpdate: new Date().toISOString(),
+	};
+};
+
+export const convertTmdbToLocalPicture = (picture): IPicture => {
+	return {
+		tmdbId: picture['tmdbId'],
+		mediaType: picture['mediaType'],
+		title: picture['title'] || picture['name'],
+		originalTitle: picture['original_title'] || picture['original_name'],
+		overview: picture['overview'] || '',
+		genres: picture['genre_ids'] || [],
+		voteAverage: picture['vote_average'],
+		voteCount: picture['vote_count'],
+		backdropPath: picture['backdrop_path'],
+		posterPath: picture['poster_path'],
+		releaseDate: picture['release_date'] || picture['first_air_date'],
 	};
 };

@@ -7,7 +7,7 @@ import {
 	ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { EnumStatus } from '@app/interfaces';
+import { EnumStatus, MediaType } from '@app/interfaces';
 
 export class DBPictureTorrentsDto {
 	@IsString()
@@ -75,6 +75,12 @@ export class TorrentFileDto {
 export class GetTorrentsDto {
 	@IsString()
 	imdbId: string;
+
+	@IsString()
+	tmdbId: string;
+
+	@IsString()
+	mediaType: MediaType;
 
 	@IsString()
 	searchQuery: string;
