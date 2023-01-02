@@ -16,10 +16,10 @@ export class Image extends Document implements IImage {
 	@Prop()
 	filePath?: string;
 
-	@Prop({ required: true })
+	@Prop({ required: true, default: 0 })
 	voteAverage: number;
 
-	@Prop({ required: true })
+	@Prop({ required: true, default: 0 })
 	voteCount: number;
 
 	@Prop({ required: true })

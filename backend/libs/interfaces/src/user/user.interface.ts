@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { UserSessionDto } from '@app/contracts';
+import { IRecentView } from '@app/interfaces/user/recentView.interface';
 
 export enum Role {
 	ADMIN = 'admin',
@@ -18,6 +19,7 @@ export interface IUser {
 	lastName?: string;
 	tgId?: number;
 	image?: string;
+	recentViews?: IRecentView[];
 }
 
 export interface RequestWithUserSession extends Request {

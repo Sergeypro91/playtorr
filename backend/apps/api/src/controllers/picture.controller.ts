@@ -6,6 +6,8 @@ import {
 	HttpStatus,
 	Param,
 	Query,
+	Session,
+	Logger,
 } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Logger as PinoLogger } from 'nestjs-pino/Logger';
@@ -17,6 +19,7 @@ import {
 	SearchPictureDto,
 	PicturePageDto,
 	GetPictureTrendsDto,
+	UserPushUserRecentView,
 } from '@app/contracts';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import {
@@ -29,6 +32,8 @@ import { GetPictureTrends } from '@app/contracts/picture/picture.getPictureTrend
 @ApiTags('Picture')
 @Controller('picture')
 export class PictureController {
+	logger = new Logger(PictureController.name);
+
 	constructor(
 		private readonly rmqService: RMQService,
 		private readonly pinoLogger: PinoLogger,
@@ -40,8 +45,24 @@ export class PictureController {
 	@Get(':tmdbId/:mediaType')
 	async getPictureData(
 		@Param() query: GetPictureDataDto,
+		@Session() { passport }: Record<string, any>,
 	): Promise<PictureDetailDataDto> {
 		this.pinoLogger.log(`getPictureData_${uuid()}`);
+
+		// Save "Picture" IDs to user entity -> recentViews
+		try {
+			await this.rmqService.send<
+				UserPushUserRecentView.Request,
+				UserPushUserRecentView.Response
+			>(UserPushUserRecentView.topic, {
+				...query,
+				email: passport.user.email,
+			});
+		} catch (error) {
+			this.logger.error(error);
+		}
+
+		// "Picture" request itself
 		try {
 			return await this.rmqService.send<
 				PictureGetPictureData.Request,

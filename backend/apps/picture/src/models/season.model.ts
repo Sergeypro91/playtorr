@@ -13,11 +13,11 @@ export class Season extends Document implements ISeason {
 	@Prop({ required: true })
 	name: string;
 
-	@Prop({ required: true })
-	overview: string;
+	@Prop()
+	overview?: string;
 
-	@Prop({ required: true })
-	posterPath: string;
+	@Prop()
+	posterPath?: string;
 
 	@Prop({ required: true })
 	seasonNumber: number;

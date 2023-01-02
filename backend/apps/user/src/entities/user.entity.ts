@@ -1,5 +1,6 @@
 import { Role, IUser } from '@app/interfaces/user/user.interface';
 import { compare, genSalt, hash } from 'bcryptjs';
+import { IRecentView } from '@app/interfaces/user';
 
 export class UserEntity implements IUser {
 	email: string;
@@ -10,6 +11,7 @@ export class UserEntity implements IUser {
 	lastName?: string;
 	tgId?: number;
 	image?: string;
+	recentViews?: IRecentView[];
 
 	constructor(user: Omit<IUser, 'passwordHash'>) {
 		this.email = user.email;
@@ -19,6 +21,7 @@ export class UserEntity implements IUser {
 		this.lastName = user.lastName;
 		this.tgId = user.tgId;
 		this.image = user.image;
+		this.recentViews = user.recentViews;
 	}
 
 	public async setPassword(password: string) {
