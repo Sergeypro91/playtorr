@@ -19,7 +19,8 @@ import {
 	ApiUnauthorizedResponse,
 	ApiBadRequestResponse,
 } from '@nestjs/swagger';
-import { RequestWithUserSession, Role } from '@app/interfaces';
+import { RequestWithUserSession } from '@app/interfaces';
+import { Role } from '@app/types';
 import {
 	DBUserDto,
 	EditUserDto,

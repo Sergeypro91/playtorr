@@ -7,7 +7,7 @@ import {
 	ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { EnumStatus, MediaType } from '@app/interfaces';
+import { EnumStatus, MediaType } from '@app/types';
 
 export class DBPictureTorrentsDto {
 	@IsString()

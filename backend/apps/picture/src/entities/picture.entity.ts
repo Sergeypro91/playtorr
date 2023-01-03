@@ -1,23 +1,23 @@
 import {
 	ICompany,
 	IPictureDetail,
-	MediaType,
 	ISeason,
 	IVideo,
 	ICredits,
 	IImages,
-} from '@app/interfaces/picture';
+} from '@app/interfaces';
+import { MediaType } from '@app/types';
 
 export class PictureEntity implements IPictureDetail {
 	imdbId: string;
 	tmdbId: string;
 	mediaType: MediaType;
-	title: string;
-	originalTitle: string;
-	overview: string;
+	title?: string;
+	originalTitle?: string;
+	overview?: string;
 	genres: number[];
-	voteAverage: number;
-	voteCount: number;
+	voteAverage?: number;
+	voteCount?: number;
 	backdropPath?: string;
 	posterPath?: string;
 	releaseDate?: string;
@@ -68,10 +68,4 @@ export class PictureEntity implements IPictureDetail {
 		this.images = picture.images;
 		this.lastUpdate = picture.lastUpdate;
 	}
-
-	// public setSearchStatus(
-	// 	imdbId: string,
-	// 	searchQuery: string,
-	// 	searchStatus: SearchStatus,
-	// ) {}
 }

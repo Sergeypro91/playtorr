@@ -10,7 +10,7 @@
 
 ## Description
 The backend part consists of 6 microservices:
-* <b style="color: #de3f3f; font-size: 1.2rem">api</b> - responsible for proxying requests to other microservices;
+* <b style="color: #de3f3f; font-size: 1.2rem">api</b> - API Gateway;
 * <b style="color: #de3f3f; font-size: 1.2rem">auth</b> - responsible for working with authorization methods;
 * <b style="color: #de3f3f; font-size: 1.2rem">user</b> - responsible for working with users entities and methods;
 * <b style="color: #de3f3f; font-size: 1.2rem">minio</b> - responsible for connection of S3 compatible MinIO storage;

@@ -1,17 +1,18 @@
 import { ICompany, ICredits, IImages, ISeason, IVideo } from '@app/interfaces';
+import { MediaType } from '@app/types';
 
-export type MediaType = 'movie' | 'tv';
-export type TimeWindow = 'day' | 'week';
-
-export interface IPicture {
+export interface PictureIdType {
 	tmdbId: string;
 	mediaType: MediaType;
-	title: string;
-	originalTitle: string;
-	overview: string;
+}
+
+export interface IPicture extends PictureIdType {
+	title?: string;
+	originalTitle?: string;
+	overview?: string;
 	genres: number[];
-	voteAverage: number;
-	voteCount: number;
+	voteAverage?: number;
+	voteCount?: number;
 	backdropPath?: string;
 	posterPath?: string;
 	releaseDate?: string;

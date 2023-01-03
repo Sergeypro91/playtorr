@@ -8,9 +8,11 @@ import {
 	SearchPictureDto,
 	PicturePageDto,
 	TmdbGetRequestDto,
+	UserGetUser,
+	PictureDataDto,
 } from '@app/contracts';
 import { ConfigService } from '@nestjs/config';
-import { RMQError } from 'nestjs-rmq';
+import { RMQError, RMQService } from 'nestjs-rmq';
 import {
 	convertTmdbToLocalPicture,
 	convertTmdbToLocalPictureDetail,
@@ -20,23 +22,24 @@ import { daysPassed } from '@app/utils';
 @Injectable()
 export class PictureService {
 	constructor(
+		private readonly rmqService: RMQService,
 		private readonly configService: ConfigService,
 		private readonly pictureRepository: PictureRepository,
 	) {}
 
 	async tmdbGetRequest({ apiVersion, apiRoute, queries }: TmdbGetRequestDto) {
-		const apiUrl = this.configService.get('TMDB_URL');
-		const apiKey = `api_key=${this.configService.get('TMDB_API_KEY')}`;
-		const stringifyQueries = queries?.length
-			? queries.join('&').concat('&')
-			: '';
-
-		console.log(
-			'URL',
-			`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
-		);
-
 		try {
+			const apiUrl = this.configService.get('TMDB_URL');
+			const apiKey = `api_key=${this.configService.get('TMDB_API_KEY')}`;
+			const stringifyQueries = queries?.length
+				? queries.join('&').concat('&')
+				: '';
+
+			console.log(
+				'URL',
+				`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
+			);
+
 			return await fetch(
 				`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
 			).then(async (response) => {
@@ -61,76 +64,83 @@ export class PictureService {
 		tmdbId,
 		mediaType,
 	}: GetPictureDataDto): Promise<PictureDetailDataDto> {
-		let currDbPicture = await this.pictureRepository
-			.findPictureByTmdbId(tmdbId, mediaType)
-			.catch((error) => {
-				throw new RMQError(error.message, undefined, error.code);
-			});
-		const getNewPicture = async () => {
-			const queries = new URLSearchParams({
-				language: 'ru',
-				append_to_response: 'videos,images,credits',
-			}).toString();
-			const { imdb_id: imdbId } = await this.tmdbGetRequest({
-				apiVersion: 3,
-				apiRoute: `${mediaType}/${tmdbId}/external_ids`,
-			});
-			const picture = await this.tmdbGetRequest({
-				apiVersion: 3,
-				apiRoute: `${mediaType}/${tmdbId}`,
-				queries: [queries],
-			});
-
-			return convertTmdbToLocalPictureDetail({
-				picture,
-				tmdbId,
-				imdbId,
-				mediaType,
-			});
-		};
-
-		if (!currDbPicture) {
-			currDbPicture = await this.pictureRepository.savePicture(
-				await getNewPicture(),
-			);
-		}
-
-		const daysPassedSinceLastUpdate = daysPassed(
-			new Date(),
-			currDbPicture.lastUpdate,
-		);
-
-		if (daysPassedSinceLastUpdate >= 7) {
-			this.pictureRepository
-				.updatePicture(await getNewPicture())
+		try {
+			let currDbPicture = await this.pictureRepository
+				.findPictureByTmdbId({ tmdbId, mediaType })
 				.catch((error) => {
 					throw new RMQError(error.message, undefined, error.code);
 				});
-		}
+			const getNewPicture = async () => {
+				const queries = new URLSearchParams({
+					language: 'ru',
+					append_to_response: 'videos,images,credits',
+				}).toString();
+				const { imdb_id: imdbId } = await this.tmdbGetRequest({
+					apiVersion: 3,
+					apiRoute: `${mediaType}/${tmdbId}/external_ids`,
+				});
+				const picture = await this.tmdbGetRequest({
+					apiVersion: 3,
+					apiRoute: `${mediaType}/${tmdbId}`,
+					queries: [queries],
+				});
 
-		return currDbPicture;
-	}
+				return convertTmdbToLocalPictureDetail({
+					picture,
+					tmdbId,
+					imdbId,
+					mediaType,
+				});
+			};
 
-	async searchPicture(query: SearchPictureDto): Promise<PicturePageDto> {
-		const queries = new URLSearchParams({
-			...query,
-			language: 'ru',
-		}).toString();
-		const page = await this.tmdbGetRequest({
-			apiVersion: 3,
-			apiRoute: 'search/multi',
-			queries: [queries],
-		});
+			if (!currDbPicture) {
+				currDbPicture = await this.pictureRepository.savePicture(
+					await getNewPicture(),
+				);
+			}
 
-		try {
-			page.results = page.results.map((picture) =>
-				convertTmdbToLocalPicture(picture),
+			const daysPassedSinceLastUpdate = daysPassed(
+				new Date(),
+				currDbPicture.lastUpdate,
 			);
+
+			if (daysPassedSinceLastUpdate >= 7) {
+				this.pictureRepository
+					.updatePicture(await getNewPicture())
+					.catch((error) => {
+						throw new RMQError(
+							error.message,
+							undefined,
+							error.statusCode,
+						);
+					});
+			}
+
+			return currDbPicture;
 		} catch (error) {
 			throw new RMQError(error.message, undefined, error.statusCode);
 		}
+	}
 
-		return page;
+	async searchPicture(query: SearchPictureDto): Promise<PicturePageDto> {
+		try {
+			const queries = new URLSearchParams({
+				...query,
+				language: 'ru',
+			}).toString();
+			const page = await this.tmdbGetRequest({
+				apiVersion: 3,
+				apiRoute: 'search/multi',
+				queries: [queries],
+			});
+			page.results = page.results.map((picture) =>
+				convertTmdbToLocalPicture(picture),
+			);
+
+			return page;
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
 	}
 
 	async getPictureTrends({
@@ -138,24 +148,39 @@ export class PictureService {
 		timeWindow,
 		page,
 	}: GetPictureTrendsDto): Promise<PicturePageDto> {
-		const queries = new URLSearchParams({
-			language: 'ru',
-			page,
-		}).toString();
-		const picturesPage = await this.tmdbGetRequest({
-			apiVersion: 3,
-			apiRoute: `trending/${mediaType}/${timeWindow}`,
-			queries: [queries],
-		});
-
 		try {
+			const queries = new URLSearchParams({
+				language: 'ru',
+				page,
+			}).toString();
+			const picturesPage = await this.tmdbGetRequest({
+				apiVersion: 3,
+				apiRoute: `trending/${mediaType}/${timeWindow}`,
+				queries: [queries],
+			});
+
 			picturesPage.results = picturesPage.results.map((picture) =>
 				convertTmdbToLocalPicture(picture),
+			);
+
+			return picturesPage;
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
+	}
+
+	async getRecentViewedPictures(email: string): Promise<PictureDataDto[]> {
+		try {
+			const user = await this.rmqService.send<
+				UserGetUser.Request,
+				UserGetUser.Response[]
+			>(UserGetUser.topic, { email });
+
+			return await this.pictureRepository.findPicturesByTmdbId(
+				user[0].recentViews,
 			);
 		} catch (error) {
 			throw new RMQError(error.message, undefined, error.statusCode);
 		}
-
-		return picturesPage;
 	}
 }

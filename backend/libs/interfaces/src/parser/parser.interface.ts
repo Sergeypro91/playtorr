@@ -1,12 +1,4 @@
-import { MediaType } from '@app/interfaces/picture';
-
-export enum EnumStatus {
-	CREATED = 'created',
-	UPDATING = 'updating',
-	FINISHED = 'finished',
-	WARNING = 'warning',
-	ERROR = 'error',
-}
+import { MediaType, EnumStatus } from '@app/types';
 
 export interface ISearchQueryData {
 	searchQuery: string;

@@ -10,7 +10,7 @@ import {
 	UserSessionDto,
 	PushUserRecentViewDto,
 } from '@app/contracts';
-import { Role } from '@app/interfaces';
+import { Role } from '@app/types';
 import {
 	USER_NOT_FOUND,
 	USER_FORBIDDEN_ERROR,
@@ -32,19 +32,6 @@ export class UserService {
 		this.logger = new Logger(UserService.name);
 	}
 
-	private handlingUserDB(user: User): DBUserDto {
-		return {
-			id: user._id,
-			email: user.email,
-			role: user.role,
-			nickname: user.nickname,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			image: user.image,
-			tgId: user.tgId,
-		};
-	}
-
 	private async createUser(newUser: UserDto): Promise<DBUserDto> {
 		const usersCount = await this.countUsers();
 		const newUserEntity = await new UserEntity({
@@ -52,9 +39,7 @@ export class UserService {
 			role: usersCount ? Role.GUEST : Role.ADMIN,
 		}).setPassword(newUser.password);
 
-		return this.userRepository
-			.createUser(newUserEntity)
-			.then(this.handlingUserDB);
+		return this.userRepository.createUser(newUserEntity);
 	}
 
 	public async countUsers() {
@@ -107,9 +92,7 @@ export class UserService {
 	}
 
 	public async getUsers({ users }: UsersEmailDto): Promise<DBUserDto[]> {
-		return this.userRepository
-			.getUsers(users)
-			.then((usersArr) => usersArr.map(this.handlingUserDB));
+		return this.userRepository.getUsers(users);
 	}
 
 	/**
@@ -178,16 +161,17 @@ export class UserService {
 			);
 		}
 
-		return this.userRepository
-			.updateUserData(editableUser.email, editableUser)
-			.then(this.handlingUserDB);
+		return this.userRepository.updateUserData(
+			editableUser.email,
+			editableUser,
+		);
 	}
 
 	public async deleteUser(user: UserEmailDto): Promise<DBUserDto> {
 		const deletingUserData = await this.findUserBy({
 			type: 'email',
 			id: user.email,
-		}).then(this.handlingUserDB);
+		});
 
 		if (!deletingUserData) {
 			throw new RMQError(USER_NOT_FOUND, undefined, HttpStatus.NOT_FOUND);

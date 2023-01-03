@@ -1,4 +1,5 @@
-import { IPictureTorrents, ISearchQueryData, MediaType } from '@app/interfaces';
+import { IPictureTorrents, ISearchQueryData } from '@app/interfaces';
+import { MediaType } from '@app/types';
 
 export class PictureTorrentsEntity implements IPictureTorrents {
 	imdbId: string;

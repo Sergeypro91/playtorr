@@ -1,14 +1,7 @@
 import { Request } from 'express';
 import { UserSessionDto } from '@app/contracts';
-import { IRecentView } from '@app/interfaces/user/recentView.interface';
-
-export enum Role {
-	ADMIN = 'admin',
-	GUEST = 'guest',
-	MEMBER = 'member',
-	PREMIUM = 'premium',
-	BLOCKED = 'blocked',
-}
+import { IRecentView } from '@app/interfaces';
+import { Role } from '@app/types';
 
 export interface IUser {
 	email: string;

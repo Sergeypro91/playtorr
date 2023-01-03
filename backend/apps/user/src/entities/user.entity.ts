@@ -1,6 +1,6 @@
-import { Role, IUser } from '@app/interfaces/user/user.interface';
 import { compare, genSalt, hash } from 'bcryptjs';
-import { IRecentView } from '@app/interfaces/user';
+import { IUser, IRecentView } from '@app/interfaces/user';
+import { Role } from '@app/types';
 
 export class UserEntity implements IUser {
 	email: string;

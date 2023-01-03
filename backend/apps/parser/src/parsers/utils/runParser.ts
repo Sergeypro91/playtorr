@@ -1,6 +1,6 @@
-import { EnumStatus } from '@app/interfaces';
 import { CHROME_DIR } from '@app/constants';
 import { TorrentDto } from '@app/contracts';
+import { EnumStatus } from '@app/types';
 import { PARSER } from '../constants';
 import { TorrentUser } from '../types';
 import { ParserReturn, ParserTorrent } from './stepHandle';

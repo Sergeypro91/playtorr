@@ -6,8 +6,8 @@ import {
 	IPictureDetail,
 	ISeason,
 	IVideo,
-	MediaType,
 } from '@app/interfaces';
+import { MediaType } from '@app/types';
 
 export type ConvertTmdbToLocalPictureArgs = {
 	picture: { unknown };

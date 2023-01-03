@@ -35,7 +35,9 @@ export class UserRepository {
 	}
 
 	async getUsers(users: string[]) {
-		return await this.userModel.find({ email: { $in: users } }).exec();
+		return await this.userModel
+			.find({ email: { $in: users } }, { passwordHash: 0 })
+			.exec();
 	}
 
 	async updateUserData(email: string, userData: EditUserDto) {
