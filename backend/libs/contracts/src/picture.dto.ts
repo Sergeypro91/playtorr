@@ -17,9 +17,8 @@ import {
 	IPictureDetail,
 	ISeason,
 	IVideo,
-	MediaType,
-	TimeWindow,
 } from '@app/interfaces';
+import { MediaType, TimeWindow } from '@app/types';
 import { Type } from 'class-transformer';
 
 export class SearchPictureDto {
@@ -67,23 +66,28 @@ export class PictureDataDto implements IPicture {
 	// TODO Find way to lock on union types mismatch
 	mediaType: MediaType;
 
+	@IsOptional()
 	@IsString()
-	title: string;
+	title?: string;
 
+	@IsOptional()
 	@IsString()
-	originalTitle: string;
+	originalTitle?: string;
 
+	@IsOptional()
 	@IsString()
-	overview: string;
+	overview?: string;
 
 	@IsArray()
 	genres: number[];
 
+	@IsOptional()
 	@IsNumber()
-	voteAverage: number;
+	voteAverage?: number;
 
+	@IsOptional()
 	@IsNumber()
-	voteCount: number;
+	voteCount?: number;
 
 	@IsOptional()
 	@IsString()

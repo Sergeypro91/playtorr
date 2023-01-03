@@ -4,8 +4,9 @@ import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
 	PictureGetPictureData,
 	PictureSearchPicture,
-} from '@app/contracts/picture';
-import { GetPictureTrends } from '@app/contracts/picture/picture.getPictureTrends';
+	GetPictureTrends,
+	PictureGetRecentViewedPictures,
+} from '@app/contracts';
 
 @Controller()
 export class PictureController {
@@ -17,6 +18,14 @@ export class PictureController {
 		@Body() query: PictureGetPictureData.Request,
 	): Promise<PictureGetPictureData.Response> {
 		return this.pictureService.getPictureData(query);
+	}
+
+	@RMQValidate()
+	@RMQRoute(PictureGetRecentViewedPictures.topic)
+	async getRecentViewedPictures(
+		email,
+	): Promise<PictureGetRecentViewedPictures.Response[]> {
+		return this.pictureService.getRecentViewedPictures(email);
 	}
 
 	@RMQValidate()

@@ -1,6 +1,6 @@
-import { EnumStatus } from '@app/interfaces';
-import { RunParsersArgs } from './types';
 import { TorrentDto } from '@app/contracts';
+import { EnumStatus } from '@app/types';
+import { RunParsersArgs } from './types';
 import {
 	parseNnm,
 	parseRutor,

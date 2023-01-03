@@ -4,9 +4,10 @@ import {
 	IsNumber,
 	IsEmail,
 	IsEnum,
-	IsMongoId,
+	IsArray,
+	ValidateNested,
 } from 'class-validator';
-import { MediaType, Role } from '@app/interfaces';
+import { MediaType, Role } from '@app/types';
 import {
 	PartialType,
 	OmitType,
@@ -14,17 +15,19 @@ import {
 	IntersectionType,
 } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { IRecentView, IUser } from '@app/interfaces';
 
-export class DBUserDto {
-	@IsMongoId()
-	id: string;
+export class RecentViewDto implements IRecentView {
+	tmdbId: string;
+	mediaType: MediaType;
+}
 
+export class DBUserDto implements IUser {
 	@IsEmail()
 	email: string;
 
-	@IsOptional()
 	@IsString()
-	passwordHash?: string;
+	passwordHash: string;
 
 	@IsOptional()
 	@IsString()
@@ -48,10 +51,16 @@ export class DBUserDto {
 	@IsOptional()
 	@IsString()
 	image?: string;
+
+	@IsOptional()
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => RecentViewDto)
+	recentViews?: RecentViewDto[];
 }
 
 export class UserDto extends IntersectionType(
-	OmitType(DBUserDto, ['id', 'passwordHash', 'role']),
+	OmitType(DBUserDto, ['passwordHash', 'role']),
 	PartialType(PickType(DBUserDto, ['role'])),
 ) {
 	@IsString()
@@ -59,7 +68,7 @@ export class UserDto extends IntersectionType(
 }
 
 export class TelegramUserDto extends IntersectionType(
-	OmitType(DBUserDto, ['id', 'passwordHash', 'role', 'tgId']),
+	OmitType(DBUserDto, ['passwordHash', 'role', 'tgId']),
 	PartialType(PickType(DBUserDto, ['role'])),
 ) {
 	@IsString()
@@ -71,7 +80,7 @@ export class TelegramUserDto extends IntersectionType(
 
 export class EditUserDto extends IntersectionType(
 	PickType(DBUserDto, ['email']),
-	PartialType(OmitType(DBUserDto, ['id', 'email', 'passwordHash'])),
+	PartialType(OmitType(DBUserDto, ['email', 'passwordHash'])),
 ) {}
 
 export class UserSessionDto extends PickType(DBUserDto, [

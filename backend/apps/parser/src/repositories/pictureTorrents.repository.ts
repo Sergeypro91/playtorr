@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-import { MediaType } from '@app/interfaces';
+import { MediaType } from '@app/types';
 import { PictureTorrentsEntity } from '../entities';
 import { PictureTorrents } from '../models';
 

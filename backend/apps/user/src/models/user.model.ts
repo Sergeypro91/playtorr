@@ -1,6 +1,7 @@
 import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IUser, Role } from '@app/interfaces';
+import { IUser } from '@app/interfaces';
+import { Role } from '@app/types';
 import { RecentView, RecentViewSchema } from './recentView.model';
 
 @Schema()

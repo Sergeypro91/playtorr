@@ -6,7 +6,7 @@ import {
 	TorrentInfoDto,
 } from '@app/contracts';
 import { RMQError } from 'nestjs-rmq';
-import { EnumStatus } from '@app/interfaces';
+import { EnumStatus } from '@app/types';
 import { hoursPassed } from '@app/utils';
 import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
 import { PictureTorrentsEntity } from './entities';

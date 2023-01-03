@@ -157,7 +157,8 @@
       "^@app/contracts(|/.*)$": "<rootDir>/libs/contracts/src/$1",
       "^@app/interfaces(|/.*)$": "<rootDir>/libs/interfaces/src/$1",
       "^@app/configs(|/.*)$": "<rootDir>/libs/configs/src/$1",
-      "^@app/dto(|/.*)$": "<rootDir>/libs/dto/src/$1"
+      "^@app/dto(|/.*)$": "<rootDir>/libs/dto/src/$1",
+      "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1"
     }
   },
   "lint-staged": {

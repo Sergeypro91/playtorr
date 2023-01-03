@@ -1,6 +1,7 @@
 import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IPictureDetail, MediaType } from '@app/interfaces';
+import { IPictureDetail } from '@app/interfaces';
+import { MediaType } from '@app/types';
 import { Company, CompanySchema } from './company.model';
 import { Season, SeasonSchema } from './season.model';
 import { Video, VideoSchema } from './video.model';
@@ -18,26 +19,26 @@ export class Picture extends Document implements IPictureDetail {
 	@Prop({ required: true })
 	mediaType: MediaType;
 
-	@Prop({ required: true })
-	title: string;
-
-	@Prop({ required: true })
-	originalTitle: string;
-
-	@Prop({ required: true })
-	overview: string;
-
-	@Prop({ required: true, type: [Number] })
-	genres: Types.Array<number>;
-
-	@Prop({ required: true, default: 0 })
-	voteAverage: number;
-
-	@Prop({ required: true, default: 0 })
-	voteCount: number;
+	@Prop()
+	title?: string;
 
 	@Prop()
-	backdropPath: string;
+	originalTitle?: string;
+
+	@Prop()
+	overview?: string;
+
+	@Prop({ required: true, type: [Number], default: [] })
+	genres: Types.Array<number>;
+
+	@Prop()
+	voteAverage?: number;
+
+	@Prop()
+	voteCount?: number;
+
+	@Prop()
+	backdropPath?: string;
 
 	@Prop()
 	posterPath?: string;
@@ -81,7 +82,7 @@ export class Picture extends Document implements IPictureDetail {
 	@Prop()
 	nextEpisodeDate?: string;
 
-	@Prop({ required: true, type: [VideoSchema] })
+	@Prop({ required: true, type: [VideoSchema], default: [] })
 	videos: Types.Array<Video>;
 
 	@Prop({ required: true, type: CreditsSchema })

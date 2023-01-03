@@ -1,7 +1,7 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { IRecentView } from '@app/interfaces/user';
-import { MediaType } from '@app/interfaces';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IRecentView } from '@app/interfaces';
+import { MediaType } from '@app/types';
 
 @Schema()
 export class RecentView extends Document implements IRecentView {

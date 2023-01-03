@@ -1,33 +1,39 @@
+import { v4 as uuid } from 'uuid';
+import { RMQError, RMQService } from 'nestjs-rmq';
 import {
 	Get,
+	Param,
+	Query,
+	Session,
 	UseGuards,
 	Controller,
 	HttpException,
 	HttpStatus,
-	Param,
-	Query,
-	Session,
 	Logger,
 } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
 import { Logger as PinoLogger } from 'nestjs-pino/Logger';
-import { ApiTags, ApiOperation, ApiNotFoundResponse } from '@nestjs/swagger';
+import {
+	ApiTags,
+	ApiOperation,
+	ApiNotFoundResponse,
+	ApiUnauthorizedResponse,
+	ApiBadRequestResponse,
+} from '@nestjs/swagger';
 import {
 	ErrorDto,
-	GetPictureDataDto,
-	PictureDetailDataDto,
-	SearchPictureDto,
 	PicturePageDto,
+	SearchPictureDto,
+	GetPictureDataDto,
 	GetPictureTrendsDto,
+	PictureDetailDataDto,
 	UserPushUserRecentView,
-} from '@app/contracts';
-import { RMQError, RMQService } from 'nestjs-rmq';
-import {
 	PictureGetPictureData,
 	PictureSearchPicture,
-} from '@app/contracts/picture';
+	GetPictureTrends,
+	PictureGetRecentViewedPictures,
+	PictureDataDto,
+} from '@app/contracts';
 import { AuthenticatedGuard } from '../guards';
-import { GetPictureTrends } from '@app/contracts/picture/picture.getPictureTrends';
 
 @ApiTags('Picture')
 @Controller('picture')
@@ -39,7 +45,34 @@ export class PictureController {
 		private readonly pinoLogger: PinoLogger,
 	) {}
 
+	@ApiOperation({ summary: 'Поиск фильма/сериала по запросу' })
+	@ApiUnauthorizedResponse({ type: ErrorDto })
+	@ApiBadRequestResponse({ type: ErrorDto })
+	@ApiNotFoundResponse({ type: ErrorDto })
+	@UseGuards(AuthenticatedGuard)
+	@Get()
+	async searchPicture(
+		@Query() query: SearchPictureDto,
+	): Promise<PicturePageDto> {
+		this.pinoLogger.log(`searchPicture_${uuid()}`);
+		try {
+			return await this.rmqService.send<
+				PictureSearchPicture.Request,
+				PictureSearchPicture.Response
+			>(PictureSearchPicture.topic, query);
+		} catch (error) {
+			if (error instanceof RMQError) {
+				throw new HttpException(
+					error.message,
+					error.code || HttpStatus.REQUEST_TIMEOUT,
+				);
+			}
+		}
+	}
+
 	@ApiOperation({ summary: 'Получение даных о фильме/сериале' })
+	@ApiUnauthorizedResponse({ type: ErrorDto })
+	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
 	@Get(':tmdbId/:mediaType')
@@ -78,19 +111,22 @@ export class PictureController {
 		}
 	}
 
-	@ApiOperation({ summary: 'Поиск фильма/сериала по запросу' })
+	@ApiOperation({ summary: 'Получение трендов фильмов/сериалов' })
+	@ApiUnauthorizedResponse({ type: ErrorDto })
+	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
-	@Get()
-	async searchPicture(
-		@Query() query: SearchPictureDto,
+	@Get('trends/:mediaType/:timeWindow')
+	async getPictureTrends(
+		@Param() query: Omit<GetPictureTrendsDto, 'page'>,
+		@Query('page') page: string,
 	): Promise<PicturePageDto> {
-		this.pinoLogger.log(`searchPicture_${uuid()}`);
+		this.pinoLogger.log(`getPictureTrends_${uuid()}`);
 		try {
 			return await this.rmqService.send<
-				PictureSearchPicture.Request,
-				PictureSearchPicture.Response
-			>(PictureSearchPicture.topic, query);
+				GetPictureTrends.Request,
+				GetPictureTrends.Response
+			>(GetPictureTrends.topic, { ...query, page });
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
@@ -101,20 +137,24 @@ export class PictureController {
 		}
 	}
 
-	@ApiOperation({ summary: 'Получение трендов фильмов/сериалов' })
+	@ApiOperation({
+		summary: 'Получение перечня недавно просматриваемых фильмов/сериалов',
+	})
+	@ApiUnauthorizedResponse({ type: ErrorDto })
+	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
-	@Get('trends/:mediaType/:timeWindow')
-	async getPictureTrends(
-		@Param() query: GetPictureTrendsDto,
-		@Query('page') page: string,
-	): Promise<PicturePageDto> {
-		this.pinoLogger.log(`getPictureTrends_${uuid()}`);
+	@Get('recentViewed')
+	async getRecentViewedPictures(
+		@Session() { passport }: Record<string, any>,
+	): Promise<PictureDataDto[]> {
+		this.pinoLogger.log(`getPicturesData_${uuid()}`);
+
 		try {
 			return await this.rmqService.send<
-				GetPictureTrends.Request,
-				GetPictureTrends.Response
-			>(GetPictureTrends.topic, { ...query, page });
+				PictureGetRecentViewedPictures.Request[],
+				PictureGetRecentViewedPictures.Response[]
+			>(PictureGetRecentViewedPictures.topic, passport.user.email);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
