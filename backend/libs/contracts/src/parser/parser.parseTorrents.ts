@@ -1,7 +1,7 @@
 import { GetTorrentsDto, TorrentInfoDto } from '@app/contracts';
 
-export namespace ParserGetTorrents {
-	export const topic = 'parser.getTorrents.command';
+export namespace ParserParseTorrents {
+	export const topic = 'parser.parseTorrents.command';
 
 	export class Request extends GetTorrentsDto {}
 

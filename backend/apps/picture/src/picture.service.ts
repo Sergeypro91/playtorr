@@ -27,7 +27,11 @@ export class PictureService {
 		private readonly pictureRepository: PictureRepository,
 	) {}
 
-	async tmdbGetRequest({ apiVersion, apiRoute, queries }: TmdbGetRequestDto) {
+	public async tmdbGetRequest({
+		apiVersion,
+		apiRoute,
+		queries,
+	}: TmdbGetRequestDto) {
 		try {
 			const apiUrl = this.configService.get('TMDB_URL');
 			const apiKey = `api_key=${this.configService.get('TMDB_API_KEY')}`;
@@ -60,7 +64,7 @@ export class PictureService {
 		}
 	}
 
-	async getPictureData({
+	public async getPictureData({
 		tmdbId,
 		mediaType,
 	}: GetPictureDataDto): Promise<PictureDetailDataDto> {
@@ -122,7 +126,9 @@ export class PictureService {
 		}
 	}
 
-	async searchPicture(query: SearchPictureDto): Promise<PicturePageDto> {
+	public async searchPicture(
+		query: SearchPictureDto,
+	): Promise<PicturePageDto> {
 		try {
 			const queries = new URLSearchParams({
 				...query,
@@ -143,7 +149,7 @@ export class PictureService {
 		}
 	}
 
-	async getPictureTrends({
+	public async getPictureTrends({
 		mediaType,
 		timeWindow,
 		page,
@@ -169,7 +175,9 @@ export class PictureService {
 		}
 	}
 
-	async getRecentViewedPictures(email: string): Promise<PictureDataDto[]> {
+	public async getRecentViewedPictures(
+		email: string,
+	): Promise<PictureDataDto[]> {
 		try {
 			const user = await this.rmqService.send<
 				UserGetUser.Request,

@@ -13,25 +13,25 @@ export class PictureRepository {
 		private readonly pictureModel: Model<Picture>,
 	) {}
 
-	async savePicture(picture: PictureEntity) {
-		const isExist = await this.findPictureByImdbId(picture.imdbId);
+	public async savePicture(picture: PictureEntity) {
+		const existPicture = await this.findPictureByImdbId(picture.imdbId);
 
-		if (!isExist) {
+		if (!existPicture) {
 			return new this.pictureModel(picture).save();
 		}
 
 		throw new ConflictException(PICTURE_EXIST_ERROR);
 	}
 
-	async findPictureByImdbId(imdbId: string) {
+	public async findPictureByImdbId(imdbId: string) {
 		return this.pictureModel.findOne({ imdbId }).exec();
 	}
 
-	async findPictureByTmdbId({ tmdbId, mediaType }: PictureIdType) {
+	public async findPictureByTmdbId({ tmdbId, mediaType }: PictureIdType) {
 		return this.pictureModel.findOne({ tmdbId, mediaType }).exec();
 	}
 
-	async findPicturesByTmdbId(picturesIdType: PictureIdType[]) {
+	public async findPicturesByTmdbId(picturesIdType: PictureIdType[]) {
 		return this.pictureModel
 			.find(
 				{
@@ -62,7 +62,7 @@ export class PictureRepository {
 			.exec();
 	}
 
-	async updatePicture({ tmdbId, mediaType, ...rest }: PictureEntity) {
+	public async updatePicture({ tmdbId, mediaType, ...rest }: PictureEntity) {
 		return this.pictureModel
 			.findOneAndUpdate(
 				{ tmdbId, mediaType },
@@ -74,7 +74,7 @@ export class PictureRepository {
 			.exec();
 	}
 
-	async deletePicture({ tmdbId, mediaType }: PictureIdType) {
+	public async deletePicture({ tmdbId, mediaType }: PictureIdType) {
 		return this.pictureModel
 			.deleteOne({ pictures: { $elemMatch: { tmdbId, mediaType } } })
 			.exec();

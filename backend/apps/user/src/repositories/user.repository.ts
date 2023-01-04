@@ -12,35 +12,35 @@ export class UserRepository {
 		@InjectModel(User.name) private readonly userModel: Model<User>,
 	) {}
 
-	async countUsers() {
+	public async countUsers() {
 		return await this.userModel.count().exec();
 	}
 
-	async createUser(user: UserEntity) {
+	public async createUser(user: UserEntity) {
 		const newUser = new this.userModel(user);
 
 		return newUser.save();
 	}
 
-	async findUserById(id: string) {
+	public async findUserById(id: string) {
 		return this.userModel.findById(id).exec();
 	}
 
-	async findUserByEmail(email: string) {
+	public async findUserByEmail(email: string) {
 		return this.userModel.findOne({ email }).exec();
 	}
 
-	async findUserByTgId(tgId: number) {
+	public async findUserByTgId(tgId: number) {
 		return this.userModel.findOne({ tgId }).exec();
 	}
 
-	async getUsers(users: string[]) {
+	public async getUsers(users: string[]) {
 		return await this.userModel
 			.find({ email: { $in: users } }, { passwordHash: 0 })
 			.exec();
 	}
 
-	async updateUserData(email: string, userData: EditUserDto) {
+	public async updateUserData(email: string, userData: EditUserDto) {
 		try {
 			return await this.userModel
 				.findOneAndUpdate(
@@ -56,7 +56,7 @@ export class UserRepository {
 		}
 	}
 
-	async pushRecentView({ email, ...rest }: PushUserRecentViewDto) {
+	public async pushRecentView({ email, ...rest }: PushUserRecentViewDto) {
 		await this.userModel
 			.updateOne({ email }, { $pull: { recentViews: rest } })
 			.exec();
@@ -66,7 +66,7 @@ export class UserRepository {
 			.exec();
 	}
 
-	async deleteUsersByEmail(email: string) {
+	public async deleteUsersByEmail(email: string) {
 		return this.userModel.deleteOne({ email: { $in: email } }).exec();
 	}
 }

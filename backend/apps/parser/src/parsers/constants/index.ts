@@ -1,15 +1,23 @@
-export const DELAY = 60000;
-export const PARSER = {
-	nnm: {
-		name: 'NnmClub',
+import { ParserArgs } from '@app/types';
+import { parseRutor } from '../rutor';
+import { parseNnmClub } from '../nnmclub';
+import { parseRuTracker } from '../rutracker';
+
+export const STEP_DELAY = 30000;
+export const PARSERS = [
+	{
+		name: 'nnmclub',
 		url: 'https://nnmclub.to',
+		func: async (args: ParserArgs) => parseNnmClub(args),
 	},
-	rutor: {
-		name: 'Rutor',
-		url: 'https://rutor.org/',
+	{
+		name: 'rutor',
+		url: 'https://rutor.org',
+		func: async (args: ParserArgs) => parseRutor(args),
 	},
-	rutracker: {
-		name: 'Rutracker',
-		url: 'https://rutracker.org/',
+	{
+		name: 'rutracker',
+		url: 'https://rutracker.org',
+		func: async (args: ParserArgs) => parseRuTracker(args),
 	},
-};
+] as const;

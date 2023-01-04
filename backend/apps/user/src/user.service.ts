@@ -33,29 +33,41 @@ export class UserService {
 	}
 
 	private async createUser(newUser: UserDto): Promise<DBUserDto> {
-		const usersCount = await this.countUsers();
-		const newUserEntity = await new UserEntity({
-			...newUser,
-			role: usersCount ? Role.GUEST : Role.ADMIN,
-		}).setPassword(newUser.password);
+		try {
+			const usersCount = await this.countUsers();
+			const newUserEntity = await new UserEntity({
+				...newUser,
+				role: usersCount ? Role.GUEST : Role.ADMIN,
+			}).setPassword(newUser.password);
 
-		return this.userRepository.createUser(newUserEntity);
+			return this.userRepository.createUser(newUserEntity);
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
 	}
 
 	public async countUsers() {
-		return this.userRepository.countUsers();
+		try {
+			return this.userRepository.countUsers();
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
 	}
 
 	public async findUserBy({ type, id }: FindUserByDto): Promise<User> {
-		switch (type) {
-			case 'email':
-				return this.userRepository.findUserByEmail(id);
-			case 'id':
-				return this.userRepository.findUserById(id);
-			case 'tgId':
-				return this.userRepository.findUserByTgId(parseInt(id, 10));
-			default:
-				break;
+		try {
+			switch (type) {
+				case 'email':
+					return this.userRepository.findUserByEmail(id);
+				case 'id':
+					return this.userRepository.findUserById(id);
+				case 'tgId':
+					return this.userRepository.findUserByTgId(parseInt(id, 10));
+				default:
+					break;
+			}
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
 		}
 	}
 
@@ -92,7 +104,11 @@ export class UserService {
 	}
 
 	public async getUsers({ users }: UsersEmailDto): Promise<DBUserDto[]> {
-		return this.userRepository.getUsers(users);
+		try {
+			return this.userRepository.getUsers(users);
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
 	}
 
 	/**
