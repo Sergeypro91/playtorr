@@ -1,26 +1,6 @@
 import { Browser } from 'puppeteer';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { DELAY } from '../constants';
-
-export type ParserTorrent = {
-	url: string;
-	user: UserTorrent;
-	searchQuery: string;
-	chromeDir?: string;
-};
-
-export type UserTorrent = {
-	login: string;
-	password: string;
-};
-
-export type ParserReturn = {
-	name: string;
-	size: string;
-	magnet: string;
-	seeders: string;
-	leeches: string;
-}[];
+import { STEP_DELAY } from '../constants';
 
 export const stepHandle = async (
 	fn: () => void,
@@ -31,9 +11,9 @@ export const stepHandle = async (
 		let timeoutMessage = '';
 
 		const timeout = setTimeout(async () => {
-			timeoutMessage = `Step \"${name}\". Waiting failed: ${DELAY}ms exceeded`;
+			timeoutMessage = `Step \"${name}\". Waiting failed: ${STEP_DELAY}ms exceeded`;
 			await browser.close();
-		}, DELAY);
+		}, STEP_DELAY);
 
 		try {
 			await fn();

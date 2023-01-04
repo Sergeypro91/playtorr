@@ -2,14 +2,14 @@ import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
 	ISearchQueryData,
-	ITorrentFile,
-	IPictureTorrents,
 	ITorrent,
+	IPictureTorrents,
+	ITracker,
 } from '@app/interfaces';
 import { EnumStatus, MediaType } from '@app/types';
 
 @Schema()
-export class TorrentFile extends Document implements ITorrentFile {
+export class Torrent extends Document implements ITorrent {
 	@Prop({ required: true })
 	torrentLabel: string;
 
@@ -20,7 +20,7 @@ export class TorrentFile extends Document implements ITorrentFile {
 	size?: string;
 
 	@Prop()
-	magnet?: string;
+	link?: string;
 
 	@Prop()
 	seeders?: string;
@@ -29,38 +29,38 @@ export class TorrentFile extends Document implements ITorrentFile {
 	leeches?: string;
 }
 
-export const TorrentFileSchema = SchemaFactory.createForClass(TorrentFile);
+export const TorrentSchema = SchemaFactory.createForClass(Torrent);
 
 @Schema()
-export class Torrent extends Document implements ITorrent {
+export class Tracker extends Document implements ITracker {
 	@Prop()
-	torrentLabel: string;
+	trackerLabel: string;
 
-	@Prop({ required: true, type: [TorrentFileSchema] })
-	torrentFiles: Types.Array<TorrentFile>;
+	@Prop({ required: true, type: [TorrentSchema] })
+	torrents: Types.Array<Torrent>;
 
 	@Prop({ required: true, enum: EnumStatus, default: EnumStatus.CREATED })
-	torrentStatus: EnumStatus;
+	trackerStatus: EnumStatus;
+
+	@Prop({ required: true })
+	lastUpdate: string;
 
 	@Prop()
-	torrentStatusMessage?: string;
+	trackerMessage?: string;
 }
 
-export const TorrentSchema = SchemaFactory.createForClass(Torrent);
+export const TrackerSchema = SchemaFactory.createForClass(Tracker);
 
 @Schema()
 export class SearchQueryData extends Document implements ISearchQueryData {
 	@Prop({ required: true })
 	searchQuery: string;
 
-	@Prop({ required: true })
-	lastUpdate: string;
-
 	@Prop({ required: true, enum: EnumStatus, default: EnumStatus.CREATED })
 	searchStatus: EnumStatus;
 
-	@Prop({ required: true, type: [TorrentSchema] })
-	torrents: Types.Array<Torrent>;
+	@Prop({ required: true, type: [TrackerSchema] })
+	trackers: Types.Array<Tracker>;
 }
 
 export const SearchQueryDataSchema =

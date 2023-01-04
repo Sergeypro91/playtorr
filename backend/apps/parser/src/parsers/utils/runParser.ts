@@ -1,26 +1,33 @@
 import { CHROME_DIR } from '@app/constants';
-import { TorrentDto } from '@app/contracts';
-import { EnumStatus } from '@app/types';
-import { PARSER } from '../constants';
-import { TorrentUser } from '../types';
-import { ParserReturn, ParserTorrent } from './stepHandle';
+import { EnumStatus, TrackerAccount } from '@app/types';
+import { PARSERS } from '../constants';
+import { ITracker } from '@app/interfaces';
+import { hoursPassed } from '@app/utils';
 
 export const runParser = async (
-	user: TorrentUser,
+	user: TrackerAccount,
 	searchQuery: string,
-	parser: typeof PARSER.nnm,
-	parserFunc: (payload: ParserTorrent) => Promise<ParserReturn>,
-): Promise<TorrentDto> => {
-	const torrentFiles = await parserFunc({
-		url: parser.url,
-		user,
-		searchQuery,
-		chromeDir: CHROME_DIR,
-	});
+	parserName: typeof PARSERS[number]['name'],
+	tracker?: ITracker,
+): Promise<ITracker> => {
+	const parsersMap = new Map(PARSERS.map((parser) => [parser.name, parser]));
+	const { url, func } = parsersMap.get(parserName);
+
+	if (
+		tracker &&
+		hoursPassed(new Date(), tracker.lastUpdate) < 24 &&
+		tracker.trackerStatus !== EnumStatus.ERROR
+	) {
+		return tracker;
+	}
 
 	return {
-		torrentLabel: parser.name,
-		torrentStatus: EnumStatus.FINISHED,
-		torrentFiles,
+		...(await func({
+			url,
+			user,
+			parserName,
+			searchQuery,
+			chromeDir: CHROME_DIR,
+		})),
 	};
 };

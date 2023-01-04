@@ -8,10 +8,22 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { EnumStatus, MediaType } from '@app/types';
+import {
+	IPictureTorrents,
+	ISearchQueryData,
+	ITorrent,
+	ITracker,
+} from '@app/interfaces';
 
-export class DBPictureTorrentsDto {
+export class DBPictureTorrentsDto implements IPictureTorrents {
 	@IsString()
 	imdbId: string;
+
+	@IsString()
+	tmdbId: string;
+
+	@IsString()
+	mediaType: MediaType;
 
 	@IsArray()
 	@ValidateNested({ each: true })
@@ -19,39 +31,39 @@ export class DBPictureTorrentsDto {
 	searchRequests: SearchQueryDataDto[];
 }
 
-export class SearchQueryDataDto {
+export class SearchQueryDataDto implements ISearchQueryData {
 	@IsString()
 	searchQuery: string;
-
-	@IsDateString()
-	lastUpdate: string;
 
 	@IsEnum(EnumStatus)
 	searchStatus: EnumStatus;
 
 	@IsArray()
 	@ValidateNested({ each: true })
-	@Type(() => TorrentDto)
-	torrents: TorrentDto[];
+	@Type(() => TrackerDto)
+	trackers: TrackerDto[];
 }
 
-export class TorrentDto {
+export class TrackerDto implements ITracker {
 	@IsString()
-	torrentLabel: string;
+	trackerLabel: string;
 
 	@IsArray()
 	@ValidateNested({ each: true })
-	@Type(() => TorrentFileDto)
-	torrentFiles: TorrentFileDto[];
+	@Type(() => TorrentDto)
+	torrents: TorrentDto[];
 
 	@IsEnum(EnumStatus)
-	torrentStatus: EnumStatus;
+	trackerStatus: EnumStatus;
+
+	@IsDateString()
+	lastUpdate: string;
 
 	@IsString()
-	torrentStatusMessage?: string;
+	trackerMessage?: string;
 }
 
-export class TorrentFileDto {
+export class TorrentDto implements ITorrent {
 	@IsString()
 	name: string;
 
@@ -61,7 +73,7 @@ export class TorrentFileDto {
 
 	@IsOptional()
 	@IsString()
-	magnet?: string;
+	link?: string;
 
 	@IsOptional()
 	@IsString()

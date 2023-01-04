@@ -4,13 +4,13 @@ import {
 	DBPictureTorrentsDto,
 	GetTorrentsDto,
 	TorrentInfoDto,
+	TrackerDto,
 } from '@app/contracts';
 import { RMQError } from 'nestjs-rmq';
 import { EnumStatus } from '@app/types';
-import { hoursPassed } from '@app/utils';
 import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
 import { PictureTorrentsEntity } from './entities';
-import { parsers } from './parsers';
+import { parse } from './parsers';
 
 @Injectable()
 export class ParserService {
@@ -19,7 +19,7 @@ export class ParserService {
 		private readonly pictureTorrentsRepository: PictureTorrentsRepository,
 	) {}
 
-	public async getTorrents({
+	public async parseTorrents({
 		imdbId,
 		tmdbId,
 		mediaType,
@@ -30,10 +30,10 @@ export class ParserService {
 			password: this.configService.get('NNM_PASSWORD'),
 		};
 		let currPictureTorrents: DBPictureTorrentsDto =
-			await this.pictureTorrentsRepository.findPictureTorrentsByTmdbId(
+			await this.pictureTorrentsRepository.findPictureTorrentsByTmdbId({
 				tmdbId,
 				mediaType,
-			);
+			});
 
 		if (!currPictureTorrents) {
 			const newPictureTorrents = new PictureTorrentsEntity({
@@ -54,28 +54,16 @@ export class ParserService {
 			lastUpdate: new Date().toISOString(),
 			searchStatus: EnumStatus.CREATED,
 			message: undefined,
-			torrents: [],
+			trackers: [],
 		};
 		const [oldSearchQueryData] = currPictureTorrents.searchRequests.filter(
 			(searchQueryData) => searchQueryData.searchQuery === searchQuery,
 		);
 		const searchQueryData = oldSearchQueryData || newSearchQueryData;
-		const hoursDiffDate = hoursPassed(
-			new Date(),
-			searchQueryData.lastUpdate,
-		);
-
-		// If the torrent search was launched less than 24 hours ago
-		if (
-			hoursDiffDate < 24 &&
-			searchQueryData.searchStatus !== EnumStatus.CREATED
-		) {
-			return searchQueryData;
-		}
 
 		// If the torrent search was launched more than 24 hours ago
 		try {
-			await parsers({
+			await parse({
 				user,
 				searchQuery,
 				searchQueryData,
@@ -104,5 +92,21 @@ export class ParserService {
 		}
 
 		return searchQueryData;
+	}
+
+	public async getPictureTorrents({
+		tmdbId,
+		mediaType,
+		searchQuery,
+	}: GetTorrentsDto): Promise<TrackerDto[]> {
+		try {
+			return await this.pictureTorrentsRepository.getPictureTorrents({
+				tmdbId,
+				mediaType,
+				searchQuery,
+			});
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.code);
+		}
 	}
 }

@@ -2,24 +2,31 @@ import puppeteer from 'puppeteer-extra';
 import stealthMode from 'puppeteer-extra-plugin-stealth';
 import { executablePath, ElementHandle } from 'puppeteer';
 import {
-	rutrackerAuthBtn,
-	rutrackerLoginField,
-	rutrackerPasswordField,
-	rutrackerLoginBtn,
-	rutrackerSearchPageBtn,
-	rutrackerSearchField,
-	rutrackerSearchFieldBtn,
-	rutrackerSortSelector,
-	rutrackerSortSelectorElem,
-	rutrackerSearchFieldBtnSecond,
-	rutrackerPaginationList,
-	rutrackerTbody,
-} from './parser.ruTracker.selectors';
+	nnmAuthBtn,
+	nnmLoginField,
+	nnmPasswordField,
+	nnmLoginBtn,
+	nnmSearchPage,
+	nnmSearchField,
+	nnmResetFilterBtn,
+	nnmActivityFilter,
+	nnmSeederExistFilter,
+	nnmSearchCatSelector,
+	searchCatMovie,
+	searchCatTv,
+	searchCatShow,
+	searchCatAnime,
+	nnmSearchBtn,
+	nnmSortSelectorElem,
+	nnmSortSelector,
+	nnmTbody,
+	nnmResultPageNav,
+} from './parser.nnm.selectors';
 import { EnumStatus, ParserArgs } from '@app/types';
 import { ITracker } from '@app/interfaces';
 import { stepHandle, shouldGoNext } from '../utils';
 
-export const parseRuTracker = async ({
+export const parseNnmClub = async ({
 	url,
 	user,
 	parserName,
@@ -44,7 +51,6 @@ export const parseRuTracker = async ({
 			ignoreHTTPSErrors: true,
 			executablePath: chromeDir || executablePath(),
 		});
-
 		const page = await browser.newPage();
 
 		// Open page
@@ -59,14 +65,12 @@ export const parseRuTracker = async ({
 		// Auth on tracker
 		await stepHandle(
 			async () => {
-				const authBtnElem = await page.waitForXPath(rutrackerAuthBtn);
+				const authBtnElem = await page.waitForXPath(nnmAuthBtn);
 				await (authBtnElem as ElementHandle<HTMLElement>).click();
 
-				const loginElem = await page.waitForXPath(rutrackerLoginField);
-				const passwordElem = await page.waitForXPath(
-					rutrackerPasswordField,
-				);
-				const enterBtnElem = await page.waitForXPath(rutrackerLoginBtn);
+				const loginElem = await page.waitForXPath(nnmLoginField);
+				const passwordElem = await page.waitForXPath(nnmPasswordField);
+				const enterBtnElem = await page.waitForXPath(nnmLoginBtn);
 
 				await loginElem.type(user.login);
 				await passwordElem.type(user.password);
@@ -79,13 +83,11 @@ export const parseRuTracker = async ({
 		// Navigate to search page
 		await stepHandle(
 			async () => {
-				const toSearchPageBtnElem = await page.waitForXPath(
-					rutrackerSearchPageBtn,
+				const searchPageBtnElem = await page.waitForXPath(
+					nnmSearchPage,
 				);
 
-				await (
-					toSearchPageBtnElem as ElementHandle<HTMLElement>
-				).click();
+				await (searchPageBtnElem as ElementHandle<HTMLElement>).click();
 			},
 			browser,
 			'Navigate to search page',
@@ -94,27 +96,40 @@ export const parseRuTracker = async ({
 		// Setup search queries
 		await stepHandle(
 			async () => {
-				const searchFieldElem = await page.waitForXPath(
-					rutrackerSearchField,
+				const searchFieldElem = await page.waitForXPath(nnmSearchField);
+				const resetFilterBtnElem = await page.waitForXPath(
+					nnmResetFilterBtn,
 				);
-				const searchBtnElem = await page.waitForXPath(
-					rutrackerSearchFieldBtn,
+				const sortSelector = await page.waitForXPath(nnmSortSelector);
+				const activityFilterElem = await page.waitForXPath(
+					nnmActivityFilter,
 				);
+				const seederExistFilterElem = await page.waitForXPath(
+					nnmSeederExistFilter,
+				);
+				const searchCatSelectorElem = await page.waitForXPath(
+					nnmSearchCatSelector,
+				);
+				const searchBtnElem = await page.waitForXPath(nnmSearchBtn);
 
-				await searchFieldElem.type(searchQuery);
-				await (searchBtnElem as ElementHandle<HTMLElement>).click();
-
-				const sortSelector = await page.waitForXPath(
-					rutrackerSortSelector,
-				);
-				const searchBtnSecondElem = await page.waitForXPath(
-					rutrackerSearchFieldBtnSecond,
-				);
-
-				await sortSelector.select(rutrackerSortSelectorElem);
 				await (
-					searchBtnSecondElem as ElementHandle<HTMLElement>
+					resetFilterBtnElem as ElementHandle<HTMLElement>
 				).click();
+				await searchFieldElem.type(searchQuery);
+				await sortSelector.select(nnmSortSelectorElem);
+				await (
+					activityFilterElem as ElementHandle<HTMLElement>
+				).click();
+				await (
+					seederExistFilterElem as ElementHandle<HTMLElement>
+				).click();
+				await searchCatSelectorElem.select(
+					...searchCatMovie,
+					...searchCatTv,
+					...searchCatShow,
+					...searchCatAnime,
+				);
+				await (searchBtnElem as ElementHandle<HTMLElement>).click();
 			},
 			browser,
 			'Setup search queries',
@@ -124,47 +139,48 @@ export const parseRuTracker = async ({
 		await stepHandle(
 			async () => {
 				const checkingNextPageResultBtn = async () => {
-					const tableBody = await page.waitForXPath(rutrackerTbody);
+					const tableBody = await page.waitForXPath(nnmTbody);
 					let paginationList: ElementHandle<Node>;
 
 					try {
 						paginationList = await page.waitForXPath(
-							rutrackerPaginationList,
-							{ timeout: 3000 },
+							nnmResultPageNav,
+							{
+								timeout: 3000,
+							},
 						);
 					} catch (error) {}
 
 					const currPageResults = await tableBody.evaluate(
 						(elem: Element) => {
 							const tds = Array.from(
-								elem.querySelectorAll('tr.tCenter'),
+								elem.querySelectorAll('tr.prow1, tr.prow2'),
 							);
-
-							return tds.map((td: HTMLElement) => ({
+							return tds.map((td) => ({
 								name: (
 									td.querySelector(
-										'td:nth-child(4)',
-									) as HTMLElement
+										'td:nth-child(3)',
+									) as HTMLAnchorElement
 								).innerText,
 								link: (
 									td.querySelector(
-										'td:nth-child(6) a',
+										'td:nth-child(5) a',
 									) as HTMLAnchorElement
 								).href,
 								size: (
 									td.querySelector(
-										'td:nth-child(6) a',
-									) as HTMLElement
-								).innerText.replace(' ↓', ''),
+										'td:nth-last-child(6)',
+									) as HTMLAnchorElement
+								).lastChild.textContent.trim(),
 								seeders: (
 									td.querySelector(
-										'td:nth-child(7)',
-									) as HTMLElement
-								).innerText,
+										'td:nth-child(8)',
+									) as HTMLAnchorElement
+								).innerText.trim(),
 								leeches: (
 									td.querySelector(
-										'td:nth-child(8)',
-									) as HTMLElement
+										'td:nth-child(9)',
+									) as HTMLAnchorElement
 								).innerText.trim(),
 							}));
 						},
@@ -199,8 +215,8 @@ export const parseRuTracker = async ({
 // (async () =>
 // 	console.log(
 // 		'TEST',
-// 		await parseRuTracker({
-// 			url: 'https://rutracker.org',
+// 		await parseNnmClub({
+// 			url: 'https://nnmclub.to',
 // 			user: { login: 'playtorr', password: '01011990PlayTorr' },
 // 			searchQuery: 'Мстители The Avengers 2012',
 // 			chromeDir: CHROME_DIR,

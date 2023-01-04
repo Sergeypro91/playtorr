@@ -1,9 +1,11 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
-import { MediaType } from '@app/types';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PictureTorrentsEntity } from '../entities';
 import { PictureTorrents } from '../models';
+import { PictureIdType } from '@app/interfaces';
+import { PICTURE_TORRENTS_EXIST_ERROR } from '@app/constants';
+import { TrackerDto } from '@app/contracts';
 
 @Injectable()
 export class PictureTorrentsRepository {
@@ -12,23 +14,66 @@ export class PictureTorrentsRepository {
 		private readonly pictureTorrentsModel: Model<PictureTorrents>,
 	) {}
 
-	async createPictureTorrents(pictureTorrents: PictureTorrentsEntity) {
-		const newPictureTorrents = new this.pictureTorrentsModel(
-			pictureTorrents,
-		);
+	public async createPictureTorrents(pictureTorrents: PictureTorrentsEntity) {
+		const { tmdbId, mediaType } = pictureTorrents;
+		const existPictureTorrent = await this.findPictureTorrentsByTmdbId({
+			tmdbId,
+			mediaType,
+		});
 
-		return newPictureTorrents.save();
+		if (!existPictureTorrent) {
+			const newPictureTorrents = new this.pictureTorrentsModel(
+				pictureTorrents,
+			);
+
+			return newPictureTorrents.save();
+		}
+
+		throw new ConflictException(PICTURE_TORRENTS_EXIST_ERROR);
 	}
 
-	async findPictureTorrentsByImdbId(imdbId: string) {
+	public async findPictureTorrentsByImdbId(imdbId: string) {
 		return this.pictureTorrentsModel.findOne({ imdbId }).exec();
 	}
 
-	async findPictureTorrentsByTmdbId(tmdbId: string, mediaType: MediaType) {
+	public async getPictureTorrents({
+		tmdbId,
+		mediaType,
+		searchQuery,
+	}: PictureIdType & { searchQuery: string }): Promise<TrackerDto[]> {
+		try {
+			const result = await this.pictureTorrentsModel
+				.findOne(
+					{
+						tmdbId,
+						mediaType,
+					},
+					{ searchRequests: 1, _id: 0 },
+				)
+				.exec();
+
+			if (result) {
+				const { searchRequests } = result;
+
+				return searchRequests
+					.filter((query) => query.searchQuery == searchQuery)
+					.map((query) => query.trackers)[0];
+			}
+
+			return [];
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	public async findPictureTorrentsByTmdbId({
+		tmdbId,
+		mediaType,
+	}: PictureIdType) {
 		return this.pictureTorrentsModel.findOne({ tmdbId, mediaType }).exec();
 	}
 
-	async updatePictureTorrentsByImdbId({
+	public async updatePictureTorrentsByImdbId({
 		imdbId,
 		...rest
 	}: PictureTorrentsEntity) {
@@ -43,7 +88,7 @@ export class PictureTorrentsRepository {
 			.exec();
 	}
 
-	async updatePictureTorrentsByTmdbId({
+	public async updatePictureTorrentsByTmdbId({
 		tmdbId,
 		mediaType,
 		...rest
@@ -59,7 +104,7 @@ export class PictureTorrentsRepository {
 			.exec();
 	}
 
-	async deletePictureTorrents(imdbId: string) {
+	public async deletePictureTorrents(imdbId: string) {
 		return this.pictureTorrentsModel
 			.deleteOne({ imdbId: { $in: imdbId } })
 			.exec();
