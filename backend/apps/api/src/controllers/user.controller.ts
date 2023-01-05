@@ -8,6 +8,7 @@ import {
 	HttpCode,
 	UseGuards,
 	Controller,
+	HttpStatus,
 	HttpException,
 } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
@@ -73,7 +74,7 @@ export class UserController {
 	@ApiForbiddenResponse({ type: ErrorDto })
 	@Roles(Role.ADMIN)
 	@UseGuards(AuthenticatedGuard, RolesGuard)
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	@Post()
 	async getUsers(@Body() users: UsersEmailDto): Promise<DBUserDto[]> {
 		this.pinoLogger.log(`getUsers_${uuid()}`);

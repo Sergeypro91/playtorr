@@ -1,7 +1,7 @@
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQService, RMQValidate } from 'nestjs-rmq';
-import { AuthRegister, AuthValidateUser, UserRegister } from '@app/contracts';
-import { AuthJWTLogin } from '@app/contracts';
+import { AuthSignUp, AuthValidateUser, UserSignUp } from '@app/contracts';
+import { AuthSignInJwt } from '@app/contracts';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -12,14 +12,14 @@ export class AuthController {
 	) {}
 
 	@RMQValidate()
-	@RMQRoute(AuthRegister.topic)
-	async registerUser(
-		@Body() newUser: AuthRegister.Request,
-	): Promise<AuthRegister.Response> {
-		return this.rmqService.send<
-			UserRegister.Request,
-			UserRegister.Response
-		>(UserRegister.topic, newUser);
+	@RMQRoute(AuthSignUp.topic)
+	async signUp(
+		@Body() newUser: AuthSignUp.Request,
+	): Promise<AuthSignUp.Response> {
+		return this.rmqService.send<UserSignUp.Request, UserSignUp.Response>(
+			UserSignUp.topic,
+			newUser,
+		);
 	}
 
 	@RMQValidate()
@@ -31,10 +31,10 @@ export class AuthController {
 	}
 
 	@RMQValidate()
-	@RMQRoute(AuthJWTLogin.topic)
+	@RMQRoute(AuthSignInJwt.topic)
 	async loginUserByJwt(
-		@Body() { email, password }: AuthJWTLogin.Request,
-	): Promise<AuthJWTLogin.Response> {
+		@Body() { email, password }: AuthSignInJwt.Request,
+	): Promise<AuthSignInJwt.Response> {
 		return this.authService.loginUser(
 			this.authService.validateUser(email, password),
 		);

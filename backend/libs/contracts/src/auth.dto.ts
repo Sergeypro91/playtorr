@@ -14,9 +14,4 @@ export class LogoutUserDto {
 	message: string;
 }
 
-export class JWTDto {
-	@IsString()
-	access_token: string;
-}
-
 export class UserEmailDto extends PickType(LoginUserDto, ['email']) {}
