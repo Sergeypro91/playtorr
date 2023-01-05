@@ -1,10 +1,9 @@
-import { LoginUserDto } from '@app/contracts';
-import { User } from 'apps/user/src/models';
+import { DBUserDto, LoginUserDto } from '@app/contracts';
 
 export namespace AuthValidateUser {
 	export const topic = 'auth.validateUser.command';
 
 	export class Request extends LoginUserDto {}
 
-	export class Response extends User {}
+	export class Response extends DBUserDto {}
 }

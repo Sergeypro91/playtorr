@@ -1,5 +1,6 @@
 import {
 	Get,
+	Res,
 	Req,
 	Post,
 	Body,
@@ -8,19 +9,20 @@ import {
 	UseGuards,
 	Controller,
 	HttpException,
+	HttpStatus,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { v4 as uuid } from 'uuid';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import {
-	JWTDto,
 	UserDto,
 	ErrorDto,
 	DBUserDto,
 	LoginUserDto,
 	LogoutUserDto,
 	UserSessionDto,
-	AuthJWTLogin,
-	AuthRegister,
+	AuthSignInJwt,
+	AuthSignUp,
 } from '@app/contracts';
 import {
 	ApiTags,
@@ -43,14 +45,14 @@ export class AuthController {
 	@ApiOperation({ summary: 'Регистрация пользователя' })
 	@ApiInternalServerErrorResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
-	@Post('register')
-	async registerUser(@Body() newUser: UserDto): Promise<DBUserDto> {
-		this.pinoLogger.log(`registerUser_${uuid()}`);
+	@Post('sign-up')
+	async signUp(@Body() newUser: UserDto): Promise<DBUserDto> {
+		this.pinoLogger.log(`signUp_${uuid()}`);
 		try {
 			return await this.rmqService.send<
-				AuthRegister.Request,
-				AuthRegister.Response
-			>(AuthRegister.topic, newUser);
+				AuthSignUp.Request,
+				AuthSignUp.Response
+			>(AuthSignUp.topic, newUser);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);
@@ -62,29 +64,26 @@ export class AuthController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@UseGuards(LocalAuthGuard)
-	@HttpCode(200)
-	@Post('login')
-	async loginUserBySession(
+	@HttpCode(HttpStatus.OK)
+	@Post('sign-in')
+	async signIn(
 		@Body() user: LoginUserDto,
-		@Req() { user: userSession }: { user: UserSessionDto },
+		@Session() { passport }: { passport: { user: UserSessionDto } },
 	): Promise<UserSessionDto> {
-		this.pinoLogger.log(`loginUserBySession_${uuid()}`);
-		return userSession;
+		this.pinoLogger.log(`signIn_${uuid()}`);
+		return passport.user;
 	}
 
 	@ApiOperation({ summary: 'Удаление сессии пользователя' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
 	@Get('logout')
-	async logoutUser(
-		@Session() session,
-		@Req() { user: userSession }: { user: UserSessionDto },
-	): Promise<LogoutUserDto> {
-		this.pinoLogger.log(`logoutUser_${uuid()}`);
+	async logout(@Session() session): Promise<LogoutUserDto> {
+		this.pinoLogger.log(`logout_${uuid()}`);
 		try {
 			session.destroy();
 			return {
-				message: `User session for - ${userSession.email} is end`,
+				message: `User session for - ${session.passport.user.email} is end`,
 			};
 		} catch (error) {
 			if (error instanceof RMQError) {
@@ -96,28 +95,35 @@ export class AuthController {
 	@ApiOperation({ summary: 'Проверка активной сессии пользователя' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
-	@Get('checkSession')
-	async checkSession(
+	@Get('check-in')
+	async checkIn(
 		@Req() { user: userSession }: { user: UserSessionDto },
 	): Promise<UserSessionDto> {
-		this.pinoLogger.log(`checkSession_${uuid()}`);
+		this.pinoLogger.log(`checkIn_${uuid()}`);
 		return userSession;
 	}
 
 	@ApiOperation({ summary: 'JWT авторизация пользователя' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
-	@HttpCode(200)
-	@Post('loginJwt')
+	@HttpCode(HttpStatus.OK)
+	@Post('sign-in-jwt')
 	async loginUserByJwt(
+		@Res({ passthrough: true }) response: Response,
 		@Body() { email, password }: LoginUserDto,
-	): Promise<JWTDto> {
-		this.pinoLogger.log(`loginUserByJwt_${uuid()}`);
+	) {
+		this.pinoLogger.log(`signInJwt_${uuid()}`);
 		try {
-			return await this.rmqService.send<
-				AuthJWTLogin.Request,
-				AuthJWTLogin.Response
-			>(AuthJWTLogin.topic, { email, password });
+			const accessToken = await this.rmqService.send<
+				AuthSignInJwt.Request,
+				AuthSignInJwt.Response
+			>(AuthSignInJwt.topic, { email, password });
+
+			response.cookie('accessToken', accessToken, {
+				secure: true,
+				httpOnly: true,
+				sameSite: true,
+			});
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);

@@ -144,7 +144,7 @@ export class PictureController {
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
-	@Get('recentViewed')
+	@Get('recent-viewed')
 	async getRecentViewedPictures(
 		@Session() { passport }: Record<string, any>,
 	): Promise<PictureDataDto[]> {

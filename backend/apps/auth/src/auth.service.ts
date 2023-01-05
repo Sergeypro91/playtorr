@@ -2,9 +2,8 @@ import { compare } from 'bcryptjs';
 import { RMQService } from 'nestjs-rmq';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { UserFindUserBy } from '@app/contracts';
+import { DBUserDto, UserValidateUser } from '@app/contracts';
 import { USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from '@app/constants';
-import { User } from 'apps/user/src/models';
 
 @Injectable()
 export class AuthService {
@@ -17,14 +16,14 @@ export class AuthService {
 		this.logger = new Logger(AuthService.name);
 	}
 
-	public async validateUser(email: string, password: string): Promise<User> {
+	public async validateUser(
+		email: string,
+		password: string,
+	): Promise<DBUserDto> {
 		const user = await this.rmqService.send<
-			UserFindUserBy.Request,
-			UserFindUserBy.Response
-		>(UserFindUserBy.topic, {
-			type: 'email',
-			id: email,
-		});
+			UserValidateUser.Request,
+			UserValidateUser.Response
+		>(UserValidateUser.topic, { email });
 
 		if (!user) {
 			throw new UnauthorizedException(USER_NOT_FOUND_ERROR);
@@ -39,13 +38,9 @@ export class AuthService {
 		return user;
 	}
 
-	public async loginUser(
-		user: Promise<User>,
-	): Promise<{ access_token: string }> {
+	public async loginUser(user: Promise<DBUserDto>): Promise<string> {
 		const { email, role } = await user;
 
-		return {
-			access_token: await this.jwtService.signAsync({ email, role }),
-		};
+		return this.jwtService.signAsync({ email, role });
 	}
 }

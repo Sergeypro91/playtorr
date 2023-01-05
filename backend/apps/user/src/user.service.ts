@@ -46,32 +46,7 @@ export class UserService {
 		}
 	}
 
-	public async countUsers() {
-		try {
-			return this.userRepository.countUsers();
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
-		}
-	}
-
-	public async findUserBy({ type, id }: FindUserByDto): Promise<User> {
-		try {
-			switch (type) {
-				case 'email':
-					return this.userRepository.findUserByEmail(id);
-				case 'id':
-					return this.userRepository.findUserById(id);
-				case 'tgId':
-					return this.userRepository.findUserByTgId(parseInt(id, 10));
-				default:
-					break;
-			}
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
-		}
-	}
-
-	public async registerUser(newUser: UserDto): Promise<DBUserDto> {
+	public async signUp(newUser: UserDto): Promise<DBUserDto> {
 		const existEmailUser = await this.findUserBy({
 			type: 'email',
 			id: newUser.email,
@@ -103,9 +78,30 @@ export class UserService {
 		return this.createUser(newUser);
 	}
 
+	public async validateUser(email: string): Promise<DBUserDto> {
+		return this.userRepository.validateUser(email);
+	}
+
+	public async findUserBy({ type, id }: FindUserByDto): Promise<User> {
+		try {
+			switch (type) {
+				case 'email':
+					return this.userRepository.findUserByEmail(id);
+				case 'id':
+					return this.userRepository.findUserById(id);
+				case 'tgId':
+					return this.userRepository.findUserByTgId(parseInt(id, 10));
+				default:
+					break;
+			}
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
+	}
+
 	public async getUsers({ users }: UsersEmailDto): Promise<DBUserDto[]> {
 		try {
-			return this.userRepository.getUsers(users);
+			return this.userRepository.findUsersByEmail(users);
 		} catch (error) {
 			throw new RMQError(error.message, undefined, error.statusCode);
 		}
@@ -206,6 +202,14 @@ export class UserService {
 		}
 
 		return deletingUserData;
+	}
+
+	public async countUsers() {
+		try {
+			return this.userRepository.countUsers();
+		} catch (error) {
+			throw new RMQError(error.message, undefined, error.statusCode);
+		}
 	}
 
 	public async pushUserRecentView(recentView: PushUserRecentViewDto) {

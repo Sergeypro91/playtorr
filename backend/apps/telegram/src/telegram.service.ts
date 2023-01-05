@@ -14,7 +14,7 @@ import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
 import { genAuthWizard } from './wizard/telegram.wizard.auth';
 import { RMQService } from 'nestjs-rmq';
 import {
-	AuthRegister,
+	AuthSignUp,
 	FindUserByDto,
 	TelegramUserDto,
 	UserFindUserBy,
@@ -153,10 +153,10 @@ export class TelegramService {
 		user: TelegramUserDto,
 	) {
 		try {
-			await this.rmqService.send<
-				AuthRegister.Request,
-				AuthRegister.Response
-			>(AuthRegister.topic, user);
+			await this.rmqService.send<AuthSignUp.Request, AuthSignUp.Response>(
+				AuthSignUp.topic,
+				user,
+			);
 			await this.sendSticker(CONGRATS_STICKER);
 			await ctx.reply(CONGRATS_PROMPT);
 		} catch (error) {

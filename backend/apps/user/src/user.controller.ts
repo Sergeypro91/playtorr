@@ -1,13 +1,14 @@
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
-	UserDeleteUser,
-	UserEditUser,
-	UserFindUserBy,
+	UserSignUp,
 	UserGetUser,
+	UserEditUser,
 	UserGetUsers,
+	UserDeleteUser,
+	UserFindUserBy,
+	UserValidateUser,
 	UserPushUserRecentView,
-	UserRegister,
 } from '@app/contracts';
 import { UserService } from './user.service';
 
@@ -16,11 +17,19 @@ export class UserController {
 	constructor(private readonly userService: UserService) {}
 
 	@RMQValidate()
-	@RMQRoute(UserRegister.topic)
-	async registerUser(
-		@Body() newUserData: UserRegister.Request,
-	): Promise<UserRegister.Response> {
-		return this.userService.registerUser(newUserData);
+	@RMQRoute(UserSignUp.topic)
+	async signUp(
+		@Body() newUserData: UserSignUp.Request,
+	): Promise<UserSignUp.Response> {
+		return this.userService.signUp(newUserData);
+	}
+
+	@RMQValidate()
+	@RMQRoute(UserValidateUser.topic)
+	async validateUser(
+		@Body() { email }: UserValidateUser.Request,
+	): Promise<UserValidateUser.Response> | null {
+		return this.userService.validateUser(email);
 	}
 
 	@RMQValidate()

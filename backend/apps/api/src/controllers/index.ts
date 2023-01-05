@@ -1,3 +1,4 @@
+export * from './test.controller';
 export * from './auth.controller';
 export * from './minio.controller';
 export * from './parser.controller';
