@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
 import { RMQModule } from 'nestjs-rmq';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { getMongoConfig, getRMQConfig } from '@app/configs';
+import { getMongoConfig, getRMQConfig } from '@app/common';
 import { ParserController } from './parser.controller';
 import { ParserService } from './parser.service';
 import { PictureTorrents, PictureTorrentsSchema } from './models';

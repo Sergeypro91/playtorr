@@ -3,7 +3,7 @@ import {
 	TO_MAIN_BTN,
 	AUTH_LOGIN_MENU,
 	PLEASE_USE_MENU_PROMPT,
-} from '@app/constants/telegram/telegram.constants';
+} from '@app/common';
 
 export function genAddMovieScene() {
 	// AddMovie scene

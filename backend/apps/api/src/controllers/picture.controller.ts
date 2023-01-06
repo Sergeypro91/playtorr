@@ -32,7 +32,7 @@ import {
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
 	PictureDataDto,
-} from '@app/contracts';
+} from '@app/common';
 import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Picture')

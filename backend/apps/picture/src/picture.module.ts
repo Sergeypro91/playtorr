@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { PictureController } from './picture.controller';
-import { PictureService } from './picture.service';
-import { ConfigModule } from '@nestjs/config';
 import { RMQModule } from 'nestjs-rmq';
-import { getMongoConfig, getRMQConfig } from '@app/configs';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { getMongoConfig, getRMQConfig } from '@app/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Picture, PictureSchema } from './models';
+import { PictureController } from './picture.controller';
+import { PictureService } from './picture.service';
 import { PictureRepository } from './repositories/picture.repository';
 
 @Module({

@@ -4,7 +4,7 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ErrorDto } from '@app/contracts';
+import { ErrorDto } from '@app/common';
 import { JwtAuthGuard } from '../guards';
 
 @ApiTags('Test')

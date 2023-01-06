@@ -20,23 +20,20 @@ import {
 	ApiUnauthorizedResponse,
 	ApiBadRequestResponse,
 } from '@nestjs/swagger';
-import { RequestWithUserSession } from '@app/interfaces';
-import { Role } from '@app/types';
+import { Role, RequestWithUserSession } from '@app/common';
+import { RMQError, RMQService } from 'nestjs-rmq';
 import {
 	DBUserDto,
 	EditUserDto,
 	UserEmailDto,
 	UsersEmailDto,
 	UserSessionDto,
-} from '@app/contracts';
-import { RMQError, RMQService } from 'nestjs-rmq';
-import {
 	ErrorDto,
 	UserGetUser,
 	UserGetUsers,
 	UserEditUser,
 	UserDeleteUser,
-} from '@app/contracts';
+} from '@app/common';
 import { Roles } from '../decorators';
 import { AuthenticatedGuard, RolesGuard } from '../guards';
 

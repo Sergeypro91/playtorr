@@ -1,16 +1,16 @@
+import { RMQError } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+	parse,
+	EnumStatus,
 	DBPictureTorrentsDto,
 	GetTorrentsDto,
 	TorrentInfoDto,
 	TrackerDto,
-} from '@app/contracts';
-import { RMQError } from 'nestjs-rmq';
-import { EnumStatus } from '@app/types';
+} from '@app/common';
 import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
 import { PictureTorrentsEntity } from './entities';
-import { parse } from './parsers';
 
 @Injectable()
 export class ParserService {

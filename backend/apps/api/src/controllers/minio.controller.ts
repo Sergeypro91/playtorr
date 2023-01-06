@@ -25,7 +25,7 @@ import {
 	MinIOFileUrlDto,
 	MinIODeletedFileDto,
 	MinIODeletingConfirmDto,
-} from '@app/contracts';
+} from '@app/common';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import { FileInterceptor } from '@nestjs/platform-express';
 

@@ -1,12 +1,12 @@
-import { Body, Controller } from '@nestjs/common';
-import { PictureService } from './picture.service';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
+import { Body, Controller } from '@nestjs/common';
 import {
 	PictureGetPictureData,
 	PictureSearchPicture,
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
-} from '@app/contracts';
+} from '@app/common';
+import { PictureService } from './picture.service';
 
 @Controller()
 export class PictureController {

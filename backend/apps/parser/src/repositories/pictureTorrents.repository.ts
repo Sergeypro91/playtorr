@@ -1,11 +1,13 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConflictException, Injectable } from '@nestjs/common';
+import {
+	PictureIdType,
+	TrackerDto,
+	PICTURE_TORRENTS_EXIST_ERROR,
+} from '@app/common';
 import { PictureTorrentsEntity } from '../entities';
 import { PictureTorrents } from '../models';
-import { PictureIdType } from '@app/interfaces';
-import { PICTURE_TORRENTS_EXIST_ERROR } from '@app/constants';
-import { TrackerDto } from '@app/contracts';
 
 @Injectable()
 export class PictureTorrentsRepository {

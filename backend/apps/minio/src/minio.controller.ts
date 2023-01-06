@@ -1,6 +1,6 @@
-import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
-import { MinIODeleteFile, MinIOUploadFile } from '@app/contracts';
+import { Body, Controller } from '@nestjs/common';
+import { MinIODeleteFile, MinIOUploadFile } from '@app/common';
 import { MinIOService } from './minio.service';
 
 @Controller()

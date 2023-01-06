@@ -1,12 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { RMQModule } from 'nestjs-rmq';
+import * as createRedisStore from 'connect-redis';
+import * as session from 'express-session';
+import * as passport from 'passport';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { getRMQConfig, getPinoConfig } from '@app/configs';
-import { JwtStrategy, LocalStrategy } from './strategies';
-import { SessionSerializer } from './session';
-import { RolesGuard } from './guards';
+import { getRMQConfig, getPinoConfig } from '@app/common';
 import {
 	TestController,
 	AuthController,
@@ -16,9 +16,9 @@ import {
 	PictureController,
 } from './controllers';
 import Redis from 'ioredis';
-import * as createRedisStore from 'connect-redis';
-import * as session from 'express-session';
-import * as passport from 'passport';
+import { JwtStrategy, LocalStrategy } from './strategies';
+import { SessionSerializer } from './session';
+import { RolesGuard } from './guards';
 
 @Module({
 	controllers: [

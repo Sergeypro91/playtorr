@@ -76,58 +76,13 @@
         "tsConfigPath": "apps/user/tsconfig.app.json"
       }
     },
-    "contracts": {
+    "common": {
       "type": "library",
-      "root": "libs/contracts",
+      "root": "libs/common",
       "entryFile": "index",
-      "sourceRoot": "libs/contracts",
+      "sourceRoot": "libs/common/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/contracts/tsconfig.lib.json"
-      }
-    },
-    "constants": {
-      "type": "library",
-      "root": "libs/constants",
-      "entryFile": "index",
-      "sourceRoot": "libs/constants",
-      "compilerOptions": {
-        "tsConfigPath": "libs/constants/tsconfig.lib.json"
-      }
-    },
-    "interfaces": {
-      "type": "library",
-      "root": "libs/interfaces",
-      "entryFile": "index",
-      "sourceRoot": "libs/interfaces",
-      "compilerOptions": {
-        "tsConfigPath": "libs/interfaces/tsconfig.lib.json"
-      }
-    },
-    "configs": {
-      "type": "library",
-      "root": "libs/configs",
-      "entryFile": "index",
-      "sourceRoot": "libs/configs",
-      "compilerOptions": {
-        "tsConfigPath": "libs/configs/tsconfig.lib.json"
-      }
-    },
-    "utils": {
-      "type": "library",
-      "root": "libs/utils",
-      "entryFile": "index",
-      "sourceRoot": "libs/utils",
-      "compilerOptions": {
-        "tsConfigPath": "libs/utils/tsconfig.lib.json"
-      }
-    },
-    "types": {
-      "type": "library",
-      "root": "libs/types",
-      "entryFile": "index",
-      "sourceRoot": "libs/types/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/types/tsconfig.lib.json"
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     }
   }

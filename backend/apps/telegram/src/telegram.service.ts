@@ -1,25 +1,23 @@
-import { Logger, Injectable, BadRequestException } from '@nestjs/common';
-import { Logger as PinoLogger } from 'nestjs-pino';
-import { Markup, Scenes, session, Telegraf } from 'telegraf';
-import {
-	START_PROMPT,
-	SORRY_STICKER,
-	CONGRATS_PROMPT,
-	CONGRATS_STICKER,
-	SOME_ERROR_HAPPENS,
-} from '@app/constants/telegram/telegram.constants';
-import { genStartScene } from './scenes/telegram.scene.start';
-import { genAuthScene } from './scenes/telegram.scene.auth';
-import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
-import { genAuthWizard } from './wizard/telegram.wizard.auth';
 import { RMQService } from 'nestjs-rmq';
+import { Markup, Scenes, session, Telegraf } from 'telegraf';
+import { Logger as PinoLogger } from 'nestjs-pino';
+import { Logger, Injectable, BadRequestException } from '@nestjs/common';
 import {
 	AuthSignUp,
 	FindUserByDto,
 	TelegramUserDto,
 	UserFindUserBy,
-} from '@app/contracts';
+	START_PROMPT,
+	SORRY_STICKER,
+	CONGRATS_PROMPT,
+	CONGRATS_STICKER,
+	SOME_ERROR_HAPPENS,
+} from '@app/common';
 import { ConfigService } from '@nestjs/config';
+import { genStartScene } from './scenes/telegram.scene.start';
+import { genAuthScene } from './scenes/telegram.scene.auth';
+import { genAddMovieScene } from './scenes/telegram.scene.addMovie';
+import { genAuthWizard } from './wizard/telegram.wizard.auth';
 
 @Injectable()
 export class TelegramService {

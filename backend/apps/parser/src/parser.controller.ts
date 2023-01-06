@@ -1,6 +1,6 @@
-import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
-import { ParserGetPictureTorrents, ParserParseTorrents } from '@app/contracts';
+import { Body, Controller } from '@nestjs/common';
+import { ParserGetPictureTorrents, ParserParseTorrents } from '@app/common';
 import { ParserService } from './parser.service';
 
 @Controller()

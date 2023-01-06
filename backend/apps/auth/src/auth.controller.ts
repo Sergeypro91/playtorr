@@ -1,7 +1,11 @@
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQService, RMQValidate } from 'nestjs-rmq';
-import { AuthSignUp, AuthValidateUser, UserSignUp } from '@app/contracts';
-import { AuthSignInJwt } from '@app/contracts';
+import {
+	AuthSignInJwt,
+	AuthSignUp,
+	AuthValidateUser,
+	UserSignUp,
+} from '@app/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')

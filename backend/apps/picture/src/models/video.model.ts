@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { IVideo } from '@app/interfaces';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IVideo } from '@app/common';
 
 @Schema()
 export class Video extends Document implements IVideo {

@@ -23,7 +23,7 @@ import {
 	UserSessionDto,
 	AuthSignInJwt,
 	AuthSignUp,
-} from '@app/contracts';
+} from '@app/common';
 import {
 	ApiTags,
 	ApiOperation,

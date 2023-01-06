@@ -22,7 +22,7 @@ import {
 	ErrorDto,
 	ParserGetPictureTorrents,
 	TrackerDto,
-} from '@app/contracts';
+} from '@app/common';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import { AuthenticatedGuard } from '../guards';
 

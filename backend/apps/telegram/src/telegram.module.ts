@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { RMQModule } from 'nestjs-rmq';
 import { LoggerModule } from 'nestjs-pino';
-import { getRMQConfig, getPinoConfig } from '@app/configs';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { getRMQConfig, getPinoConfig } from '@app/common';
 import { TelegramService } from './telegram.service';
 
 @Module({
