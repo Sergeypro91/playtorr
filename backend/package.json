@@ -88,7 +88,6 @@
     "ioredis": "^5.2.3",
     "minio": "^7.0.32",
     "mongoose": "^6.6.1",
-    "nestjs-pino": "^3.1.1",
     "nestjs-rmq": "^2.8.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",

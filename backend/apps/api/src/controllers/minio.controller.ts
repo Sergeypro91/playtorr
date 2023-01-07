@@ -7,8 +7,6 @@ import {
 	UseInterceptors,
 	HttpException,
 } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { Logger as PinoLogger } from 'nestjs-pino/Logger';
 import {
 	ApiTags,
 	ApiBody,
@@ -32,10 +30,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @ApiTags('File')
 @Controller('file')
 export class MinIOController {
-	constructor(
-		private readonly rmqService: RMQService,
-		private readonly pinoLogger: PinoLogger,
-	) {}
+	constructor(private readonly rmqService: RMQService) {}
 
 	@ApiOperation({ summary: 'Загрузка файлов на сервер' })
 	@ApiInternalServerErrorResponse({ type: ErrorDto })
@@ -57,7 +52,6 @@ export class MinIOController {
 	async uploadFile(
 		@UploadedFile() file: Express.Multer.File,
 	): Promise<MinIOFileUrlDto> {
-		this.pinoLogger.log(`uploadFile_${uuid()}`);
 		const fileDto = {
 			name: file.originalname,
 			mimetype: file.mimetype,
@@ -82,7 +76,6 @@ export class MinIOController {
 	async deleteFile(
 		@Body() filename: MinIODeletedFileDto,
 	): Promise<MinIODeletingConfirmDto> {
-		this.pinoLogger.log(`deleteFile_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				MinIODeleteFile.Request,

@@ -1,42 +1,64 @@
-import {
-	Injectable,
-	NestInterceptor,
-	ExecutionContext,
-	CallHandler,
-} from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { v4 as uuidv4 } from 'uuid';
-import { PinoLogger } from 'nestjs-pino';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Injectable, LoggerService } from '@nestjs/common';
+import pino, { Logger } from 'pino';
+import { ConfigService } from '@nestjs/config';
+import { checkDirExist } from '@app/common';
+import { format } from 'date-fns';
+
+const levels = {
+	emerg: 80,
+	alert: 70,
+	crit: 60,
+	error: 50,
+	warn: 40,
+	notice: 30,
+	info: 20,
+	debug: 10,
+};
+
+const pinoConfig = (directoryName: string) => {
+	checkDirExist(directoryName).then();
+
+	const date = format(Date.now(), 'yyyy-MM-dd');
+	const dest = `./${directoryName}/${date}`;
+
+	return {
+		dest, // omit for stdout
+		sync: false, // Asynchronous logging
+		// minLength: 4096, // Buffer before writing
+	};
+};
 
 @Injectable()
-export class LoggerInterceptor implements NestInterceptor {
-	constructor(private readonly logger: PinoLogger) {}
+export class RedefinedLoggerService implements LoggerService {
+	pinoLogger: Logger;
 
-	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-		if (context.getType() === 'http') {
-			return this.logHttpCall(context, next);
-		}
-	}
-
-	private logHttpCall(context: ExecutionContext, next: CallHandler) {
-		const request = context.switchToHttp().getRequest();
-		const correlationKey = uuidv4();
-		const userID = request.user?.email;
-
-		this.logger.assign({ userID, correlationKey });
-		this.logger.trace({ userID });
-
-		return next.handle().pipe(
-			tap(() => {
-				this.logger.trace({ userID });
-			}),
+	constructor(private readonly configService: ConfigService) {
+		this.pinoLogger = pino(
+			{
+				level: process.env.PINO_LOG_LEVEL || 'info',
+				customLevels: levels,
+				useOnlyCustomLevels: true,
+				formatters: {
+					level: (label) => {
+						return { level: label };
+					},
+				},
+			},
+			pino.destination(
+				pinoConfig(this.configService.get('LOGS_FOLDER_NAME', 'logs')),
+			),
 		);
 	}
-}
 
-export const PinoLoggerInterceptor = {
-	provide: APP_INTERCEPTOR,
-	useClass: LoggerInterceptor,
-};
+	error(message: any, ...optionalParams: any[]): any {
+		this.pinoLogger.info(message, optionalParams);
+	}
+
+	log(message: any, ...optionalParams: any[]): any {
+		this.pinoLogger.info(message, optionalParams);
+	}
+
+	warn(message: any, ...optionalParams: any[]): any {
+		this.pinoLogger.info(message, optionalParams);
+	}
+}

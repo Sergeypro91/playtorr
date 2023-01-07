@@ -1,4 +1,3 @@
-import { LoggerModule } from 'nestjs-pino';
 import { RMQModule } from 'nestjs-rmq';
 import * as createRedisStore from 'connect-redis';
 import * as session from 'express-session';
@@ -6,7 +5,7 @@ import * as passport from 'passport';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { getRMQConfig, getPinoConfig } from '@app/common';
+import { getRMQConfig } from '@app/common';
 import {
 	TestController,
 	AuthController,
@@ -19,7 +18,7 @@ import Redis from 'ioredis';
 import { JwtStrategy, LocalStrategy } from './strategies';
 import { SessionSerializer } from './session';
 import { RolesGuard } from './guards';
-import { PinoLoggerInterceptor } from './logger';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
 	controllers: [
@@ -33,16 +32,10 @@ import { PinoLoggerInterceptor } from './logger';
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true, envFilePath: '../envs/.env' }),
 		RMQModule.forRootAsync(getRMQConfig()),
-		LoggerModule.forRootAsync(getPinoConfig()),
 		PassportModule.register({ session: true }),
+		LoggerModule,
 	],
-	providers: [
-		JwtStrategy,
-		LocalStrategy,
-		SessionSerializer,
-		RolesGuard,
-		PinoLoggerInterceptor,
-	],
+	providers: [JwtStrategy, LocalStrategy, SessionSerializer, RolesGuard],
 })
 export class ApiModule implements NestModule {
 	constructor(private readonly configService: ConfigService) {}

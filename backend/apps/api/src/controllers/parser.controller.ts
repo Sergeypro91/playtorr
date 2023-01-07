@@ -6,8 +6,6 @@ import {
 	HttpException,
 	HttpStatus,
 } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { Logger as PinoLogger } from 'nestjs-pino/Logger';
 import {
 	ApiTags,
 	ApiOperation,
@@ -29,10 +27,7 @@ import { AuthenticatedGuard } from '../guards';
 @ApiTags('Parser')
 @Controller('parser')
 export class ParserController {
-	constructor(
-		private readonly rmqService: RMQService,
-		private readonly pinoLogger: PinoLogger,
-	) {}
+	constructor(private readonly rmqService: RMQService) {}
 
 	@ApiOperation({ summary: 'Парсинг торрентов по фильму/сериалу из запроса' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
@@ -43,7 +38,6 @@ export class ParserController {
 	async parseTorrents(
 		@Body() query: GetTorrentsDto,
 	): Promise<TorrentInfoDto> {
-		this.pinoLogger.log(`parseTorrents_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				ParserParseTorrents.Request,
@@ -68,7 +62,6 @@ export class ParserController {
 	async getPictureTorrents(
 		@Body() query: GetTorrentsDto,
 	): Promise<TrackerDto[]> {
-		this.pinoLogger.log(`getPictureTorrents_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				ParserGetPictureTorrents.Request,

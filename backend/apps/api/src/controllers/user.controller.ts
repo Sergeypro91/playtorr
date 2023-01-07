@@ -11,8 +11,6 @@ import {
 	HttpStatus,
 	HttpException,
 } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { Logger as PinoLogger } from 'nestjs-pino/Logger';
 import {
 	ApiTags,
 	ApiOperation,
@@ -40,10 +38,7 @@ import { AuthenticatedGuard, RolesGuard } from '../guards';
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-	constructor(
-		private readonly rmqService: RMQService,
-		private readonly pinoLogger: PinoLogger,
-	) {}
+	constructor(private readonly rmqService: RMQService) {}
 
 	@ApiOperation({ summary: 'Получение данных пользователя' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
@@ -52,7 +47,6 @@ export class UserController {
 	async getUser(
 		@Req() { user: { email } }: { user: UserSessionDto },
 	): Promise<DBUserDto[]> {
-		this.pinoLogger.log(`getUser_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				UserGetUser.Request,
@@ -74,7 +68,6 @@ export class UserController {
 	@HttpCode(HttpStatus.OK)
 	@Post()
 	async getUsers(@Body() users: UsersEmailDto): Promise<DBUserDto[]> {
-		this.pinoLogger.log(`getUsers_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				UserGetUsers.Request,
@@ -96,7 +89,6 @@ export class UserController {
 		@Body() editableUser: EditUserDto,
 		@Req() { user: editingUser }: RequestWithUserSession,
 	): Promise<DBUserDto[]> {
-		this.pinoLogger.log(`editUser_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				UserEditUser.Request,
@@ -120,7 +112,6 @@ export class UserController {
 	@UseGuards(AuthenticatedGuard, RolesGuard)
 	@Delete()
 	async deleteUser(@Body() user: UserEmailDto): Promise<DBUserDto> {
-		this.pinoLogger.log(`deleteUsers_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				UserDeleteUser.Request,

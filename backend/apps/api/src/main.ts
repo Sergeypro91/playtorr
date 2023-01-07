@@ -2,7 +2,6 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ApiModule } from './api.module';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { LoggerErrorInterceptor } from 'nestjs-pino';
 import { setupSwagger } from '@app/common';
 
 async function bootstrap() {
@@ -21,9 +20,6 @@ async function bootstrap() {
 	app.useGlobalPipes(
 		new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
 	);
-
-	// PINO LOGGER ERROR STACK TRACE INTERCEPTOR
-	app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
 	// SWAGGER SETUPS
 	setupSwagger(app);

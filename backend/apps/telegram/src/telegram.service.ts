@@ -1,6 +1,5 @@
 import { RMQService } from 'nestjs-rmq';
 import { Markup, Scenes, session, Telegraf } from 'telegraf';
-import { Logger as PinoLogger } from 'nestjs-pino';
 import { Logger, Injectable, BadRequestException } from '@nestjs/common';
 import {
 	AuthSignUp,
@@ -35,7 +34,6 @@ export class TelegramService {
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly rmqService: RMQService,
-		private readonly pinoLogger: PinoLogger,
 	) {
 		this.bot = new Telegraf<Scenes.SceneContext>(
 			this.configService.get('TELEGRAM_BOT_TOKEN'),
@@ -161,7 +159,6 @@ export class TelegramService {
 			await this.sendSticker(SORRY_STICKER);
 			await ctx.reply(SOME_ERROR_HAPPENS);
 			if (error instanceof Error) {
-				this.pinoLogger.error(error.message);
 			}
 		}
 	}
@@ -174,7 +171,6 @@ export class TelegramService {
 			>(UserFindUserBy.topic, query);
 		} catch (error) {
 			if (error instanceof Error) {
-				this.pinoLogger.error(error.message);
 			}
 		}
 	}
