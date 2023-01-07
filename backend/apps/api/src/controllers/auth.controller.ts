@@ -12,8 +12,6 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { v4 as uuid } from 'uuid';
-import { Logger as PinoLogger } from 'nestjs-pino';
 import {
 	UserDto,
 	ErrorDto,
@@ -37,17 +35,13 @@ import { LocalAuthGuard, AuthenticatedGuard } from '../guards';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-	constructor(
-		private readonly rmqService: RMQService,
-		private readonly pinoLogger: PinoLogger,
-	) {}
+	constructor(private readonly rmqService: RMQService) {}
 
 	@ApiOperation({ summary: 'Регистрация пользователя' })
 	@ApiInternalServerErrorResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@Post('sign-up')
 	async signUp(@Body() newUser: UserDto): Promise<DBUserDto> {
-		this.pinoLogger.log(`signUp_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				AuthSignUp.Request,
@@ -70,7 +64,6 @@ export class AuthController {
 		@Body() user: LoginUserDto,
 		@Session() { passport }: { passport: { user: UserSessionDto } },
 	): Promise<UserSessionDto> {
-		this.pinoLogger.log(`signIn_${uuid()}`);
 		return passport.user;
 	}
 
@@ -79,7 +72,6 @@ export class AuthController {
 	@UseGuards(AuthenticatedGuard)
 	@Get('logout')
 	async logout(@Session() session): Promise<LogoutUserDto> {
-		this.pinoLogger.log(`logout_${uuid()}`);
 		try {
 			session.destroy();
 			return {
@@ -99,7 +91,6 @@ export class AuthController {
 	async checkIn(
 		@Req() { user: userSession }: { user: UserSessionDto },
 	): Promise<UserSessionDto> {
-		this.pinoLogger.log(`checkIn_${uuid()}`);
 		return userSession;
 	}
 
@@ -112,7 +103,6 @@ export class AuthController {
 		@Res({ passthrough: true }) response: Response,
 		@Body() { email, password }: LoginUserDto,
 	) {
-		this.pinoLogger.log(`signInJwt_${uuid()}`);
 		try {
 			const accessToken = await this.rmqService.send<
 				AuthSignInJwt.Request,

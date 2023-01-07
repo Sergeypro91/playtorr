@@ -1,23 +1,13 @@
-import * as fse from 'fs-extra';
 import { format } from 'date-fns';
 import pino from 'pino';
 import { LoggerModuleAsyncParams } from 'nestjs-pino';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { checkDirExist } from '@app/common/utils';
 
-const checkDirExist = async (directory: string) => {
-	try {
-		await fse.ensureDirSync(directory);
-	} catch (error) {
-		console.log('Logs folder create.');
-	}
-};
-
-const definedParams = async (
-	configService: ConfigService<Record<string, unknown>, false>,
-) => {
+const definedParams = async (configService: ConfigService) => {
 	const directoryName = await configService.get('LOGS_FOLDER_NAME', 'logs');
 
-	await checkDirExist(`./${directoryName}`);
+	await checkDirExist(directoryName);
 
 	const date = format(Date.now(), 'yyyy-MM-dd');
 	const dest = `./${directoryName}/${date}`;

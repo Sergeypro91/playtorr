@@ -19,6 +19,7 @@ import Redis from 'ioredis';
 import { JwtStrategy, LocalStrategy } from './strategies';
 import { SessionSerializer } from './session';
 import { RolesGuard } from './guards';
+import { PinoLoggerInterceptor } from './logger';
 
 @Module({
 	controllers: [
@@ -35,19 +36,26 @@ import { RolesGuard } from './guards';
 		LoggerModule.forRootAsync(getPinoConfig()),
 		PassportModule.register({ session: true }),
 	],
-	providers: [JwtStrategy, LocalStrategy, SessionSerializer, RolesGuard],
+	providers: [
+		JwtStrategy,
+		LocalStrategy,
+		SessionSerializer,
+		RolesGuard,
+		PinoLoggerInterceptor,
+	],
 })
 export class ApiModule implements NestModule {
 	constructor(private readonly configService: ConfigService) {}
 	configure(consumer: MiddlewareConsumer): any {
 		const RedisStore = createRedisStore(session);
 		const REDIS_PORT = parseInt(
-			this.configService.get('REDIS_PORT') ?? '6379',
+			this.configService.get('REDIS_PORT', '6379'),
 			10,
 		);
-		const REDIS_HOST = this.configService.get('REDIS_HOST') || 'localhost';
+		const REDIS_HOST = this.configService.get('REDIS_HOST', 'localhost');
+		const REDIS_KEY = this.configService.get('REDIS_KEY', '');
 		const REDIS_TTL = parseInt(
-			this.configService.get('REDIS_TTL') ?? '3600000',
+			this.configService.get('REDIS_TTL', '3600000'),
 			10,
 		);
 
@@ -57,7 +65,7 @@ export class ApiModule implements NestModule {
 					store: new RedisStore({
 						client: new Redis(REDIS_PORT, REDIS_HOST),
 					}),
-					secret: this.configService.get('REDIS_KEY'),
+					secret: REDIS_KEY,
 					resave: false,
 					saveUninitialized: false,
 					cookie: {
