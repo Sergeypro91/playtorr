@@ -26,7 +26,7 @@ import { LoggerModule } from './logger/logger.module';
 		PictureController,
 	],
 	imports: [
-		ConfigModule.forRoot({ isGlobal: true, envFilePath: '../envs/.env' }),
+		ConfigModule.forRoot({ isGlobal: true, envFilePath: 'envs/.env' }),
 		RMQModule.forRootAsync(getRMQConfig()),
 		PassportModule.register({ session: true }),
 		LoggerModule,

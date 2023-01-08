@@ -12,47 +12,53 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
     ports:
-      - "27017:27017"
-    volumes:
-      - ./storage-mongo:/data/db
+      - ${MONGO_PORT}:${MONGO_PORT}
 
   redis:
     image: redis:latest
     container_name: redis
     restart: always
+    env_file:
+      - .env
     ports:
-      - "6379:6379"
-    volumes:
-      - ./storage-redis:/data
+      - ${REDIS_PORT}:${REDIS_PORT}
 
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
     restart: always
+    env_file:
+      - .env
     environment:
       RABBITMQ_DEFAULT_PASS: ${RMQ_PASS}
       RABBITMQ_DEFAULT_USER: ${RMQ_USER}
     ports:
-      - "15672:15672"
-      - "5672:5672"
-    volumes:
-      - ./storage-rmq:/data
+      - ${RMQ_PORT}:${RMQ_PORT}
+      - ${RMQ_PORT_PLUS}:${RMQ_PORT_PLUS}
 
   s3:
     image: minio/minio:latest
     container_name: minio
     restart: always
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     env_file:
       - .env
     environment:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+    ports:
+      - ${MINIO_PORT}:${MINIO_PORT}
+      - "9001:9001"
     volumes:
       - ./storage-minio:/data
     command: server --console-address ":9001" /data
+
+  backend:
+    container_name: api
+    build: ../backend
+    image: playtorr-api
+    command: npm run start
+    ports:
+      - ${MAIN_API_PORT}:${MAIN_API_PORT}
 
 volumes:
   storage-minio:

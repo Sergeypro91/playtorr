@@ -10,7 +10,8 @@ export const getRMQConfig = (): IRMQServiceAsyncOptions => ({
 			{
 				login: configService.get('RMQ_USER', ''),
 				password: configService.get('RMQ_PASS', ''),
-				host: configService.get('RMQ_HOST', ''),
+				host: configService.get('RMQ_HOST', 'localhost'),
+				port: parseInt(configService.get('RMQ_PORT', '15672'), 10),
 			},
 		],
 		queueName: configService.get('RMQ_QUEUE', ''),

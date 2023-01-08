@@ -13,7 +13,7 @@ import { PictureTorrentsRepository } from './repositories/pictureTorrents.reposi
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/parser/envs/.env'],
+			envFilePath: ['envs/.env', './apps/parser/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		MongooseModule.forRootAsync(getMongoConfig()),

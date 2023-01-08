@@ -13,7 +13,7 @@ import { UserService } from './user.service';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/user/envs/.env'],
+			envFilePath: ['envs/.env', './apps/user/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		MongooseModule.forRootAsync(getMongoConfig()),

@@ -13,7 +13,7 @@ import { PictureRepository } from './repositories/picture.repository';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/picture/envs/.env'],
+			envFilePath: ['envs/.env', './apps/picture/envs/.env'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		MongooseModule.forRootAsync(getMongoConfig()),
