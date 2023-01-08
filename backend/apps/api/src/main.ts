@@ -6,7 +6,7 @@ import { setupSwagger } from '@app/common';
 
 async function bootstrap() {
 	const app = await NestFactory.create(ApiModule);
-	const logger = new Logger('API');
+	const logger = new Logger('API-GATEWAY');
 	const globalPrefix = 'api';
 	const configService = await app.get(ConfigService);
 	const MAIN_API_PORT = parseInt(
