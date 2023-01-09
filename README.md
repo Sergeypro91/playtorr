@@ -74,7 +74,7 @@ npm run reinstall:backend
 Running <b>Docker</b> services:
 
 ```
-npm run start-docker-services
+npm run start-docker-api
 ```
 <hr />
 

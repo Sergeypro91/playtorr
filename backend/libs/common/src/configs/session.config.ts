@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+import { createClient } from 'redis';
 import * as createRedisStore from 'connect-redis';
 import * as session from 'express-session';
 import * as passport from 'passport';
@@ -11,15 +11,23 @@ export const configSession = (
 ) => {
 	const RedisStore = createRedisStore(session);
 	const REDIS_PORT = parseInt(configService.get('REDIS_PORT', '6379'), 10);
-	const REDIS_HOST = configService.get('REDIS_HOST', 'localhost');
+	const REDIS_HOST = configService.get('REDIS_HOST', 'redis');
 	const REDIS_KEY = configService.get('REDIS_KEY', '');
 	const REDIS_TTL = parseInt(configService.get('REDIS_TTL', '3600000'), 10);
+	const redisClient = createClient({
+		socket: {
+			port: REDIS_PORT,
+			host: REDIS_HOST,
+		},
+		legacyMode: true,
+	});
+	redisClient.connect().catch(console.error);
 
 	return consumer
 		.apply(
 			session({
 				store: new RedisStore({
-					client: new Redis(REDIS_PORT, REDIS_HOST),
+					client: redisClient,
 				}),
 				secret: REDIS_KEY,
 				resave: false,

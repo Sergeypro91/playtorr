@@ -10,7 +10,12 @@ import { MinIOService } from './minio.service';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['envs/.env', './apps/minio/envs/.env'],
+			envFilePath: [
+				'envs/.env',
+				'envs/dev.env',
+				'./apps/minio/envs/.env',
+				`${process.env.NODE_ENV}.env`,
+			],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 	],

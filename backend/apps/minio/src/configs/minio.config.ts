@@ -2,7 +2,7 @@ import { MinIOOptions } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 
 export const getMinIOConfig = (configService: ConfigService): MinIOOptions => {
-	const endPoint = configService.get('MINIO_ENDPOINT');
+	const endPoint = configService.get('MINIO_HOST');
 	const port = configService.get('MINIO_PORT');
 	const useSSL = false;
 	const accessKey = configService.get('MINIO_ACCESS_KEY');
@@ -10,7 +10,7 @@ export const getMinIOConfig = (configService: ConfigService): MinIOOptions => {
 	const bucketName = configService.get('MINIO_BUCKET_NAME');
 
 	if (!endPoint) {
-		throw new Error('MINIO_ENDPOINT - не задан');
+		throw new Error('MINIO_HOST - не задан');
 	}
 	if (!port) {
 		throw new Error('MINIO_PORT - не задан');
