@@ -29,8 +29,8 @@ import { LoggerModule } from './logger/logger.module';
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: [
-				'envs/.env',
-				'envs/dev.env',
+				'../envs/.env', // if we`re running service local not in docker
+				'../envs/local.env', // if we`re running service local not in docker
 				`${process.env.NODE_ENV}.env`,
 			],
 		}),

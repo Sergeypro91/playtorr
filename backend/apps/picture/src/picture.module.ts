@@ -14,8 +14,8 @@ import { PictureRepository } from './repositories/picture.repository';
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: [
-				'envs/.env',
-				'envs/dev.env',
+				'../envs/.env', // if we`re running service local not in docker
+				'../envs/local.env', // if we`re running service local not in docker
 				'./apps/picture/envs/.env',
 				`${process.env.NODE_ENV}.env`,
 			],

@@ -12,8 +12,8 @@ import { AuthService } from './auth.service';
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: [
-				'envs/.env',
-				'envs/dev.env',
+				'../envs/.env', // if we`re running service local not in docker
+				'../envs/local.env', // if we`re running service local not in docker
 				'./apps/auth/envs/.env',
 				`${process.env.NODE_ENV}.env`,
 			],
