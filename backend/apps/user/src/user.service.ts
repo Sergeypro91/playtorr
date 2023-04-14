@@ -1,6 +1,7 @@
-import { Injectable, HttpStatus, Logger } from '@nestjs/common';
 import { RMQError } from 'nestjs-rmq';
+import { Injectable, HttpStatus, Logger } from '@nestjs/common';
 import {
+	Role,
 	UserDto,
 	DBUserDto,
 	EditUserDto,
@@ -9,9 +10,6 @@ import {
 	UsersEmailDto,
 	UserSessionDto,
 	PushUserRecentViewDto,
-} from '@app/contracts';
-import { Role } from '@app/types';
-import {
 	USER_NOT_FOUND,
 	USER_FORBIDDEN_ERROR,
 	USER_NOT_FOUND_ERROR,
@@ -19,7 +17,7 @@ import {
 	USER_WITH_TGID_EXIST_ERROR,
 	ALREADY_REGISTERED_TGID_ERROR,
 	ALREADY_REGISTERED_EMAIL_ERROR,
-} from '@app/constants';
+} from '@app/common';
 import { User } from './models';
 import { UserEntity } from './entities';
 import { UserRepository } from './repositories';

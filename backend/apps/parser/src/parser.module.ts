@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
 import { RMQModule } from 'nestjs-rmq';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { getMongoConfig, getRMQConfig } from '@app/configs';
+import { getMongoConfig, getRMQConfig } from '@app/common';
 import { ParserController } from './parser.controller';
 import { ParserService } from './parser.service';
 import { PictureTorrents, PictureTorrentsSchema } from './models';
@@ -13,7 +13,12 @@ import { PictureTorrentsRepository } from './repositories/pictureTorrents.reposi
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/parser/envs/.env'],
+			envFilePath: [
+				'../envs/.env', // if we`re running service local not in docker
+				'../envs/local.env', // if we`re running service local not in docker
+				'./apps/parser/envs/.env',
+				`${process.env.NODE_ENV}.env`,
+			],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		MongooseModule.forRootAsync(getMongoConfig()),

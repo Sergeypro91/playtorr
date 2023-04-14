@@ -2,15 +2,15 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ApiModule } from './api.module';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { setupSwagger } from '@app/common';
 
 async function bootstrap() {
 	const app = await NestFactory.create(ApiModule);
-	const logger = new Logger('API');
+	const logger = new Logger('API-GATEWAY');
 	const globalPrefix = 'api';
 	const configService = await app.get(ConfigService);
 	const MAIN_API_PORT = parseInt(
-		configService.get('MAIN_API_PORT') ?? '3000',
+		configService.get('MAIN_API_PORT', '3000'),
 		10,
 	);
 
@@ -22,13 +22,7 @@ async function bootstrap() {
 	);
 
 	// SWAGGER SETUPS
-	const config = new DocumentBuilder()
-		.setTitle('PlayTorr.API')
-		.setDescription('PlayTorr API docs description')
-		.setVersion('1.0')
-		.build();
-	const document = SwaggerModule.createDocument(app, config);
-	SwaggerModule.setup('swagger', app, document);
+	setupSwagger(app);
 
 	// LISTENING
 	await app.listen(MAIN_API_PORT, async () => {

@@ -2,8 +2,12 @@ import { compare } from 'bcryptjs';
 import { RMQService } from 'nestjs-rmq';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { DBUserDto, UserValidateUser } from '@app/contracts';
-import { USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from '@app/constants';
+import {
+	DBUserDto,
+	UserValidateUser,
+	USER_NOT_FOUND_ERROR,
+	WRONG_PASSWORD_ERROR,
+} from '@app/common';
 
 @Injectable()
 export class AuthService {

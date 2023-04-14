@@ -1,20 +1,18 @@
-import { Logger, Injectable, HttpStatus } from '@nestjs/common';
+import { RMQError } from 'nestjs-rmq';
 import { Client, Region } from 'minio';
-import { MinIOOptions } from '@app/interfaces/minio/minio.interface';
-import { getMinIOConfig } from './configs';
+import { Logger, Injectable, HttpStatus } from '@nestjs/common';
+import { MinIOOptions } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import {
 	MinIODeletingConfirmDto,
 	MinIOFileDto,
 	MinIOFileUrlDto,
-} from '@app/contracts';
-import { defineBucketPolicy } from './policy';
-import {
 	FILE_DOESNT_EXIST,
 	FAILED_TO_UPLOAD,
 	FILE_TYPE_UNSUPPORTED,
-} from '@app/constants';
-import { RMQError } from 'nestjs-rmq';
+} from '@app/common';
+import { getMinIOConfig } from './configs';
+import { defineBucketPolicy } from './policy';
 
 @Injectable()
 export class MinIOService {

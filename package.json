@@ -9,7 +9,7 @@
     "reinstall:backend": "cd backend && npm run remove-node_modules && npm run remove-package-lock && npm run initial-installation",
     "install:frontend": "cd frontend && npm run initial-installation",
     "reinstall:frontend": "cd frontend && npm run remove-node_modules && npm run remove-package-lock && npm run initial-installation",
-    "start-docker-services": "cp envs/.env docker && cd docker && docker-compose -p playtorr_services up -d",
+    "start-docker-api:dev": "docker-compose --env-file ./envs/.env -f docker-compose.yml -f docker-compose.development.yml -p playtorr_services up -d",
     "start:backend": "cd backend && npm run start",
     "start:dev:backend": "cd backend && npm run start:dev",
     "start:debug:backend": "cd backend && npm run start:debug",
@@ -17,7 +17,8 @@
     "start:frontend": "cd frontend && npm run start",
     "lint-staged:backend": "cd backend && npm run lint-staged",
     "lint-staged:frontend": "cd frontend && npm run lint-staged",
-    "lint-staged": "npm run lint-staged:backend"
+    "lint-staged": "npm run lint-staged:backend",
+    "k8s": "cd k8s && kubectl apply -f=deployment.yml"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",

@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { IImages } from '@app/interfaces';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IImages } from '@app/common';
 import { Image, ImageSchema } from './image.model';
 
 @Schema()

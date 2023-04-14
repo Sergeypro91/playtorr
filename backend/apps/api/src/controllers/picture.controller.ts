@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import {
 	Get,
@@ -11,7 +10,7 @@ import {
 	HttpStatus,
 	Logger,
 } from '@nestjs/common';
-import { Logger as PinoLogger } from 'nestjs-pino/Logger';
+// import { Logger as PinoLogger } from 'nestjs-pino/Logger';
 import {
 	ApiTags,
 	ApiOperation,
@@ -32,7 +31,7 @@ import {
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
 	PictureDataDto,
-} from '@app/contracts';
+} from '@app/common';
 import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Picture')
@@ -40,10 +39,7 @@ import { AuthenticatedGuard } from '../guards';
 export class PictureController {
 	logger = new Logger(PictureController.name);
 
-	constructor(
-		private readonly rmqService: RMQService,
-		private readonly pinoLogger: PinoLogger,
-	) {}
+	constructor(private readonly rmqService: RMQService) {}
 
 	@ApiOperation({ summary: 'Поиск фильма/сериала по запросу' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
@@ -54,7 +50,6 @@ export class PictureController {
 	async searchPicture(
 		@Query() query: SearchPictureDto,
 	): Promise<PicturePageDto> {
-		this.pinoLogger.log(`searchPicture_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				PictureSearchPicture.Request,
@@ -80,8 +75,6 @@ export class PictureController {
 		@Param() query: GetPictureDataDto,
 		@Session() { passport }: Record<string, any>,
 	): Promise<PictureDetailDataDto> {
-		this.pinoLogger.log(`getPictureData_${uuid()}`);
-
 		// Save "Picture" IDs to user entity -> recentViews
 		try {
 			await this.rmqService.send<
@@ -121,7 +114,6 @@ export class PictureController {
 		@Param() query: Omit<GetPictureTrendsDto, 'page'>,
 		@Query('page') page: string,
 	): Promise<PicturePageDto> {
-		this.pinoLogger.log(`getPictureTrends_${uuid()}`);
 		try {
 			return await this.rmqService.send<
 				GetPictureTrends.Request,
@@ -148,8 +140,6 @@ export class PictureController {
 	async getRecentViewedPictures(
 		@Session() { passport }: Record<string, any>,
 	): Promise<PictureDataDto[]> {
-		this.pinoLogger.log(`getPicturesData_${uuid()}`);
-
 		try {
 			return await this.rmqService.send<
 				PictureGetRecentViewedPictures.Request[],

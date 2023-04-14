@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { ISeason } from '@app/interfaces';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ISeason } from '@app/common';
 
 @Schema()
 export class Season extends Document implements ISeason {

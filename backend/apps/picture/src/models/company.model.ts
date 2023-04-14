@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { ICompany } from '@app/interfaces';
+import { ICompany } from '@app/common';
 
 @Schema()
 export class Company extends Document implements ICompany {

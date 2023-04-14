@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playtorr-deploement
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playtorr-app
+  template:
+    metadata:
+      labels:
+        app: playtorr-app
+    spec:
+      containers:
+        - name: playtorr-app-container
+          image: sergeypro91/playtorr

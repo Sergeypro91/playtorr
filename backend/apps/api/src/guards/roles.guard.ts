@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
-import { Role } from '@app/types';
+import { Role } from '@app/common';
 import { ROLES_KEY } from '../decorators';
 
 @Injectable()

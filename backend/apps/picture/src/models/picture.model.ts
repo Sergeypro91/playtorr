@@ -1,7 +1,6 @@
 import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IPictureDetail } from '@app/interfaces';
-import { MediaType } from '@app/types';
+import { MediaType, IPictureDetail } from '@app/common';
 import { Company, CompanySchema } from './company.model';
 import { Season, SeasonSchema } from './season.model';
 import { Video, VideoSchema } from './video.model';

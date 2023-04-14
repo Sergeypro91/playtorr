@@ -1,5 +1,5 @@
-import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
+import { Body, Controller } from '@nestjs/common';
 import {
 	UserSignUp,
 	UserGetUser,
@@ -9,7 +9,7 @@ import {
 	UserFindUserBy,
 	UserValidateUser,
 	UserPushUserRecentView,
-} from '@app/contracts';
+} from '@app/common';
 import { UserService } from './user.service';
 
 @Controller('user')

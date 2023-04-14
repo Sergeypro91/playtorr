@@ -1,4 +1,5 @@
 import {
+	MediaType,
 	ICompany,
 	IImage,
 	IPeople,
@@ -6,8 +7,7 @@ import {
 	IPictureDetail,
 	ISeason,
 	IVideo,
-} from '@app/interfaces';
-import { MediaType } from '@app/types';
+} from '@app/common';
 
 export type ConvertTmdbToLocalPictureArgs = {
 	picture: { unknown };

@@ -1,18 +1,21 @@
+import { RMQModule } from 'nestjs-rmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { RMQModule } from 'nestjs-rmq';
-import { LoggerModule } from 'nestjs-pino';
-import { getRMQConfig, getPinoConfig } from '@app/configs';
+import { getRMQConfig } from '@app/common';
 import { TelegramService } from './telegram.service';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: ['../envs/.env', './apps/telegram/envs/.env'],
+			envFilePath: [
+				'../envs/.env', // if we`re running service local not in docker
+				'../envs/local.env', // if we`re running service local not in docker
+				'./apps/telegram/envs/.env',
+				`${process.env.NODE_ENV}.env`,
+			],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
-		LoggerModule.forRootAsync(getPinoConfig()),
 	],
 	providers: [TelegramService],
 })

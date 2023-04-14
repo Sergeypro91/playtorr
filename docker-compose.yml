@@ -1,0 +1,101 @@
+version: "3.7"
+
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_LOGIN}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    networks:
+      - playtorr-api
+
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    networks:
+      - playtorr-api
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:management
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASS}
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
+    ports:
+      - ${RMQ_PORT}:${RMQ_PORT}
+      - ${RMQ_PORT_PLUS}:${RMQ_PORT_PLUS}
+    networks:
+      - playtorr-api
+
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    restart: always
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+    ports:
+      - ${MINIO_PORT}:${MINIO_PORT}
+      - ${MINIO_PORT_PLUS}:${MINIO_PORT_PLUS}
+    command: server --console-address ":9001" /data
+    networks:
+      - playtorr-api
+
+  backend:
+    container_name: api
+    image: playtorr-api
+    build: ./backend
+    restart: unless-stopped
+    command: npm run start
+    ports:
+      - ${MAIN_API_PORT}:${MAIN_API_PORT}
+    environment:
+      - MAIN_API_PORT=${MAIN_API_PORT}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_HOST=mongodb
+      - MONGO_LOGIN=${MONGO_LOGIN}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=redis
+      - REDIS_KEY=${REDIS_KEY}
+      - REDIS_TTL=${REDIS_TTL}
+      - RMQ_PORT=${RMQ_PORT}
+      - RMQ_PORT_PLUS=${RMQ_PORT_PLUS}
+      - RMQ_HOST=rabbitmq
+      - RMQ_USER=${RMQ_USER}
+      - RMQ_PASS=${RMQ_PASS}
+      - RMQ_EXCHANGE=${RMQ_EXCHANGE}
+      - MINIO_HOST=minio
+      - MINIO_PORT=${MINIO_PORT}
+      - MINIO_PORT_PLUS=${MINIO_PORT_PLUS}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_TTL=${JWT_TTL}
+    depends_on:
+      - redis
+      - mongodb
+      - rabbitmq
+      - minio
+    networks:
+      - playtorr-api
+
+networks:
+  playtorr-api:
+    driver: bridge

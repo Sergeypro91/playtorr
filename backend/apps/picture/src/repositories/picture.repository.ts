@@ -1,8 +1,7 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PictureIdType } from '@app/interfaces';
-import { PICTURE_EXIST_ERROR } from '@app/constants';
+import { PictureIdType, PICTURE_EXIST_ERROR } from '@app/common';
 import { PictureEntity } from '../entities';
 import { Picture } from '../models';
 

@@ -1,8 +1,12 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DBUserDto, EditUserDto, PushUserRecentViewDto } from '@app/contracts';
-import { USER_NOT_CHANGE_ERROR } from '@app/constants';
+import {
+	DBUserDto,
+	EditUserDto,
+	PushUserRecentViewDto,
+	USER_NOT_CHANGE_ERROR,
+} from '@app/common';
 import { UserEntity } from '../entities';
 import { User } from '../models';
 

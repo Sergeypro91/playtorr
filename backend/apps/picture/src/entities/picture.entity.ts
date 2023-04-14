@@ -1,12 +1,12 @@
 import {
+	MediaType,
 	ICompany,
 	IPictureDetail,
 	ISeason,
 	IVideo,
 	ICredits,
 	IImages,
-} from '@app/interfaces';
-import { MediaType } from '@app/types';
+} from '@app/common';
 
 export class PictureEntity implements IPictureDetail {
 	imdbId: string;
