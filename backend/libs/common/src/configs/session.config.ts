@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import * as createRedisStore from 'connect-redis';
+import RedisStore from 'connect-redis';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { MiddlewareConsumer } from '@nestjs/common';
@@ -9,7 +9,6 @@ export const configSession = (
 	consumer: MiddlewareConsumer,
 	configService: ConfigService,
 ) => {
-	const RedisStore = createRedisStore(session);
 	const REDIS_PORT = parseInt(configService.get('REDIS_PORT', '6379'), 10);
 	const REDIS_HOST = configService.get('REDIS_HOST', 'redis');
 	const REDIS_KEY = configService.get('REDIS_KEY', '');
@@ -19,16 +18,16 @@ export const configSession = (
 			port: REDIS_PORT,
 			host: REDIS_HOST,
 		},
-		legacyMode: true,
 	});
 	redisClient.connect().catch(console.error);
+	const redisStore = new RedisStore({
+		client: redisClient,
+	});
 
 	return consumer
 		.apply(
 			session({
-				store: new RedisStore({
-					client: redisClient,
-				}),
+				store: redisStore,
 				secret: REDIS_KEY,
 				resave: false,
 				saveUninitialized: false,

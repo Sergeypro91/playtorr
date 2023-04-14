@@ -14,7 +14,8 @@ import {
 	IntersectionType,
 } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { MediaType, Role, IRecentView, IUser } from '@app/common';
+import { MediaType, IRecentView, IUser } from '@app/common';
+import { Role } from '@app/common/types';
 
 export class RecentViewDto implements IRecentView {
 	tmdbId: string;
