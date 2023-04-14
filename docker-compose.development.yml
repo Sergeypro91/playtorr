@@ -1,6 +1,22 @@
 version: "3.7"
 
 services:
+  mongodb:
+    volumes:
+      - ./docker/storage-mongo:/data/db
+
+  redis:
+    volumes:
+      - ./docker/storage-redis:/data
+
+  rabbitmq:
+    volumes:
+      - ./docker/storage-rabbitmq:/data
+
+  minio:
+    volumes:
+      - ./docker/storage-minio:/data
+
   backend:
     command: npm run start:dev
     volumes:
@@ -9,4 +25,12 @@ services:
       - /app/backend/node_modules
 
 volumes:
+  storage-mongo:
+    external: true
+  storage-redis:
+    external: true
+  storage-rabbitmq:
+    external: true
+  storage-minio:
+    external: true
   logs:

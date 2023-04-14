@@ -17,7 +17,8 @@
     "start:frontend": "cd frontend && npm run start",
     "lint-staged:backend": "cd backend && npm run lint-staged",
     "lint-staged:frontend": "cd frontend && npm run lint-staged",
-    "lint-staged": "npm run lint-staged:backend"
+    "lint-staged": "npm run lint-staged:backend",
+    "k8s": "cd k8s && kubectl apply -f=deployment.yml"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",

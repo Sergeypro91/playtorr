@@ -11,8 +11,6 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
-    volumes:
-      - ./docker/storage-mongo:/data/db
     networks:
       - playtorr-api
 
@@ -22,8 +20,6 @@ services:
     restart: always
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
-    volumes:
-      - ./docker/storage-redis:/data
     networks:
       - playtorr-api
 
@@ -37,8 +33,6 @@ services:
     ports:
       - ${RMQ_PORT}:${RMQ_PORT}
       - ${RMQ_PORT_PLUS}:${RMQ_PORT_PLUS}
-    volumes:
-      - ./docker/storage-rabbitmq:/data
     networks:
       - playtorr-api
 
@@ -52,8 +46,6 @@ services:
     ports:
       - ${MINIO_PORT}:${MINIO_PORT}
       - ${MINIO_PORT_PLUS}:${MINIO_PORT_PLUS}
-    volumes:
-      - ./docker/storage-minio:/data
     command: server --console-address ":9001" /data
     networks:
       - playtorr-api
@@ -107,13 +99,3 @@ services:
 networks:
   playtorr-api:
     driver: bridge
-
-volumes:
-  storage-mongo:
-    external: true
-  storage-redis:
-    external: true
-  storage-rabbitmq:
-    external: true
-  storage-minio:
-    external: true
