@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
-import { PictureModule } from './picture.module';
+import { PersonModule } from './person.module';
 
 async function bootstrap() {
-	const logger = new Logger('PICTURE');
-	const app = await NestFactory.create(PictureModule);
+	const logger = new Logger('PERSON');
+	const app = await NestFactory.create(PersonModule);
 	await app.init();
-	logger.log(`🚀 Picture microservice is running`);
+	logger.log(`🚀 Person microservice is running`);
 }
 
 bootstrap().then(() => {
-	console.log('---------#|Start - PICTURE_SERVICE|#---------');
+	console.log('---------#|Start - PERSON_SERVICE|#---------');
 });

@@ -31,6 +31,7 @@ import {
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
 	PictureDataDto,
+	GetPictureTrendsApiGatewayDto,
 } from '@app/common';
 import { AuthenticatedGuard } from '../guards';
 
@@ -72,7 +73,7 @@ export class PictureController {
 	@UseGuards(AuthenticatedGuard)
 	@Get(':tmdbId/:mediaType')
 	async getPictureData(
-		@Param() query: GetPictureDataDto,
+		@Param() param: GetPictureDataDto,
 		@Session() { passport }: Record<string, any>,
 	): Promise<PictureDetailDataDto> {
 		// Save "Picture" IDs to user entity -> recentViews
@@ -81,7 +82,7 @@ export class PictureController {
 				UserPushUserRecentView.Request,
 				UserPushUserRecentView.Response
 			>(UserPushUserRecentView.topic, {
-				...query,
+				...param,
 				email: passport.user.email,
 			});
 		} catch (error) {
@@ -93,7 +94,7 @@ export class PictureController {
 			return await this.rmqService.send<
 				PictureGetPictureData.Request,
 				PictureGetPictureData.Response
-			>(PictureGetPictureData.topic, query);
+			>(PictureGetPictureData.topic, param);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
@@ -111,14 +112,14 @@ export class PictureController {
 	@UseGuards(AuthenticatedGuard)
 	@Get('trends/:mediaType/:timeWindow')
 	async getPictureTrends(
-		@Param() query: Omit<GetPictureTrendsDto, 'page'>,
-		@Query('page') page: string,
+		@Param() param: GetPictureTrendsApiGatewayDto,
+		@Query('page') page?: string,
 	): Promise<PicturePageDto> {
 		try {
 			return await this.rmqService.send<
 				GetPictureTrends.Request,
 				GetPictureTrends.Response
-			>(GetPictureTrends.topic, { ...query, page });
+			>(GetPictureTrends.topic, { ...param, page });
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(

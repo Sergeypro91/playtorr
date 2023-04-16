@@ -49,6 +49,15 @@
         "tsConfigPath": "apps/parser/tsconfig.app.json"
       }
     },
+    "person": {
+      "type": "application",
+      "root": "apps/person",
+      "entryFile": "main",
+      "sourceRoot": "apps/person/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/person/tsconfig.app.json"
+      }
+    },
     "picture": {
       "type": "application",
       "root": "apps/picture",

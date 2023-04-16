@@ -1,5 +1,2 @@
-export * from './picture.dto';
-export * from './picture.getPictureData';
-export * from './picture.getRecentViewedPictures';
-export * from './picture.searchPicture';
-export * from './picture.getPictureTrends';
+export * from './person.dto';
+export * from './person.getPersonData';

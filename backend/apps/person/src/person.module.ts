@@ -3,29 +3,29 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getMongoConfig, getRMQConfig } from '@app/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Picture, PictureSchema } from './models';
-import { PictureController } from './picture.controller';
-import { PictureService } from './picture.service';
-import { PictureRepository } from './repositories/picture.repository';
+import { PersonController } from './person.controller';
+import { PersonService } from './person.service';
+import { Person, PersonSchema } from './model';
+import { PersonRepository } from './repositories';
 
 @Module({
-	controllers: [PictureController],
+	controllers: [PersonController],
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: [
 				'../envs/.env', // if we`re running service local not in docker
 				'../envs/local.env', // if we`re running service local not in docker
-				'./apps/picture/envs/.env',
+				'./apps/person/envs/.env',
 				`${process.env.NODE_ENV}.env`,
 			],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		MongooseModule.forRootAsync(getMongoConfig()),
 		MongooseModule.forFeature([
-			{ name: Picture.name, schema: PictureSchema },
+			{ name: Person.name, schema: PersonSchema },
 		]),
 	],
-	providers: [PictureService, PictureRepository],
+	providers: [PersonService, PersonRepository],
 })
-export class PictureModule {}
+export class PersonModule {}

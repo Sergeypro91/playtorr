@@ -1,5 +1,12 @@
-export type MediaType = 'movie' | 'tv';
-export type TimeWindow = 'day' | 'week';
+export enum MediaType {
+	MOVIE = 'movie',
+	TV = 'tv',
+}
+
+export enum TimeWindow {
+	DAY = 'day',
+	WEEK = 'week',
+}
 
 export enum EnumStatus {
 	CREATED = 'created',

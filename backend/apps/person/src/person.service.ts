@@ -1,30 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import {
-	daysPassed,
-	ApiError,
-	GetPictureDataDto,
-	GetPictureTrendsDto,
-	PictureDetailDataDto,
-	SearchPictureDto,
-	PicturePageDto,
-	TmdbGetRequestDto,
-	UserGetUser,
-	PictureDataDto,
-} from '@app/common';
-import { ConfigService } from '@nestjs/config';
 import { RMQError, RMQService } from 'nestjs-rmq';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
-	convertTmdbToLocalPicture,
-	convertTmdbToLocalPictureDetail,
-} from './utils';
-import { PictureRepository } from './repositories/picture.repository';
+	ApiError,
+	GetPersonDataDto,
+	PersonDetailDataDto,
+	TmdbGetRequestDto,
+} from '@app/common';
+import { PersonRepository } from './repositories';
+import { personAdapter } from './utils';
 
 @Injectable()
-export class PictureService {
+export class PersonService {
 	constructor(
 		private readonly rmqService: RMQService,
 		private readonly configService: ConfigService,
-		private readonly pictureRepository: PictureRepository,
+		private readonly personRepository: PersonRepository,
 	) {}
 
 	public async tmdbGetRequest({
@@ -64,131 +55,34 @@ export class PictureService {
 		}
 	}
 
-	public async getPictureData({
+	public async getPersonData({
 		tmdbId,
-		mediaType,
-	}: GetPictureDataDto): Promise<PictureDetailDataDto> {
-		try {
-			let currDbPicture = await this.pictureRepository
-				.findPictureByTmdbId({ tmdbId, mediaType })
-				.catch((error) => {
-					throw new RMQError(error.message, undefined, error.code);
-				});
-			const getNewPicture = async () => {
-				const queries = new URLSearchParams({
-					language: 'ru',
-					append_to_response: 'videos,images,credits',
-				}).toString();
-				const { imdb_id: imdbId } = await this.tmdbGetRequest({
-					apiVersion: 3,
-					apiRoute: `${mediaType}/${tmdbId}/external_ids`,
-				});
-				const picture = await this.tmdbGetRequest({
-					apiVersion: 3,
-					apiRoute: `${mediaType}/${tmdbId}`,
-					queries: [queries],
-				});
+	}: GetPersonDataDto): Promise<PersonDetailDataDto> {
+		let person = await this.personRepository.findPersonByTmdbId(tmdbId);
 
-				return convertTmdbToLocalPictureDetail({
-					picture,
-					tmdbId,
-					imdbId,
-					mediaType,
-				});
-			};
-
-			if (!currDbPicture) {
-				currDbPicture = await this.pictureRepository.savePicture(
-					await getNewPicture(),
-				);
-			}
-
-			const daysPassedSinceLastUpdate = daysPassed(
-				new Date(),
-				currDbPicture.lastUpdate,
-			);
-
-			if (daysPassedSinceLastUpdate >= 7) {
-				this.pictureRepository
-					.updatePicture(await getNewPicture())
-					.catch((error) => {
-						throw new RMQError(
-							error.message,
-							undefined,
-							error.statusCode,
-						);
-					});
-			}
-
-			return currDbPicture;
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
-		}
-	}
-
-	public async searchPicture(
-		query: SearchPictureDto,
-	): Promise<PicturePageDto> {
-		try {
-			const queries = new URLSearchParams({
-				...query,
-				language: 'ru',
-			}).toString();
-			const page = await this.tmdbGetRequest({
+		if (!person) {
+			const personDetails = await this.tmdbGetRequest({
 				apiVersion: 3,
-				apiRoute: 'search/multi',
-				queries: [queries],
+				apiRoute: `person/${tmdbId}`,
 			});
-			page.results = page.results.map((picture) =>
-				convertTmdbToLocalPicture(picture),
-			);
-
-			return page;
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
-		}
-	}
-
-	public async getPictureTrends({
-		mediaType,
-		timeWindow,
-		page,
-	}: GetPictureTrendsDto): Promise<PicturePageDto> {
-		try {
-			const queries = new URLSearchParams({
-				language: 'ru',
-				page,
-			}).toString();
-			const picturesPage = await this.tmdbGetRequest({
+			const personMovie = await this.tmdbGetRequest({
 				apiVersion: 3,
-				apiRoute: `trending/${mediaType}/${timeWindow}`,
-				queries: [queries],
+				apiRoute: `person/${tmdbId}/movie_credits`,
+			});
+			const personTV = await this.tmdbGetRequest({
+				apiVersion: 3,
+				apiRoute: `person/${tmdbId}/tv_credits`,
 			});
 
-			picturesPage.results = picturesPage.results.map((picture) =>
-				convertTmdbToLocalPicture(picture),
+			person = await this.personRepository.savePerson(
+				personAdapter({
+					details: personDetails,
+					movie: personMovie,
+					tv: personTV,
+				}),
 			);
-
-			return picturesPage;
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
 		}
-	}
 
-	public async getRecentViewedPictures(
-		email: string,
-	): Promise<PictureDataDto[]> {
-		try {
-			const user = await this.rmqService.send<
-				UserGetUser.Request,
-				UserGetUser.Response[]
-			>(UserGetUser.topic, { email });
-
-			return await this.pictureRepository.findPicturesByTmdbId(
-				user[0].recentViews,
-			);
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
-		}
+		return person;
 	}
 }

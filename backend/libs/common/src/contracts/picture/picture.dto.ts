@@ -6,10 +6,9 @@ import {
 	IsNumber,
 	IsBoolean,
 	IsObject,
+	IsEnum,
 } from 'class-validator';
 import {
-	MediaType,
-	TimeWindow,
 	ICompany,
 	ICredits,
 	IImage,
@@ -20,7 +19,9 @@ import {
 	ISeason,
 	IVideo,
 } from '@app/common';
+import { MediaType, TimeWindow } from '@app/common/types';
 import { Type } from 'class-transformer';
+import { IntersectionType, OmitType } from '@nestjs/swagger';
 
 export class SearchPictureDto {
 	@IsString()
@@ -32,16 +33,21 @@ export class SearchPictureDto {
 }
 
 export class GetPictureTrendsDto {
-	@IsString()
+	@IsEnum(MediaType)
 	mediaType: MediaType;
 
-	@IsString()
+	@IsEnum(TimeWindow)
 	timeWindow: TimeWindow;
 
 	@IsOptional()
 	@IsString()
 	page?: string;
 }
+
+export class GetPictureTrendsApiGatewayDto extends OmitType(
+	GetPictureTrendsDto,
+	['page'],
+) {}
 
 export class PicturePageDto {
 	@IsNumber()
@@ -63,8 +69,7 @@ export class PictureDataDto implements IPicture {
 	@IsString()
 	tmdbId: string;
 
-	@IsString()
-	// TODO Find way to lock on union types mismatch
+	@IsEnum(MediaType)
 	mediaType: MediaType;
 
 	@IsOptional()
@@ -253,7 +258,7 @@ export class GetPictureDataDto {
 	@IsString()
 	tmdbId: string;
 
-	@IsString()
+	@IsEnum(MediaType)
 	mediaType: MediaType;
 }
 

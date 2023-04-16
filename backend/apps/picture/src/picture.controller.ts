@@ -15,9 +15,9 @@ export class PictureController {
 	@RMQValidate()
 	@RMQRoute(PictureGetPictureData.topic)
 	async getPictureData(
-		@Body() query: PictureGetPictureData.Request,
+		@Body() dto: PictureGetPictureData.Request,
 	): Promise<PictureGetPictureData.Response> {
-		return this.pictureService.getPictureData(query);
+		return this.pictureService.getPictureData(dto);
 	}
 
 	@RMQValidate()
@@ -31,16 +31,16 @@ export class PictureController {
 	@RMQValidate()
 	@RMQRoute(PictureSearchPicture.topic)
 	async searchPicture(
-		@Body() query: PictureSearchPicture.Request,
+		@Body() dto: PictureSearchPicture.Request,
 	): Promise<PictureSearchPicture.Response> {
-		return this.pictureService.searchPicture(query);
+		return this.pictureService.searchPicture(dto);
 	}
 
 	@RMQValidate()
 	@RMQRoute(GetPictureTrends.topic)
 	async getPictureTrends(
-		@Body() query: GetPictureTrends.Request,
+		@Body() dto: GetPictureTrends.Request,
 	): Promise<GetPictureTrends.Response> {
-		return this.pictureService.getPictureTrends(query);
+		return this.pictureService.getPictureTrends(dto);
 	}
 }

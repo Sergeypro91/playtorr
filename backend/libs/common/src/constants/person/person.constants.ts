@@ -1,2 +1,1 @@
-export const PICTURE_EXIST_ERROR =
-	'Данный фильм/сериал уже существвуют в базе.';
+export const PERSON_EXIST_ERROR = 'Данные по Личности отсутствуют.';

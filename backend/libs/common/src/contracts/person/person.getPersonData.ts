@@ -1,9 +1,9 @@
-import { GetPictureDataDto, PictureDetailDataDto } from './picture.dto';
+import { GetPersonDataDto, PersonDetailDataDto } from './person.dto';
 
-export namespace PictureGetPictureData {
-	export const topic = 'picture.getPictureData.command';
+export namespace PersonGetPersonData {
+	export const topic = 'person.getPersonData.command';
 
-	export class Request extends GetPictureDataDto {}
+	export class Request extends GetPersonDataDto {}
 
-	export class Response extends PictureDetailDataDto {}
+	export class Response extends PersonDetailDataDto {}
 }
