@@ -28,6 +28,8 @@ async function bootstrap() {
 	await app.listen(MAIN_API_PORT, async () => {
 		logger.log(`🚀 API-Gateway start on - ${await app.getUrl()}`);
 	});
+
+	console.log('TEST');
 }
 
 bootstrap().then(() => {

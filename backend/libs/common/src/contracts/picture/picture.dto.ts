@@ -21,7 +21,7 @@ import {
 } from '@app/common';
 import { MediaType, TimeWindow } from '@app/common/types';
 import { Type } from 'class-transformer';
-import { IntersectionType, OmitType } from '@nestjs/swagger';
+import { OmitType } from '@nestjs/swagger';
 
 export class SearchPictureDto {
 	@IsString()

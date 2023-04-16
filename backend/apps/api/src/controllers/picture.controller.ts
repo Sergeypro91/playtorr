@@ -10,7 +10,6 @@ import {
 	HttpStatus,
 	Logger,
 } from '@nestjs/common';
-// import { Logger as PinoLogger } from 'nestjs-pino/Logger';
 import {
 	ApiTags,
 	ApiOperation,
@@ -23,7 +22,6 @@ import {
 	PicturePageDto,
 	SearchPictureDto,
 	GetPictureDataDto,
-	GetPictureTrendsDto,
 	PictureDetailDataDto,
 	UserPushUserRecentView,
 	PictureGetPictureData,

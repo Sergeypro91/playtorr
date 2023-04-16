@@ -15,8 +15,11 @@
     "start:debug:backend": "cd backend && npm run start:debug",
     "start:prod:backend": "cd backend && npm run start:prod",
     "start:frontend": "cd frontend && npm run start",
-    "lint-staged:backend": "cd backend && npm run lint-staged",
-    "lint-staged:frontend": "cd frontend && npm run lint-staged",
+    "lint:backend": "cd backend && npm run lint",
+    "lint-staged:backend": "cd backend && npx lint-staged",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint-staged:frontend": "cd frontend && npx lint-staged",
+    "lint": "npm run lint:backend",
     "lint-staged": "npm run lint-staged:backend",
     "k8s": "cd k8s && kubectl apply -f=deployment.yml"
   },
@@ -24,7 +27,6 @@
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
     "husky": "^8.0.0",
-    "lint-staged": "^13.0.3",
     "tsc-files": "^1.1.3"
   }
 }
