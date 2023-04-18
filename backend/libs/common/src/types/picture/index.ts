@@ -1,6 +1,7 @@
 export enum MediaType {
 	MOVIE = 'movie',
 	TV = 'tv',
+	PERSON = 'person',
 }
 
 export enum TimeWindow {

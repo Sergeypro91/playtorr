@@ -1,15 +1,42 @@
-import {
-	MediaType,
-	ICompany,
-	ICredits,
-	IImages,
-	ISeason,
-	IVideo,
-} from '@app/common';
+import { ICompany, ICredits, IImages, ISeason, IVideo } from '@app/common';
+import { MediaType } from '@app/common/types';
 
 export interface PictureIdType {
 	tmdbId: string;
 	mediaType: MediaType;
+}
+
+export interface IMovieSlim {
+	posterPath?: string | null;
+	releaseDate: string;
+	originalTitle: string;
+	genres: number[];
+	tmdbId: number;
+	mediaType: MediaType;
+	title: string;
+	popularity: number;
+	voteAverage: number;
+}
+
+export interface ITvSlim {
+	posterPath: string | null;
+	popularity: number;
+	tmdbId: number;
+	overview: string;
+	voteAverage: number;
+	mediaType: MediaType;
+	releaseDate: string;
+	genres: number[];
+	title: string;
+	originalTitle: string;
+}
+
+export interface IPersonSlim {
+	profilePath: string | null;
+	tmdbId: number;
+	mediaType: MediaType;
+	name: string;
+	popularity: number;
 }
 
 export interface IPicture extends PictureIdType {

@@ -3,7 +3,7 @@ import { MediaType } from '@app/common/types';
 export type IPersonPicture = {
 	tmdbId?: string;
 	imdbId?: string;
-	type?: MediaType;
+	mediaType?: MediaType;
 };
 
 export interface IPerson {

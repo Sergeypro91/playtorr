@@ -1,7 +1,7 @@
 import { now, Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IPerson, IPersonPicture } from '@app/common/interfaces/person';
-import { MediaType } from '@app/common';
+import { MediaType } from '@app/common/types';
 
 @Schema()
 export class PersonPicture implements IPersonPicture {
@@ -12,7 +12,7 @@ export class PersonPicture implements IPersonPicture {
 	imdbId?: string;
 
 	@Prop({ enum: MediaType })
-	type?: MediaType;
+	mediaType?: MediaType;
 }
 
 export const PersonPictureSchema = SchemaFactory.createForClass(PersonPicture);

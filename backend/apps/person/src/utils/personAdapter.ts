@@ -6,10 +6,10 @@ export const personAdapter = ({
 	movies,
 	tvs,
 }: TmdbPersonDataDto): PersonEntity => {
-	const simplify = (arr: { id: number }[], type: MediaType) =>
+	const simplify = (arr: { id: number }[], mediaType: MediaType) =>
 		arr.map((elem) => ({
 			tmdbId: elem.id.toString(),
-			type,
+			mediaType,
 		}));
 	const combiner = (
 		{
@@ -19,8 +19,13 @@ export const personAdapter = ({
 			cast: { id: number }[];
 			crew: { id: number }[];
 		},
-		type: MediaType,
-	) => [...new Set([...simplify(cast, type), ...simplify(crew, type)])];
+		mediaType: MediaType,
+	) => [
+		...new Set([
+			...simplify(cast, mediaType),
+			...simplify(crew, mediaType),
+		]),
+	];
 
 	return {
 		movies: combiner(movies, MediaType.MOVIE),

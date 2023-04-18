@@ -2,7 +2,7 @@ import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { Body, Controller } from '@nestjs/common';
 import {
 	PictureGetPictureData,
-	PictureSearchPicture,
+	PictureSearch,
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
 } from '@app/common';
@@ -11,6 +11,14 @@ import { PictureService } from './picture.service';
 @Controller()
 export class PictureController {
 	constructor(private readonly pictureService: PictureService) {}
+
+	@RMQValidate()
+	@RMQRoute(PictureSearch.topic)
+	async search(
+		@Body() dto: PictureSearch.Request,
+	): Promise<PictureSearch.Response> {
+		return this.pictureService.search(dto);
+	}
 
 	@RMQValidate()
 	@RMQRoute(PictureGetPictureData.topic)
@@ -26,14 +34,6 @@ export class PictureController {
 		email,
 	): Promise<PictureGetRecentViewedPictures.Response[]> {
 		return this.pictureService.getRecentViewedPictures(email);
-	}
-
-	@RMQValidate()
-	@RMQRoute(PictureSearchPicture.topic)
-	async searchPicture(
-		@Body() dto: PictureSearchPicture.Request,
-	): Promise<PictureSearchPicture.Response> {
-		return this.pictureService.searchPicture(dto);
 	}
 
 	@RMQValidate()

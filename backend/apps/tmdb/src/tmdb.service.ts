@@ -4,8 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import {
 	ApiError,
 	GetTmdbPersonDataDto,
+	SearchRequestTmdbDto,
 	TmdbGetRequestDto,
 	TmdbPersonDataDto,
+	SearchResultTmdbDto,
 } from '@app/common';
 import { promiseAllSettledHandle } from './utils';
 
@@ -35,6 +37,25 @@ export class TmdbService {
 
 			throw new ApiError(response.status, status_message);
 		});
+	}
+
+	public async searchTmdb({
+		query,
+		page,
+	}: SearchRequestTmdbDto): Promise<SearchResultTmdbDto> {
+		const queries = new URLSearchParams({
+			query,
+			page,
+		}).toString();
+
+		const [searchResult] = await promiseAllSettledHandle([
+			this.tmdbGet({
+				route: `search/multi`,
+				queries: [queries],
+			}),
+		]);
+
+		return searchResult;
 	}
 
 	public async getTmdbPersonData({

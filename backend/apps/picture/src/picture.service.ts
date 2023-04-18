@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import {
 	daysPassed,
-	ApiError,
 	GetPictureDataDto,
 	GetPictureTrendsDto,
 	PictureDetailDataDto,
-	SearchPictureDto,
-	PicturePageDto,
-	TmdbGetRequestDto,
+	SearchRequestDto,
+	SearchResultDto,
 	UserGetUser,
 	PictureDataDto,
+	TmdbSearchTmdb,
+	TmdbGetRequestDto,
+	ApiError,
 } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import {
-	convertTmdbToLocalPicture,
+	adapterSearchResult,
+	adaptSearchResults,
 	convertTmdbToLocalPictureDetail,
 } from './utils';
 import { PictureRepository } from './repositories/picture.repository';
@@ -26,6 +28,22 @@ export class PictureService {
 		private readonly configService: ConfigService,
 		private readonly pictureRepository: PictureRepository,
 	) {}
+
+	public async search(dto: SearchRequestDto): Promise<SearchResultDto> {
+		try {
+			const searchResult = await this.rmqService.send<
+				TmdbSearchTmdb.Request,
+				TmdbSearchTmdb.Response
+			>(TmdbSearchTmdb.topic, dto);
+
+			return {
+				...searchResult,
+				results: searchResult.results.map((searchResult) =>
+					adaptSearchResults(searchResult),
+				),
+			};
+		} catch (error) {}
+	}
 
 	public async tmdbGetRequest({
 		version,
@@ -121,34 +139,11 @@ export class PictureService {
 		}
 	}
 
-	public async searchPicture(
-		query: SearchPictureDto,
-	): Promise<PicturePageDto> {
-		try {
-			const queries = new URLSearchParams({
-				...query,
-				language: 'ru',
-			}).toString();
-			const page = await this.tmdbGetRequest({
-				version: 3,
-				route: 'search/multi',
-				queries: [queries],
-			});
-			page.results = page.results.map((picture) =>
-				convertTmdbToLocalPicture(picture),
-			);
-
-			return page;
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
-		}
-	}
-
 	public async getPictureTrends({
 		mediaType,
 		timeWindow,
 		page,
-	}: GetPictureTrendsDto): Promise<PicturePageDto> {
+	}: GetPictureTrendsDto): Promise<SearchResultDto> {
 		try {
 			const queries = new URLSearchParams({
 				language: 'ru',
@@ -161,7 +156,7 @@ export class PictureService {
 			});
 
 			picturesPage.results = picturesPage.results.map((picture) =>
-				convertTmdbToLocalPicture(picture),
+				adapterSearchResult(picture),
 			);
 
 			return picturesPage;

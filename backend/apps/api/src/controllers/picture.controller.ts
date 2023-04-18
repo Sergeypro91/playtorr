@@ -19,13 +19,13 @@ import {
 } from '@nestjs/swagger';
 import {
 	ErrorDto,
-	PicturePageDto,
-	SearchPictureDto,
+	SearchResultDto,
+	SearchRequestDto,
 	GetPictureDataDto,
 	PictureDetailDataDto,
 	UserPushUserRecentView,
 	PictureGetPictureData,
-	PictureSearchPicture,
+	PictureSearch,
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
 	PictureDataDto,
@@ -46,14 +46,12 @@ export class PictureController {
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
 	@Get()
-	async searchPicture(
-		@Query() query: SearchPictureDto,
-	): Promise<PicturePageDto> {
+	async search(@Query() query: SearchRequestDto): Promise<SearchResultDto> {
 		try {
 			return await this.rmqService.send<
-				PictureSearchPicture.Request,
-				PictureSearchPicture.Response
-			>(PictureSearchPicture.topic, query);
+				PictureSearch.Request,
+				PictureSearch.Response
+			>(PictureSearch.topic, query);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
@@ -112,7 +110,7 @@ export class PictureController {
 	async getPictureTrends(
 		@Param() param: GetPictureTrendsApiGatewayDto,
 		@Query('page') page?: string,
-	): Promise<PicturePageDto> {
+	): Promise<SearchResultDto> {
 		try {
 			return await this.rmqService.send<
 				GetPictureTrends.Request,

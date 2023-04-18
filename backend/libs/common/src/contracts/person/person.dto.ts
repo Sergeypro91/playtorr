@@ -19,7 +19,7 @@ export class PersonPictureDto implements IPersonPicture {
 
 	@IsOptional()
 	@IsEnum(() => MediaType)
-	type?: MediaType;
+	mediaType?: MediaType;
 }
 
 export class PersonDetailDataDto implements IPerson {
