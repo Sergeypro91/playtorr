@@ -1,20 +1,35 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
-import { IPerson } from '@app/common/interfaces';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IPerson, IPersonPicture } from '@app/common/interfaces';
+import { MediaType } from '@app/common/types';
 
 export class GetPersonDataDto {
 	@IsString()
 	tmdbId: string;
 }
 
+export class PersonPictureDto implements IPersonPicture {
+	@IsOptional()
+	@IsString()
+	tmdbId?: string;
+
+	@IsOptional()
+	@IsString()
+	imdbId?: string;
+
+	@IsOptional()
+	@IsEnum(() => MediaType)
+	type?: MediaType;
+}
+
 export class PersonDetailDataDto implements IPerson {
 	@IsArray()
-	movies: string[];
+	@Type(() => PersonPictureDto)
+	movies: PersonPictureDto[];
 
 	@IsArray()
-	shows: string[];
-
-	@IsString()
-	lastUpdate: string;
+	@Type(() => PersonPictureDto)
+	tvs: PersonPictureDto[];
 
 	@IsString()
 	tmdbId: string;

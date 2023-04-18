@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { PERSON_EXIST_ERROR } from '@app/common';
@@ -37,13 +37,11 @@ export class PersonRepository {
 	public async updatePerson({
 		id,
 		...rest
-	}: Partial<Person>): Promise<Person> {
-		const now = new Date().toISOString();
-
+	}: { id: string } & Partial<PersonEntity>): Promise<Person> {
 		return this.personModel
 			.findOneAndUpdate(
-				{ id },
-				{ $set: { ...rest, lastUpdate: now } },
+				{ _id: id },
+				{ $set: { ...rest } },
 				{
 					new: true,
 				},

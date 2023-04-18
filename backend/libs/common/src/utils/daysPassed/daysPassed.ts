@@ -1,9 +1,12 @@
-export const daysPassed = (
-	dayOne: string | number | Date,
-	dayTwo: string | number | Date,
-): number => {
+export const daysPassed = ({
+	from = new Date(),
+	to = new Date(),
+}: {
+	from?: string | number | Date;
+	to?: string | number | Date;
+}): number => {
 	return Math.round(
-		(new Date(dayOne).getTime() - new Date(dayTwo).getTime()) /
+		(new Date(from).getTime() - new Date(to).getTime()) /
 			1000 /
 			60 /
 			60 /

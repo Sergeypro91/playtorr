@@ -76,6 +76,15 @@
         "tsConfigPath": "apps/telegram/tsconfig.app.json"
       }
     },
+    "tmdb": {
+      "type": "application",
+      "root": "apps/tmdb",
+      "entryFile": "main",
+      "sourceRoot": "apps/tmdb/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/tmdb/tsconfig.app.json"
+      }
+    },
     "user": {
       "type": "application",
       "root": "apps/user",

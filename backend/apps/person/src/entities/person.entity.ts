@@ -1,8 +1,8 @@
-import { IPerson } from '@app/common';
+import { IPerson, IPersonPicture } from '@app/common';
 
 export class PersonEntity implements IPerson {
-	movies: string[];
-	shows: string[];
+	movies: IPersonPicture[];
+	tvs: IPersonPicture[];
 	tmdbId: string;
 	imdbId?: string;
 	photo?: string;
@@ -12,7 +12,7 @@ export class PersonEntity implements IPerson {
 
 	constructor(person) {
 		this.movies = person.movies;
-		this.shows = person.shows;
+		this.tvs = person.tvs;
 		this.tmdbId = person.tmdbId;
 		this.imdbId = person.imdbId;
 		this.photo = person.photo;

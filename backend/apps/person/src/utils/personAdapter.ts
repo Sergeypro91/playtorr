@@ -1,0 +1,35 @@
+import { PersonEntity } from '../entities';
+import { MediaType, TmdbPersonDataDto } from '@app/common';
+
+export const personAdapter = ({
+	details,
+	movies,
+	tvs,
+}: TmdbPersonDataDto): PersonEntity => {
+	const simplify = (arr: { id: number }[], type: MediaType) =>
+		arr.map((elem) => ({
+			tmdbId: elem.id.toString(),
+			type,
+		}));
+	const combiner = (
+		{
+			cast,
+			crew,
+		}: {
+			cast: { id: number }[];
+			crew: { id: number }[];
+		},
+		type: MediaType,
+	) => [...new Set([...simplify(cast, type), ...simplify(crew, type)])];
+
+	return {
+		movies: combiner(movies, MediaType.MOVIE),
+		tvs: combiner(tvs, MediaType.TV),
+		tmdbId: details['id'].toString(),
+		imdbId: details['imdb_id'],
+		photo: details['profile_path'],
+		birthday: details?.['birthday'],
+		name: details?.['name'],
+		biography: details?.['biography'],
+	};
+};

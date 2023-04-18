@@ -1,11 +1,11 @@
-import { RMQError, RMQService } from 'nestjs-rmq';
+import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-	ApiError,
+	daysPassed,
 	GetPersonDataDto,
 	PersonDetailDataDto,
-	TmdbGetRequestDto,
+	TmdbGetTmdbPersonData,
 } from '@app/common';
 import { PersonRepository } from './repositories';
 import { personAdapter } from './utils';
@@ -18,69 +18,33 @@ export class PersonService {
 		private readonly personRepository: PersonRepository,
 	) {}
 
-	public async tmdbGetRequest({
-		apiVersion,
-		apiRoute,
-		queries,
-	}: TmdbGetRequestDto) {
-		try {
-			const apiUrl = this.configService.get('TMDB_URL');
-			const apiKey = `api_key=${this.configService.get('TMDB_API_KEY')}`;
-			const stringifyQueries = queries?.length
-				? queries.join('&').concat('&')
-				: '';
-
-			console.log(
-				'URL',
-				`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
-			);
-
-			return await fetch(
-				`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
-			).then(async (response) => {
-				if (response.ok) {
-					return response.json();
-				}
-
-				const { status_message } = await response.json();
-
-				throw new ApiError(
-					response.statusText,
-					response.status,
-					status_message,
-				);
-			});
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
-		}
-	}
-
 	public async getPersonData({
 		tmdbId,
 	}: GetPersonDataDto): Promise<PersonDetailDataDto> {
 		let person = await this.personRepository.findPersonByTmdbId(tmdbId);
 
-		if (!person) {
-			const personDetails = await this.tmdbGetRequest({
-				apiVersion: 3,
-				apiRoute: `person/${tmdbId}`,
-			});
-			const personMovie = await this.tmdbGetRequest({
-				apiVersion: 3,
-				apiRoute: `person/${tmdbId}/movie_credits`,
-			});
-			const personTV = await this.tmdbGetRequest({
-				apiVersion: 3,
-				apiRoute: `person/${tmdbId}/tv_credits`,
-			});
+		const getTmdbPersonaDetail = () => {
+			try {
+				return this.rmqService.send<
+					TmdbGetTmdbPersonData.Request,
+					TmdbGetTmdbPersonData.Response
+				>(TmdbGetTmdbPersonData.topic, { tmdbId });
+			} catch (error) {}
+		};
 
+		if (!person) {
 			person = await this.personRepository.savePerson(
-				personAdapter({
-					details: personDetails,
-					movie: personMovie,
-					tv: personTV,
-				}),
+				personAdapter(await getTmdbPersonaDetail()),
 			);
+		} else if (
+			daysPassed({
+				to: person['updatedAt'],
+			}) > 1
+		) {
+			person = await this.personRepository.updatePerson({
+				id: person['id'],
+				...personAdapter(await getTmdbPersonaDetail()),
+			});
 		}
 
 		return person;

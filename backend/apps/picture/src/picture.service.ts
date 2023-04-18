@@ -28,8 +28,8 @@ export class PictureService {
 	) {}
 
 	public async tmdbGetRequest({
-		apiVersion,
-		apiRoute,
+		version,
+		route,
 		queries,
 	}: TmdbGetRequestDto) {
 		try {
@@ -41,11 +41,11 @@ export class PictureService {
 
 			console.log(
 				'URL',
-				`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
+				`${apiUrl}/${version}/${route}?${stringifyQueries}${apiKey}`,
 			);
 
 			return await fetch(
-				`${apiUrl}/${apiVersion}/${apiRoute}?${stringifyQueries}${apiKey}`,
+				`${apiUrl}/${version}/${route}?${stringifyQueries}${apiKey}`,
 			).then(async (response) => {
 				if (response.ok) {
 					return response.json();
@@ -53,11 +53,7 @@ export class PictureService {
 
 				const { status_message } = await response.json();
 
-				throw new ApiError(
-					response.statusText,
-					response.status,
-					status_message,
-				);
+				throw new ApiError(response.status, status_message);
 			});
 		} catch (error) {
 			throw new RMQError(error.message, undefined, error.statusCode);
@@ -80,12 +76,12 @@ export class PictureService {
 					append_to_response: 'videos,images,credits',
 				}).toString();
 				const { imdb_id: imdbId } = await this.tmdbGetRequest({
-					apiVersion: 3,
-					apiRoute: `${mediaType}/${tmdbId}/external_ids`,
+					version: 3,
+					route: `${mediaType}/${tmdbId}/external_ids`,
 				});
 				const picture = await this.tmdbGetRequest({
-					apiVersion: 3,
-					apiRoute: `${mediaType}/${tmdbId}`,
+					version: 3,
+					route: `${mediaType}/${tmdbId}`,
 					queries: [queries],
 				});
 
@@ -103,10 +99,9 @@ export class PictureService {
 				);
 			}
 
-			const daysPassedSinceLastUpdate = daysPassed(
-				new Date(),
-				currDbPicture.lastUpdate,
-			);
+			const daysPassedSinceLastUpdate = daysPassed({
+				to: currDbPicture.lastUpdate,
+			});
 
 			if (daysPassedSinceLastUpdate >= 7) {
 				this.pictureRepository
@@ -135,8 +130,8 @@ export class PictureService {
 				language: 'ru',
 			}).toString();
 			const page = await this.tmdbGetRequest({
-				apiVersion: 3,
-				apiRoute: 'search/multi',
+				version: 3,
+				route: 'search/multi',
 				queries: [queries],
 			});
 			page.results = page.results.map((picture) =>
@@ -160,8 +155,8 @@ export class PictureService {
 				page,
 			}).toString();
 			const picturesPage = await this.tmdbGetRequest({
-				apiVersion: 3,
-				apiRoute: `trending/${mediaType}/${timeWindow}`,
+				version: 3,
+				route: `trending/${mediaType}/${timeWindow}`,
 				queries: [queries],
 			});
 

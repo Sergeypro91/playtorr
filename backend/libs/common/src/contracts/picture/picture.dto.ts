@@ -108,18 +108,6 @@ export class PictureDataDto implements IPicture {
 	releaseDate?: string;
 }
 
-export class TmdbGetRequestDto {
-	@IsNumber()
-	apiVersion: number;
-
-	@IsString()
-	apiRoute: string;
-
-	@IsOptional()
-	@IsArray()
-	queries?: string[];
-}
-
 export class CompanyDto implements ICompany {
 	@IsOptional()
 	@IsString()
