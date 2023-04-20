@@ -1,9 +1,6 @@
 import { IPicture } from '@app/common/interfaces';
 import { MediaType } from '@app/common/types';
-import {
-	MovieDto,
-	TvDto,
-} from '@app/common/contracts/picture/dtos/getPictureDto';
+import { MovieDto, TvDto } from '@app/common/contracts/picture/dtos/getPicture';
 
 export class PictureEntity implements IPicture {
 	tmdbId: string;

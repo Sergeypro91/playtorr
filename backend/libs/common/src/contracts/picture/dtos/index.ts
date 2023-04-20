@@ -1,1 +1,3 @@
-export * from './getPictureDto';
+export * from './search';
+export * from './getPicture';
+export * from './getPictureTrends';

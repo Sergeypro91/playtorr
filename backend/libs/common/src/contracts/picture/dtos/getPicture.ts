@@ -28,7 +28,7 @@ import {
 	IResultsVideoObj,
 } from '@app/common/interfaces';
 
-export class GetPictureDto {
+export class GetPicture {
 	@IsString()
 	tmdbId: string;
 

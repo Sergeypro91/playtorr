@@ -1,4 +1,5 @@
 export * from './searchTmdb';
 export * from './getTmdbPerson';
-export * from './getTmdbPictureDto';
-export * from './tmdbGetRequestDto';
+export * from './getTmdbPicture';
+export * from './tmdbGetRequest';
+export * from './getTmdbPictureTrends';

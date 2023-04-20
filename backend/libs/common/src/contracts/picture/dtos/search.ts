@@ -1,15 +1,15 @@
 import {
 	IsArray,
-	IsString,
-	IsOptional,
-	ValidateNested,
-	IsNumber,
 	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString,
+	ValidateNested,
 } from 'class-validator';
-import { IMovieSlim, IPeople, IPersonSlim, ITvSlim } from '@app/common';
-import { MediaType, TimeWindow } from '@app/common/types';
 import { Type } from 'class-transformer';
-import { OmitType } from '@nestjs/swagger';
+import { MediaType } from '@app/common/types';
+import { PaginationDto } from '@app/common/contracts/base.dto';
+import { IMovieSlim, IPersonSlim, ITvSlim } from '@app/common/interfaces';
 
 export class SearchRequestDto {
 	@IsString()
@@ -20,22 +20,12 @@ export class SearchRequestDto {
 	page?: string;
 }
 
-export class GetPictureTrendsDto {
-	@IsEnum(MediaType)
-	mediaType: MediaType;
-
-	@IsEnum(TimeWindow)
-	timeWindow: TimeWindow;
-
-	@IsOptional()
-	@IsString()
-	page?: string;
+export class SearchResultDto extends PaginationDto {
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => MovieSlim || TvSlim || PersonSlim)
+	results: (MovieSlim | TvSlim | PersonSlim)[];
 }
-
-export class GetPictureTrendsApiGatewayDto extends OmitType(
-	GetPictureTrendsDto,
-	['page'],
-) {}
 
 export class MovieSlim implements IMovieSlim {
 	@IsOptional()
@@ -117,42 +107,4 @@ export class PersonSlim implements IPersonSlim {
 
 	@IsNumber()
 	popularity: number;
-}
-
-export class SearchResultDto {
-	@IsNumber()
-	page: number;
-
-	@IsArray()
-	@ValidateNested({ each: true })
-	@Type(() => MovieSlim || TvSlim || PersonSlim)
-	results: (MovieSlim | TvSlim | PersonSlim)[];
-
-	@IsNumber()
-	totalPages: number;
-
-	@IsNumber()
-	totalResults: number;
-}
-
-export class PeopleDto implements IPeople {
-	@IsNumber()
-	peopleId: number;
-
-	@IsString()
-	position: string;
-
-	@IsString()
-	name: string;
-
-	@IsString()
-	originalName: string;
-
-	@IsOptional()
-	@IsString()
-	photo?: string;
-
-	@IsOptional()
-	@IsString()
-	character?: string;
 }

@@ -29,7 +29,7 @@ import {
 	PictureDto,
 	GetPictureTrendsApiGatewayDto,
 } from '@app/common';
-import { GetPictureDto } from '@app/common/contracts';
+import { GetPicture } from '@app/common/contracts';
 import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Picture')
@@ -68,7 +68,7 @@ export class PictureController {
 	@UseGuards(AuthenticatedGuard)
 	@Get(':tmdbId/:mediaType')
 	async getPictureData(
-		@Param() param: GetPictureDto,
+		@Param() param: GetPicture,
 		@Session() { passport }: Record<string, any>,
 	): Promise<PictureDto> {
 		// Save "Picture" IDs to user entity -> recentViews

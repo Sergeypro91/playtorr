@@ -4,6 +4,7 @@ import {
 	TmdbSearchTmdb,
 	TmdbGetTmdbPerson,
 	TmdbGetTmdbPicture,
+	TmdbGetTmdbPictureTrends,
 } from '@app/common';
 import { TmdbService } from './tmdb.service';
 
@@ -31,7 +32,17 @@ export class TmdbController {
 	@RMQRoute(TmdbGetTmdbPicture.topic)
 	public async getTmdbPicture(
 		@Body() dto: TmdbGetTmdbPicture.Request,
-	): Promise<TmdbGetTmdbPicture.ResponseA | TmdbGetTmdbPicture.ResponseB> {
+	): Promise<
+		TmdbGetTmdbPicture.ResponseMovie | TmdbGetTmdbPicture.ResponseTv
+	> {
 		return this.tmdbService.getTmdbPicture(dto);
+	}
+
+	@RMQValidate()
+	@RMQRoute(TmdbGetTmdbPictureTrends.topic)
+	public async getTmdPictureTrends(
+		@Body() dto: TmdbGetTmdbPictureTrends.Request,
+	): Promise<TmdbGetTmdbPictureTrends.Response> {
+		return this.tmdbService.getTmdPictureTrends(dto);
 	}
 }

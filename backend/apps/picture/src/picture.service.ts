@@ -1,19 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { daysPassed, ApiError } from '@app/common';
+import {
+	daysPassed,
+	ApiError,
+	TmdbGetTmdbPictureTrends,
+	PictureTrendsDtoDto,
+} from '@app/common';
 import {
 	UserGetUser,
 	TmdbSearchTmdb,
 	TmdbGetTmdbPicture,
-	GetPictureDto,
+	GetPicture,
 	PictureDto,
 	GetPictureTrendsDto,
 	SearchRequestDto,
 	SearchResultDto,
-	TmdbGetRequestDto,
+	TmdbGetRequest,
 } from '@app/common/contracts';
 import { ConfigService } from '@nestjs/config';
-import { RMQError, RMQService } from 'nestjs-rmq';
-import { adaptPictureTrends, adaptSearchResult, adaptPicture } from './utils';
+import { RMQService } from 'nestjs-rmq';
+import {
+	adaptPictureTrends,
+	adaptSearchResult,
+	adaptPicture,
+	adaptPictureTrendsResult,
+} from './utils';
 import { PictureRepository } from './repositories/picture.repository';
 
 @Injectable()
@@ -25,28 +35,20 @@ export class PictureService {
 	) {}
 
 	public async search(dto: SearchRequestDto): Promise<SearchResultDto> {
-		try {
-			const searchResult = await this.rmqService.send<
-				TmdbSearchTmdb.Request,
-				TmdbSearchTmdb.Response
-			>(TmdbSearchTmdb.topic, dto);
+		const searchResult = await this.rmqService.send<
+			TmdbSearchTmdb.Request,
+			TmdbSearchTmdb.Response
+		>(TmdbSearchTmdb.topic, dto);
 
-			return {
-				...searchResult,
-				results: searchResult.results.map((searchResult) =>
-					adaptSearchResult(searchResult),
-				),
-			};
-		} catch (error) {
-			throw new ApiError(error.statusCode, error.message);
-		}
+		return {
+			...searchResult,
+			results: searchResult.results.map((searchResult) =>
+				adaptSearchResult(searchResult),
+			),
+		};
 	}
 
-	public async tmdbGetRequest({
-		version,
-		route,
-		queries,
-	}: TmdbGetRequestDto) {
+	public async tmdbGetRequest({ version, route, queries }: TmdbGetRequest) {
 		try {
 			const apiUrl = this.configService.get('TMDB_URL');
 			const apiKey = `api_key=${this.configService.get('TMDB_API_KEY')}`;
@@ -75,14 +77,15 @@ export class PictureService {
 		}
 	}
 
-	public async getPicture(dto: GetPictureDto): Promise<PictureDto> {
+	public async getPicture(dto: GetPicture): Promise<PictureDto> {
 		try {
 			let picture = await this.pictureRepository.findPictureByTmdbId(dto);
 
 			const getTmdbPicture = async () => {
 				const pictureData = await this.rmqService.send<
 					TmdbGetTmdbPicture.Request,
-					TmdbGetTmdbPicture.ResponseA | TmdbGetTmdbPicture.ResponseB
+					| TmdbGetTmdbPicture.ResponseMovie
+					| TmdbGetTmdbPicture.ResponseTv
 				>(TmdbGetTmdbPicture.topic, dto);
 
 				return adaptPicture({
@@ -111,30 +114,23 @@ export class PictureService {
 		}
 	}
 
-	public async getPictureTrends({
-		mediaType,
-		timeWindow,
-		page,
-	}: GetPictureTrendsDto): Promise<SearchResultDto> {
-		try {
-			const queries = new URLSearchParams({
-				language: 'ru',
-				page,
-			}).toString();
-			const picturesPage = await this.tmdbGetRequest({
-				version: 3,
-				route: `trending/${mediaType}/${timeWindow}`,
-				queries: [queries],
-			});
+	public async getPictureTrends(
+		dto: GetPictureTrendsDto,
+	): Promise<PictureTrendsDtoDto> {
+		const pictureTrendsResult = await this.rmqService.send<
+			TmdbGetTmdbPictureTrends.Request,
+			TmdbGetTmdbPictureTrends.Response
+		>(TmdbGetTmdbPictureTrends.topic, dto);
 
-			picturesPage.results = picturesPage.results.map((picture) =>
-				adaptPictureTrends(picture),
-			);
-
-			return picturesPage;
-		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
-		}
+		return {
+			...pictureTrendsResult,
+			results: pictureTrendsResult.results.map((searchResult) =>
+				adaptPictureTrendsResult({
+					...searchResult,
+					['media_type']: dto.mediaType,
+				}),
+			),
+		};
 	}
 
 	public async getRecentViewedPictures(email: string): Promise<PictureDto[]> {
@@ -148,7 +144,7 @@ export class PictureService {
 				user[0].recentViews,
 			);
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
+			throw new ApiError(error.statusCode, error.message);
 		}
 	}
 }

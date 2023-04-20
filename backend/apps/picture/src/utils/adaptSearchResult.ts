@@ -46,3 +46,14 @@ export const adaptSearchResult = (
 			return adaptToSlimPerson(searchResult);
 	}
 };
+
+export const adaptPictureTrendsResult = (
+	searchResult: unknown,
+): IMovieSlim | ITvSlim => {
+	switch (searchResult['media_type']) {
+		case MediaType.MOVIE:
+			return adaptToSlimMovie(searchResult);
+		case MediaType.TV:
+			return adaptToSlimTv(searchResult);
+	}
+};

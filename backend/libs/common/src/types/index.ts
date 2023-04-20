@@ -1,3 +1,3 @@
 export * from './parser';
-export * from './picture';
 export * from './user';
+export * from './base.types';

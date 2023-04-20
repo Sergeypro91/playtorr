@@ -1,7 +1,7 @@
 import { GetTmdbPersonDto, TmdbPersonDto } from './dtos';
 
 export namespace TmdbGetTmdbPerson {
-	export const topic = 'tmdb.getPerson.command';
+	export const topic = 'tmdb.getTmdbPerson.command';
 
 	export class Request extends GetTmdbPersonDto {}
 

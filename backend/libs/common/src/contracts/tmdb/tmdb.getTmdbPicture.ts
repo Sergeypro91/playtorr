@@ -1,11 +1,11 @@
-import { GetTmdbPictureDto, TmdbMovieDto, TmdbTvDto } from './dtos';
+import { GetTmdbPicture, TmdbMovieDto, TmdbTvDto } from './dtos';
 
 export namespace TmdbGetTmdbPicture {
-	export const topic = 'tmdb.getPicture.command';
+	export const topic = 'tmdb.getTmdbPicture.command';
 
-	export class Request extends GetTmdbPictureDto {}
+	export class Request extends GetTmdbPicture {}
 
-	export class ResponseA extends TmdbMovieDto {}
+	export class ResponseMovie extends TmdbMovieDto {}
 
-	export class ResponseB extends TmdbTvDto {}
+	export class ResponseTv extends TmdbTvDto {}
 }

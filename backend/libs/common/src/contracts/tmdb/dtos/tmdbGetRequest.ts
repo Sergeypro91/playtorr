@@ -1,6 +1,6 @@
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class TmdbGetRequestDto {
+export class TmdbGetRequest {
 	@IsString()
 	route: string;
 

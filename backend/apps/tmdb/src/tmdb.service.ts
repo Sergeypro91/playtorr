@@ -4,12 +4,14 @@ import { ConfigService } from '@nestjs/config';
 import {
 	ApiError,
 	GetTmdbPersonDto,
-	GetTmdbPictureDto,
+	GetTmdbPicture,
+	GetTmdbPictureTrendsDto,
 	SearchRequestTmdbDto,
 	SearchResultTmdbDto,
-	TmdbGetRequestDto,
+	TmdbGetRequest,
 	TmdbMovieDto,
 	TmdbPersonDto,
+	TmdbPictureTrendsDto,
 	TmdbTvDto,
 } from '@app/common';
 import { promiseAllSettledHandle } from './utils';
@@ -21,7 +23,7 @@ export class TmdbService {
 		private readonly configService: ConfigService,
 	) {}
 
-	public async tmdbGet({ route, version, queries }: TmdbGetRequestDto) {
+	public async tmdbGet({ route, version, queries }: TmdbGetRequest) {
 		const apiUrl = this.configService.get('TMDB_URL');
 		const apiKey = `api_key=${this.configService.get('TMDB_API_KEY')}`;
 		const apiVersion =
@@ -50,14 +52,11 @@ export class TmdbService {
 			query,
 			page,
 		}).toString();
-		const [searchResult] = await promiseAllSettledHandle([
-			this.tmdbGet({
-				route: `search/multi`,
-				queries: [queries],
-			}),
-		]);
 
-		return searchResult;
+		return this.tmdbGet({
+			route: `search/multi`,
+			queries: [queries],
+		});
 	}
 
 	public async getTmdbPerson({
@@ -81,7 +80,7 @@ export class TmdbService {
 	public async getTmdbPicture({
 		tmdbId,
 		mediaType,
-	}: GetTmdbPictureDto): Promise<TmdbMovieDto | TmdbTvDto> {
+	}: GetTmdbPicture): Promise<TmdbMovieDto | TmdbTvDto> {
 		const queries = new URLSearchParams({
 			append_to_response: 'videos,images,credits',
 		}).toString();
@@ -96,5 +95,20 @@ export class TmdbService {
 		]);
 
 		return { ...picture, ...external_ids };
+	}
+
+	public async getTmdPictureTrends({
+		mediaType,
+		timeWindow,
+		page,
+	}: GetTmdbPictureTrendsDto): Promise<TmdbPictureTrendsDto> {
+		const queries = new URLSearchParams({
+			page,
+		}).toString();
+
+		return this.tmdbGet({
+			route: `trending/${mediaType}/${timeWindow}`,
+			queries: [queries],
+		});
 	}
 }
