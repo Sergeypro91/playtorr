@@ -1,24 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { daysPassed, ApiError } from '@app/common';
 import {
-	daysPassed,
-	GetPictureDataDto,
+	UserGetUser,
+	TmdbSearchTmdb,
+	TmdbGetTmdbPicture,
+	GetPictureDto,
+	PictureDto,
 	GetPictureTrendsDto,
-	PictureDetailDataDto,
 	SearchRequestDto,
 	SearchResultDto,
-	UserGetUser,
-	PictureDataDto,
-	TmdbSearchTmdb,
 	TmdbGetRequestDto,
-	ApiError,
-} from '@app/common';
+} from '@app/common/contracts';
 import { ConfigService } from '@nestjs/config';
 import { RMQError, RMQService } from 'nestjs-rmq';
-import {
-	adapterSearchResult,
-	adaptSearchResults,
-	convertTmdbToLocalPictureDetail,
-} from './utils';
+import { adaptPictureTrends, adaptSearchResult, adaptPicture } from './utils';
 import { PictureRepository } from './repositories/picture.repository';
 
 @Injectable()
@@ -39,10 +34,12 @@ export class PictureService {
 			return {
 				...searchResult,
 				results: searchResult.results.map((searchResult) =>
-					adaptSearchResults(searchResult),
+					adaptSearchResult(searchResult),
 				),
 			};
-		} catch (error) {}
+		} catch (error) {
+			throw new ApiError(error.statusCode, error.message);
+		}
 	}
 
 	public async tmdbGetRequest({
@@ -74,68 +71,43 @@ export class PictureService {
 				throw new ApiError(response.status, status_message);
 			});
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
+			throw new ApiError(error.statusCode, error.message);
 		}
 	}
 
-	public async getPictureData({
-		tmdbId,
-		mediaType,
-	}: GetPictureDataDto): Promise<PictureDetailDataDto> {
+	public async getPicture(dto: GetPictureDto): Promise<PictureDto> {
 		try {
-			let currDbPicture = await this.pictureRepository
-				.findPictureByTmdbId({ tmdbId, mediaType })
-				.catch((error) => {
-					throw new RMQError(error.message, undefined, error.code);
-				});
-			const getNewPicture = async () => {
-				const queries = new URLSearchParams({
-					language: 'ru',
-					append_to_response: 'videos,images,credits',
-				}).toString();
-				const { imdb_id: imdbId } = await this.tmdbGetRequest({
-					version: 3,
-					route: `${mediaType}/${tmdbId}/external_ids`,
-				});
-				const picture = await this.tmdbGetRequest({
-					version: 3,
-					route: `${mediaType}/${tmdbId}`,
-					queries: [queries],
-				});
+			let picture = await this.pictureRepository.findPictureByTmdbId(dto);
 
-				return convertTmdbToLocalPictureDetail({
-					picture,
-					tmdbId,
-					imdbId,
-					mediaType,
+			const getTmdbPicture = async () => {
+				const pictureData = await this.rmqService.send<
+					TmdbGetTmdbPicture.Request,
+					TmdbGetTmdbPicture.ResponseA | TmdbGetTmdbPicture.ResponseB
+				>(TmdbGetTmdbPicture.topic, dto);
+
+				return adaptPicture({
+					pictureData,
+					mediaType: dto.mediaType,
 				});
 			};
 
-			if (!currDbPicture) {
-				currDbPicture = await this.pictureRepository.savePicture(
-					await getNewPicture(),
+			if (!picture) {
+				picture = await this.pictureRepository.savePicture(
+					await getTmdbPicture(),
+				);
+			} else if (
+				daysPassed({
+					to: picture['updatedAt'],
+				}) >= 7
+			) {
+				picture = await this.pictureRepository.updatePicture(
+					await getTmdbPicture(),
 				);
 			}
 
-			const daysPassedSinceLastUpdate = daysPassed({
-				to: currDbPicture.lastUpdate,
-			});
-
-			if (daysPassedSinceLastUpdate >= 7) {
-				this.pictureRepository
-					.updatePicture(await getNewPicture())
-					.catch((error) => {
-						throw new RMQError(
-							error.message,
-							undefined,
-							error.statusCode,
-						);
-					});
-			}
-
-			return currDbPicture;
+			return picture;
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
+			throw new ApiError(error.statusCode, error.message);
 		}
 	}
 
@@ -156,7 +128,7 @@ export class PictureService {
 			});
 
 			picturesPage.results = picturesPage.results.map((picture) =>
-				adapterSearchResult(picture),
+				adaptPictureTrends(picture),
 			);
 
 			return picturesPage;
@@ -165,9 +137,7 @@ export class PictureService {
 		}
 	}
 
-	public async getRecentViewedPictures(
-		email: string,
-	): Promise<PictureDataDto[]> {
+	public async getRecentViewedPictures(email: string): Promise<PictureDto[]> {
 		try {
 			const user = await this.rmqService.send<
 				UserGetUser.Request,

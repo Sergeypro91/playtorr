@@ -21,16 +21,15 @@ import {
 	ErrorDto,
 	SearchResultDto,
 	SearchRequestDto,
-	GetPictureDataDto,
-	PictureDetailDataDto,
 	UserPushUserRecentView,
-	PictureGetPictureData,
+	PictureGetPicture,
 	PictureSearch,
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
-	PictureDataDto,
+	PictureDto,
 	GetPictureTrendsApiGatewayDto,
 } from '@app/common';
+import { GetPictureDto } from '@app/common/contracts';
 import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Picture')
@@ -69,9 +68,9 @@ export class PictureController {
 	@UseGuards(AuthenticatedGuard)
 	@Get(':tmdbId/:mediaType')
 	async getPictureData(
-		@Param() param: GetPictureDataDto,
+		@Param() param: GetPictureDto,
 		@Session() { passport }: Record<string, any>,
-	): Promise<PictureDetailDataDto> {
+	): Promise<PictureDto> {
 		// Save "Picture" IDs to user entity -> recentViews
 		try {
 			await this.rmqService.send<
@@ -88,9 +87,9 @@ export class PictureController {
 		// "Picture" request itself
 		try {
 			return await this.rmqService.send<
-				PictureGetPictureData.Request,
-				PictureGetPictureData.Response
-			>(PictureGetPictureData.topic, param);
+				PictureGetPicture.Request,
+				PictureGetPicture.Response
+			>(PictureGetPicture.topic, param);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
@@ -136,7 +135,7 @@ export class PictureController {
 	@Get('recent-viewed')
 	async getRecentViewedPictures(
 		@Session() { passport }: Record<string, any>,
-	): Promise<PictureDataDto[]> {
+	): Promise<PictureDto[]> {
 		try {
 			return await this.rmqService.send<
 				PictureGetRecentViewedPictures.Request[],

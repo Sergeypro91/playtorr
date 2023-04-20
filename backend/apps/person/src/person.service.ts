@@ -2,13 +2,14 @@ import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+	ApiError,
 	daysPassed,
 	GetPersonDataDto,
 	PersonDetailDataDto,
-	TmdbGetTmdbPersonData,
+	TmdbGetTmdbPerson,
 } from '@app/common';
 import { PersonRepository } from './repositories';
-import { personAdapter } from './utils';
+import { adaptPerson } from './utils';
 
 @Injectable()
 export class PersonService {
@@ -18,35 +19,39 @@ export class PersonService {
 		private readonly personRepository: PersonRepository,
 	) {}
 
-	public async getPersonData({
+	public async getPerson({
 		tmdbId,
 	}: GetPersonDataDto): Promise<PersonDetailDataDto> {
-		let person = await this.personRepository.findPersonByTmdbId(tmdbId);
+		try {
+			let person = await this.personRepository.findPersonByTmdbId(tmdbId);
 
-		const getTmdbPersonaDetail = () => {
-			try {
-				return this.rmqService.send<
-					TmdbGetTmdbPersonData.Request,
-					TmdbGetTmdbPersonData.Response
-				>(TmdbGetTmdbPersonData.topic, { tmdbId });
-			} catch (error) {}
-		};
+			const getTmdbPerson = () => {
+				try {
+					return this.rmqService.send<
+						TmdbGetTmdbPerson.Request,
+						TmdbGetTmdbPerson.Response
+					>(TmdbGetTmdbPerson.topic, { tmdbId });
+				} catch (error) {}
+			};
 
-		if (!person) {
-			person = await this.personRepository.savePerson(
-				personAdapter(await getTmdbPersonaDetail()),
-			);
-		} else if (
-			daysPassed({
-				to: person['updatedAt'],
-			}) > 1
-		) {
-			person = await this.personRepository.updatePerson({
-				id: person['id'],
-				...personAdapter(await getTmdbPersonaDetail()),
-			});
+			if (!person) {
+				person = await this.personRepository.savePerson(
+					adaptPerson(await getTmdbPerson()),
+				);
+			} else if (
+				daysPassed({
+					to: person['updatedAt'],
+				}) > 1
+			) {
+				person = await this.personRepository.updatePerson({
+					id: person['id'],
+					...adaptPerson(await getTmdbPerson()),
+				});
+			}
+
+			return person;
+		} catch (error) {
+			throw new ApiError(error.statusCode, error.message);
 		}
-
-		return person;
 	}
 }

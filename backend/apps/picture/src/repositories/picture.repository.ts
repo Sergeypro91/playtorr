@@ -12,7 +12,7 @@ export class PictureRepository {
 		private readonly pictureModel: Model<Picture>,
 	) {}
 
-	public async savePicture(picture: PictureEntity) {
+	public async savePicture(picture: PictureEntity): Promise<Picture> {
 		const existPicture = await this.findPictureByImdbId(picture.imdbId);
 
 		if (!existPicture) {
@@ -22,15 +22,20 @@ export class PictureRepository {
 		throw new ConflictException(PICTURE_EXIST_ERROR);
 	}
 
-	public async findPictureByImdbId(imdbId: string) {
+	public async findPictureByImdbId(imdbId: string): Promise<Picture> {
 		return this.pictureModel.findOne({ imdbId }).exec();
 	}
 
-	public async findPictureByTmdbId({ tmdbId, mediaType }: PictureIdType) {
+	public async findPictureByTmdbId({
+		tmdbId,
+		mediaType,
+	}: PictureIdType): Promise<Picture> {
 		return this.pictureModel.findOne({ tmdbId, mediaType }).exec();
 	}
 
-	public async findPicturesByTmdbId(picturesIdType: PictureIdType[]) {
+	public async findPicturesByTmdbId(
+		picturesIdType: PictureIdType[],
+	): Promise<Picture[]> {
 		return this.pictureModel
 			.find(
 				{
@@ -38,8 +43,6 @@ export class PictureRepository {
 					mediaType: picturesIdType.map(({ mediaType }) => mediaType),
 				},
 				{
-					_id: 0,
-					imdbId: 0,
 					productionCompanies: 0,
 					networks: 0,
 					tagline: 0,
@@ -61,7 +64,11 @@ export class PictureRepository {
 			.exec();
 	}
 
-	public async updatePicture({ tmdbId, mediaType, ...rest }: PictureEntity) {
+	public async updatePicture({
+		tmdbId,
+		mediaType,
+		...rest
+	}: PictureEntity): Promise<Picture> {
 		return this.pictureModel
 			.findOneAndUpdate(
 				{ tmdbId, mediaType },

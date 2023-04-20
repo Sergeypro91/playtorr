@@ -1,4 +1,4 @@
-import { MediaType, EnumStatus } from '@app/common';
+import { MediaType, EnumStatus } from '@app/common/types';
 
 export interface ISearchQueryData {
 	searchQuery: string;

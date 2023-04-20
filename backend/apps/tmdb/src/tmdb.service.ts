@@ -3,11 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
 	ApiError,
-	GetTmdbPersonDataDto,
+	GetTmdbPersonDto,
+	GetTmdbPictureDto,
 	SearchRequestTmdbDto,
-	TmdbGetRequestDto,
-	TmdbPersonDataDto,
 	SearchResultTmdbDto,
+	TmdbGetRequestDto,
+	TmdbMovieDto,
+	TmdbPersonDto,
+	TmdbTvDto,
 } from '@app/common';
 import { promiseAllSettledHandle } from './utils';
 
@@ -47,7 +50,6 @@ export class TmdbService {
 			query,
 			page,
 		}).toString();
-
 		const [searchResult] = await promiseAllSettledHandle([
 			this.tmdbGet({
 				route: `search/multi`,
@@ -58,9 +60,9 @@ export class TmdbService {
 		return searchResult;
 	}
 
-	public async getTmdbPersonData({
+	public async getTmdbPerson({
 		tmdbId,
-	}: GetTmdbPersonDataDto): Promise<TmdbPersonDataDto> {
+	}: GetTmdbPersonDto): Promise<TmdbPersonDto> {
 		const [details, movies, tvs] = await promiseAllSettledHandle([
 			this.tmdbGet({
 				route: `person/${tmdbId}`,
@@ -74,5 +76,25 @@ export class TmdbService {
 		]);
 
 		return { details, movies, tvs };
+	}
+
+	public async getTmdbPicture({
+		tmdbId,
+		mediaType,
+	}: GetTmdbPictureDto): Promise<TmdbMovieDto | TmdbTvDto> {
+		const queries = new URLSearchParams({
+			append_to_response: 'videos,images,credits',
+		}).toString();
+		const [picture, external_ids] = await promiseAllSettledHandle([
+			this.tmdbGet({
+				route: `${mediaType}/${tmdbId}`,
+				queries: [queries],
+			}),
+			this.tmdbGet({
+				route: `${mediaType}/${tmdbId}/external_ids`,
+			}),
+		]);
+
+		return { ...picture, ...external_ids };
 	}
 }

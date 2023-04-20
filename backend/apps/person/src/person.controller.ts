@@ -12,6 +12,6 @@ export class PersonController {
 	async getPersonData(
 		@Body() dto: PersonGetPersonData.Request,
 	): Promise<PersonGetPersonData.Response> {
-		return this.personService.getPersonData(dto);
+		return this.personService.getPerson(dto);
 	}
 }

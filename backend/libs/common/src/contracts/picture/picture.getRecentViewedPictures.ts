@@ -1,5 +1,5 @@
 import { PickType } from '@nestjs/swagger';
-import { PictureDataDto } from './picture.dto';
+import { PictureDto } from './dtos';
 import { UserDto } from '../user';
 
 export namespace PictureGetRecentViewedPictures {
@@ -7,5 +7,5 @@ export namespace PictureGetRecentViewedPictures {
 
 	export class Request extends PickType(UserDto, ['email']) {}
 
-	export class Response extends PictureDataDto {}
+	export class Response extends PictureDto {}
 }

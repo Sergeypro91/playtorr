@@ -4,6 +4,15 @@ export enum MediaType {
 	PERSON = 'person',
 }
 
+export enum PictureStatus {
+	RUMORED = 'Rumored',
+	PLANNED = 'Planned',
+	IN_PRODUCTION = 'In Production',
+	POST_PRODUCTION = 'Post Production',
+	RELEASED = 'Released',
+	CANCELED = 'Canceled',
+}
+
 export enum TimeWindow {
 	DAY = 'day',
 	WEEK = 'week',

@@ -1,5 +1,4 @@
-import { ICompany, ICredits, IImages, ISeason, IVideo } from '@app/common';
-import { MediaType } from '@app/common/types';
+import { MediaType, PictureStatus } from '@app/common/types';
 
 export interface PictureIdType {
 	tmdbId: string;
@@ -39,34 +38,144 @@ export interface IPersonSlim {
 	popularity: number;
 }
 
-export interface IPicture extends PictureIdType {
-	title?: string;
-	originalTitle?: string;
-	overview?: string;
-	genres: number[];
-	voteAverage?: number;
-	voteCount?: number;
-	backdropPath?: string;
-	posterPath?: string;
-	releaseDate?: string;
+export interface IExternalsIds {
+	tmdbId: string;
+	imdbId: string | null;
 }
 
-export interface IPictureDetail extends IPicture {
-	imdbId: string;
-	productionCompanies?: ICompany[];
-	networks?: ICompany[];
-	tagline?: string;
-	runtime?: number; // MOVIE
-	budget?: number; // MOVIE
-	revenue?: number; // MOVIE
-	releaseStatus?: string; // MOVIE
-	inProduction?: boolean; // TV
-	seasons?: ISeason[]; // TV
-	seasonsCount?: number; // TV
-	episodesCount?: number; // TV
-	nextEpisodeDate?: string; // TV
-	videos: IVideo[];
+export interface IPicture extends IExternalsIds {
+	mediaType: MediaType;
+	pictureData: IMovie | ITv;
+}
+
+export interface IGenre {
+	id: number;
+	name: string;
+}
+
+export interface ICompany {
+	id: number;
+	name: string;
+	logoPath: string | null;
+}
+
+export interface IVideo {
+	iso?: string;
+	name: string;
+	key: string;
+	site: string;
+	size: number;
+	type: string;
+	official: boolean;
+	publishedAt: string;
+}
+
+export interface IParticipantPerson {
+	tmdbId: number; // id
+	name: string;
+	originalName: string;
+	popularity: number;
+	profilePath: string | null;
+}
+
+export interface ICredits {
+	cast: IParticipantPerson[];
+	crew: IParticipantPerson[];
+}
+
+export interface IImage {
+	aspectRatio: number;
+	filePath: string;
+	height: number;
+	iso: string | null;
+	voteAverage: number;
+	width: number;
+}
+
+export interface IImages {
+	backdrops: IImage[];
+	logos: IImage[];
+	posters: IImage[];
+}
+
+export interface IMovie {
+	backdropPath: string | null;
+	budget: number;
+	genres: IGenre[];
+	originalTitle: string;
+	overview: string | null;
+	popularity: number;
+	posterPath: string | null;
+	productionCompanies: ICompany[];
+	releaseDate: string;
+	revenue: number;
+	runtime: number | null;
+	status: PictureStatus;
+	tagline: string | null;
+	title: string;
+	voteAverage: number;
+	videos: IResultsVideoObj;
 	credits: ICredits;
 	images: IImages;
-	lastUpdate: string;
+}
+
+// TV
+
+export interface ICreatedBy {
+	tmdbId: number;
+	name: string;
+	profilePath: string | null;
+}
+
+export interface IEpisodeToAir {
+	airDate: string;
+	episodeNumber: number;
+	id: number;
+	name: string;
+	overview: string;
+	seasonNumber: number;
+	stillPath: string | null;
+	voteAverage: number;
+}
+
+export interface ISeason {
+	airDate: string;
+	episodeCount: number;
+	id: number;
+	name: string;
+	overview: string;
+	posterPath: string | null;
+	seasonNumber: number;
+}
+
+export interface IResultsVideoObj {
+	results: IVideo[];
+}
+
+export interface ITv {
+	backdropPath: string | null;
+	createdBy: ICreatedBy[];
+	episodeRunTime: number[];
+	firstAirDate: string;
+	genres: IGenre[];
+	inProduction: boolean;
+	lastAirDate: string;
+	lastEpisodeToAir: IEpisodeToAir;
+	name: string;
+	networks: ICompany[];
+	numberOfEpisodes: number;
+	numberOfSeasons: number;
+	originalName: string;
+	overview: string | null;
+	popularity: number;
+	posterPath: string | null;
+	productionCompanies: ICompany[];
+	seasons: ISeason[];
+	status: string;
+	tagline: string | null;
+	type: string;
+	voteAverage: number;
+	videos: IResultsVideoObj;
+	credits: ICredits;
+	images: IImages;
 }

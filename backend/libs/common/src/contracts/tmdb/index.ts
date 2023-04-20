@@ -1,3 +1,4 @@
-export * from './tmdb.dto';
-export * from './tmdb.SearchTmdb';
-export * from './tmdb.getTmdbPersonData';
+export * from './dtos';
+export * from './tmdb.searchTmdb';
+export * from './tmdb.getTmdbPerson';
+export * from './tmdb.getTmdbPicture';

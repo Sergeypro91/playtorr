@@ -1,1 +1,1 @@
-export * from './personAdapter';
+export * from './adaptPerson';
