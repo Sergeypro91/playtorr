@@ -9,6 +9,7 @@ import {
 	UserController,
 	MinIOController,
 	ParserController,
+	PersonController,
 	PictureController,
 } from './controllers';
 import { JwtStrategy, LocalStrategy } from './strategies';
@@ -23,6 +24,7 @@ import { LoggerModule } from './logger/logger.module';
 		UserController,
 		MinIOController,
 		ParserController,
+		PersonController,
 		PictureController,
 	],
 	imports: [

@@ -9,6 +9,7 @@ async function bootstrap() {
 	await app.init();
 	logger.log(`🚀 User microservice is running`);
 }
+
 bootstrap().then(() => {
 	console.log('---------#|Start - USER_SERVICE|#---------');
 });

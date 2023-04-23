@@ -1,8 +1,8 @@
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { Body, Controller } from '@nestjs/common';
 import {
-	PictureGetPictureData,
-	PictureSearchPicture,
+	PictureGetPicture,
+	PictureSearch,
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
 } from '@app/common';
@@ -13,11 +13,19 @@ export class PictureController {
 	constructor(private readonly pictureService: PictureService) {}
 
 	@RMQValidate()
-	@RMQRoute(PictureGetPictureData.topic)
+	@RMQRoute(PictureSearch.topic)
+	async search(
+		@Body() dto: PictureSearch.Request,
+	): Promise<PictureSearch.Response> {
+		return this.pictureService.search(dto);
+	}
+
+	@RMQValidate()
+	@RMQRoute(PictureGetPicture.topic)
 	async getPictureData(
-		@Body() query: PictureGetPictureData.Request,
-	): Promise<PictureGetPictureData.Response> {
-		return this.pictureService.getPictureData(query);
+		@Body() dto: PictureGetPicture.Request,
+	): Promise<PictureGetPicture.Response> {
+		return this.pictureService.getPicture(dto);
 	}
 
 	@RMQValidate()
@@ -29,18 +37,10 @@ export class PictureController {
 	}
 
 	@RMQValidate()
-	@RMQRoute(PictureSearchPicture.topic)
-	async searchPicture(
-		@Body() query: PictureSearchPicture.Request,
-	): Promise<PictureSearchPicture.Response> {
-		return this.pictureService.searchPicture(query);
-	}
-
-	@RMQValidate()
 	@RMQRoute(GetPictureTrends.topic)
 	async getPictureTrends(
-		@Body() query: GetPictureTrends.Request,
+		@Body() dto: GetPictureTrends.Request,
 	): Promise<GetPictureTrends.Response> {
-		return this.pictureService.getPictureTrends(query);
+		return this.pictureService.getPictureTrends(dto);
 	}
 }

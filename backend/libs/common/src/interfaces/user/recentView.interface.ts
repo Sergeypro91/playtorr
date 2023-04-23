@@ -1,4 +1,4 @@
-import { MediaType } from '@app/common';
+import { MediaType } from '@app/common/types';
 
 export interface IRecentView {
 	tmdbId: string;

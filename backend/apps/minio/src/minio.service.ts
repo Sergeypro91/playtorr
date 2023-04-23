@@ -1,7 +1,6 @@
-import { RMQError } from 'nestjs-rmq';
 import { Client, Region } from 'minio';
 import { Logger, Injectable, HttpStatus } from '@nestjs/common';
-import { MinIOOptions } from '@app/common';
+import { ApiError, MinIOOptions } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import {
 	MinIODeletingConfirmDto,
@@ -72,10 +71,9 @@ export class MinIOService {
 		const FILE_MIME_TYPE = fileDto.mimetype.split('/')[1];
 
 		if (!fileTypes.includes(FILE_MIME_TYPE)) {
-			throw new RMQError(
-				FILE_TYPE_UNSUPPORTED,
-				undefined,
+			throw new ApiError(
 				HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+				FILE_TYPE_UNSUPPORTED,
 			);
 		}
 
@@ -86,11 +84,7 @@ export class MinIOService {
 			};
 		} catch (error) {
 			if (error instanceof Error) {
-				throw new RMQError(
-					FAILED_TO_UPLOAD,
-					undefined,
-					HttpStatus.BAD_REQUEST,
-				);
+				throw new ApiError(HttpStatus.BAD_REQUEST, FAILED_TO_UPLOAD);
 			}
 		}
 	}
@@ -102,11 +96,7 @@ export class MinIOService {
 			return { message: `${filename} - был успешно удален` };
 		} catch (error) {
 			if (error instanceof Error) {
-				throw new RMQError(
-					FILE_DOESNT_EXIST,
-					undefined,
-					HttpStatus.NOT_FOUND,
-				);
+				throw new ApiError(HttpStatus.NOT_FOUND, FILE_DOESNT_EXIST);
 			}
 		}
 	}

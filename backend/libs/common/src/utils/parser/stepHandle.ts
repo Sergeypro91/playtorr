@@ -11,13 +11,14 @@ export const stepHandle = async (
 		let timeoutMessage = '';
 
 		const timeout = setTimeout(async () => {
-			timeoutMessage = `Step \"${name}\". Waiting failed: ${STEP_DELAY}ms exceeded`;
+			timeoutMessage = `Parser step \"${name}\". Waiting failed: ${STEP_DELAY}ms exceeded`;
 			await browser.close();
 		}, STEP_DELAY);
 
 		try {
 			await fn();
 		} catch (error) {
+			console.log('PARSER ERROR DETAIL', error.message);
 			rej(timeoutMessage || error.message);
 			return;
 		}
@@ -25,8 +26,5 @@ export const stepHandle = async (
 		clearTimeout(timeout);
 		res(true);
 	}).catch((error) => {
-		throw new HttpException(
-			error.message,
-			error.code || HttpStatus.REQUEST_TIMEOUT,
-		);
+		throw new HttpException(error, HttpStatus.REQUEST_TIMEOUT);
 	});

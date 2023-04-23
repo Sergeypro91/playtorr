@@ -1,8 +1,9 @@
 import { compare } from 'bcryptjs';
 import { RMQService } from 'nestjs-rmq';
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import {
+	ApiError,
 	DBUserDto,
 	UserValidateUser,
 	USER_NOT_FOUND_ERROR,
@@ -30,13 +31,13 @@ export class AuthService {
 		>(UserValidateUser.topic, { email });
 
 		if (!user) {
-			throw new UnauthorizedException(USER_NOT_FOUND_ERROR);
+			throw new ApiError(HttpStatus.NOT_FOUND, USER_NOT_FOUND_ERROR);
 		}
 
 		const isCorrectPassword = await compare(password, user.passwordHash);
 
 		if (!isCorrectPassword) {
-			throw new UnauthorizedException(WRONG_PASSWORD_ERROR);
+			throw new ApiError(HttpStatus.UNAUTHORIZED, WRONG_PASSWORD_ERROR);
 		}
 
 		return user;

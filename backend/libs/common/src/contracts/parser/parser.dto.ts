@@ -8,13 +8,12 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
-	EnumStatus,
-	MediaType,
 	IPictureTorrents,
 	ISearchQueryData,
 	ITorrent,
 	ITracker,
 } from '@app/common';
+import { MediaType, EnumStatus } from '@app/common/types';
 
 export class DBPictureTorrentsDto implements IPictureTorrents {
 	@IsString()

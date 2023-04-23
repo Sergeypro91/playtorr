@@ -1,7 +1,15 @@
-import { RMQError } from 'nestjs-rmq';
 import { Injectable, HttpStatus, Logger } from '@nestjs/common';
 import {
-	Role,
+	ApiError,
+	USER_NOT_FOUND,
+	USER_FORBIDDEN_ERROR,
+	USER_NOT_FOUND_ERROR,
+	USER_NOT_DELETE_ERROR,
+	USER_WITH_TGID_EXIST_ERROR,
+	ALREADY_REGISTERED_TGID_ERROR,
+	ALREADY_REGISTERED_EMAIL_ERROR,
+} from '@app/common/constants';
+import {
 	UserDto,
 	DBUserDto,
 	EditUserDto,
@@ -10,14 +18,8 @@ import {
 	UsersEmailDto,
 	UserSessionDto,
 	PushUserRecentViewDto,
-	USER_NOT_FOUND,
-	USER_FORBIDDEN_ERROR,
-	USER_NOT_FOUND_ERROR,
-	USER_NOT_DELETE_ERROR,
-	USER_WITH_TGID_EXIST_ERROR,
-	ALREADY_REGISTERED_TGID_ERROR,
-	ALREADY_REGISTERED_EMAIL_ERROR,
-} from '@app/common';
+} from '@app/common/contracts';
+import { Role } from '@app/common/types';
 import { User } from './models';
 import { UserEntity } from './entities';
 import { UserRepository } from './repositories';
@@ -40,7 +42,7 @@ export class UserService {
 
 			return this.userRepository.createUser(newUserEntity);
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
+			throw new ApiError(error.statusCode, error.message);
 		}
 	}
 
@@ -51,10 +53,9 @@ export class UserService {
 		});
 
 		if (existEmailUser) {
-			throw new RMQError(
-				ALREADY_REGISTERED_EMAIL_ERROR,
-				undefined,
+			throw new ApiError(
 				HttpStatus.CONFLICT,
+				ALREADY_REGISTERED_EMAIL_ERROR,
 			);
 		}
 
@@ -65,10 +66,9 @@ export class UserService {
 			});
 
 			if (existTgIdUser) {
-				throw new RMQError(
-					ALREADY_REGISTERED_TGID_ERROR,
-					undefined,
+				throw new ApiError(
 					HttpStatus.CONFLICT,
+					ALREADY_REGISTERED_TGID_ERROR,
 				);
 			}
 		}
@@ -93,7 +93,7 @@ export class UserService {
 					break;
 			}
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
+			throw new ApiError(error.statusCode, error.message);
 		}
 	}
 
@@ -101,18 +101,18 @@ export class UserService {
 		try {
 			return this.userRepository.findUsersByEmail(users);
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
+			throw new ApiError(error.statusCode, error.message);
 		}
 	}
 
 	/**
-	 * Метод изменения данных существующего пользователя.
-	 * Используется как для редактирования пользователя самого себя,
-	 * так и для редактирования пользователя Администратором, путем
-	 * сопоставления email пользователя текущей активной сессии с
-	 * переданными в редактируемых данных.
-	 * @param editableUser - Данные редактируемого пользователя.
-	 * @param editingUser - Сессия редактирующего пользователя.
+	 * @descriptionA Method for changing the data of an existing user.
+	 * Used both to edit the user himself,
+	 * and for editing the user by the Administrator, by
+	 * matching the user's email address of the current active session with
+	 * passed in the edited data.
+	 * @param editableUser - Data of the edited user.
+	 * @param editingUser - Editing user session.
 	 * */
 	public async editUser(
 		editableUser: EditUserDto,
@@ -122,11 +122,7 @@ export class UserService {
 
 		/* Если редактирующий пользователь не является редактируемым и у него нет Админ прав. */
 		if (editingUser.email !== editableUser.email && !isEditingUserAdmin) {
-			throw new RMQError(
-				USER_FORBIDDEN_ERROR,
-				undefined,
-				HttpStatus.FORBIDDEN,
-			);
+			throw new ApiError(HttpStatus.FORBIDDEN, USER_FORBIDDEN_ERROR);
 		}
 
 		const editableUserEmail = editableUser.email;
@@ -136,11 +132,7 @@ export class UserService {
 		});
 
 		if (!editedUser) {
-			throw new RMQError(
-				USER_NOT_FOUND_ERROR,
-				undefined,
-				HttpStatus.NOT_FOUND,
-			);
+			throw new ApiError(HttpStatus.NOT_FOUND, USER_NOT_FOUND_ERROR);
 		}
 
 		if (editableUser.tgId) {
@@ -154,21 +146,16 @@ export class UserService {
 				existingTgIdUser.email !== editableUser.email
 			) {
 				/* Если редактируемый пользователь содержит "tgId" ранее использованный кем-то другим. */
-				throw new RMQError(
-					USER_WITH_TGID_EXIST_ERROR,
-					undefined,
+				throw new ApiError(
 					HttpStatus.CONFLICT,
+					USER_WITH_TGID_EXIST_ERROR,
 				);
 			}
 		}
 
 		/* Если редактируемый пользователь содержит "role", а у редактирующего нет Админ прав. */
 		if (editableUser.role && !isEditingUserAdmin) {
-			throw new RMQError(
-				USER_FORBIDDEN_ERROR,
-				undefined,
-				HttpStatus.FORBIDDEN,
-			);
+			throw new ApiError(HttpStatus.FORBIDDEN, USER_FORBIDDEN_ERROR);
 		}
 
 		return this.userRepository.updateUserData(
@@ -184,7 +171,7 @@ export class UserService {
 		});
 
 		if (!deletingUserData) {
-			throw new RMQError(USER_NOT_FOUND, undefined, HttpStatus.NOT_FOUND);
+			throw new ApiError(HttpStatus.NOT_FOUND, USER_NOT_FOUND);
 		}
 
 		const { deletedCount } = await this.userRepository.deleteUsersByEmail(
@@ -192,11 +179,7 @@ export class UserService {
 		);
 
 		if (!deletedCount) {
-			throw new RMQError(
-				USER_NOT_DELETE_ERROR,
-				undefined,
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new ApiError(HttpStatus.BAD_REQUEST, USER_NOT_DELETE_ERROR);
 		}
 
 		return deletingUserData;
@@ -206,7 +189,7 @@ export class UserService {
 		try {
 			return this.userRepository.countUsers();
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
+			throw new ApiError(error.statusCode, error.message);
 		}
 	}
 
@@ -215,7 +198,7 @@ export class UserService {
 			await this.userRepository.pushRecentView(recentView);
 			return recentView;
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.statusCode);
+			throw new ApiError(error.statusCode, error.message);
 		}
 	}
 }
