@@ -9,6 +9,7 @@ export const PICTURE_TORRENTS_EXIST_ERROR =
 	'Торренты для данного кино/сериала уже существуют';
 
 export const STEP_DELAY = 30000;
+
 export const PARSERS = [
 	{
 		name: 'nnmclub',

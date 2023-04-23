@@ -1,15 +1,14 @@
 import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ApiError, daysPassed } from '@app/common';
 import {
-	ApiError,
-	daysPassed,
 	GetPersonDataDto,
 	PersonDetailDataDto,
 	TmdbGetTmdbPerson,
-} from '@app/common';
-import { PersonRepository } from './repositories';
+} from '@app/common/contracts';
 import { adaptPerson } from './utils';
+import { PersonRepository } from './repositories';
 
 @Injectable()
 export class PersonService {

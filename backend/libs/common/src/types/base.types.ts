@@ -25,3 +25,11 @@ export enum EnumStatus {
 	WARNING = 'warning',
 	ERROR = 'error',
 }
+
+export enum Role {
+	ADMIN = 'admin',
+	GUEST = 'guest',
+	MEMBER = 'member',
+	PREMIUM = 'premium',
+	BLOCKED = 'blocked',
+}

@@ -1,4 +1,3 @@
-import { RMQError } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -8,6 +7,7 @@ import {
 	GetTorrentsDto,
 	TorrentInfoDto,
 	TrackerDto,
+	ApiError,
 } from '@app/common';
 import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
 import { PictureTorrentsEntity } from './entities';
@@ -88,7 +88,7 @@ export class ParserService {
 				searchRequests,
 			});
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.code);
+			throw new ApiError(error.code, error.message);
 		}
 
 		return searchQueryData;
@@ -106,7 +106,7 @@ export class ParserService {
 				searchQuery,
 			});
 		} catch (error) {
-			throw new RMQError(error.message, undefined, error.code);
+			throw new ApiError(error.code, error.message);
 		}
 	}
 }

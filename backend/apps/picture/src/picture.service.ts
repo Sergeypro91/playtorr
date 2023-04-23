@@ -1,25 +1,20 @@
+import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
-import {
-	daysPassed,
-	ApiError,
-	TmdbGetTmdbPictureTrends,
-	PictureTrendsDtoDto,
-} from '@app/common';
+import { daysPassed, ApiError } from '@app/common';
 import {
 	UserGetUser,
 	TmdbSearchTmdb,
 	TmdbGetTmdbPicture,
+	TmdbGetTmdbPictureTrends,
 	GetPicture,
 	PictureDto,
-	GetPictureTrendsDto,
-	SearchRequestDto,
 	SearchResultDto,
-	TmdbGetRequest,
+	SearchRequestDto,
+	GetPictureTrendsDto,
+	PictureTrendsDtoDto,
 } from '@app/common/contracts';
 import { ConfigService } from '@nestjs/config';
-import { RMQService } from 'nestjs-rmq';
 import {
-	adaptPictureTrends,
 	adaptSearchResult,
 	adaptPicture,
 	adaptPictureTrendsResult,
@@ -46,35 +41,6 @@ export class PictureService {
 				adaptSearchResult(searchResult),
 			),
 		};
-	}
-
-	public async tmdbGetRequest({ version, route, queries }: TmdbGetRequest) {
-		try {
-			const apiUrl = this.configService.get('TMDB_URL');
-			const apiKey = `api_key=${this.configService.get('TMDB_API_KEY')}`;
-			const stringifyQueries = queries?.length
-				? queries.join('&').concat('&')
-				: '';
-
-			console.log(
-				'URL',
-				`${apiUrl}/${version}/${route}?${stringifyQueries}${apiKey}`,
-			);
-
-			return await fetch(
-				`${apiUrl}/${version}/${route}?${stringifyQueries}${apiKey}`,
-			).then(async (response) => {
-				if (response.ok) {
-					return response.json();
-				}
-
-				const { status_message } = await response.json();
-
-				throw new ApiError(response.status, status_message);
-			});
-		} catch (error) {
-			throw new ApiError(error.statusCode, error.message);
-		}
 	}
 
 	public async getPicture(dto: GetPicture): Promise<PictureDto> {

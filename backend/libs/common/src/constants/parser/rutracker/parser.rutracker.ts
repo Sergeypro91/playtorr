@@ -4,9 +4,6 @@ import { executablePath, ElementHandle } from 'puppeteer';
 import {
 	shouldGoNext,
 	stepHandle,
-	EnumStatus,
-	ParserArgs,
-	ITracker,
 	rutrackerAuthBtn,
 	rutrackerLoginField,
 	rutrackerPasswordField,
@@ -20,6 +17,8 @@ import {
 	rutrackerPaginationList,
 	rutrackerTbody,
 } from '@app/common';
+import { ITracker } from '@app/common/interfaces';
+import { ParserArgs, EnumStatus } from '@app/common/types';
 
 export const parseRuTracker = async ({
 	url,
@@ -185,7 +184,7 @@ export const parseRuTracker = async ({
 		);
 
 		// Close browser
-		await browser.close();
+		// await browser.close();
 
 		// Return result
 		return result;
@@ -204,7 +203,9 @@ export const parseRuTracker = async ({
 // 		await parseRuTracker({
 // 			url: 'https://rutracker.org',
 // 			user: { login: 'playtorr', password: '01011990PlayTorr' },
+// 			parserName: 'rutracker',
 // 			searchQuery: 'Мстители The Avengers 2012',
-// 			chromeDir: CHROME_DIR,
+// 			chromeDir:
+// 				'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 // 		}),
 // 	))();

@@ -1,8 +1,8 @@
 import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ApiError } from '@app/common';
 import {
-	ApiError,
 	GetTmdbPersonDto,
 	GetTmdbPicture,
 	GetTmdbPictureTrendsDto,
@@ -13,7 +13,7 @@ import {
 	TmdbPersonDto,
 	TmdbPictureTrendsDto,
 	TmdbTvDto,
-} from '@app/common';
+} from '@app/common/contracts';
 import { promiseAllSettledHandle } from './utils';
 
 @Injectable()
