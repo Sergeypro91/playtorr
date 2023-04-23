@@ -3,11 +3,12 @@ import { Logger } from '@nestjs/common';
 import { ParserModule } from './parser.module';
 
 async function bootstrap() {
-	const logger = new Logger('MINIO');
+	const logger = new Logger('PARSER');
 	const app = await NestFactory.create(ParserModule);
 	await app.init();
 	logger.log(`🚀 Parse microservice is running`);
 }
+
 bootstrap().then(() => {
 	console.log('---------#|Start - PARSER_SERVICE|#---------');
 });
