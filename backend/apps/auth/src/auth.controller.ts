@@ -5,7 +5,7 @@ import {
 	AuthSignUp,
 	AuthValidateUser,
 	UserSignUp,
-} from '@app/common';
+} from '@app/common/contracts';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -18,29 +18,27 @@ export class AuthController {
 	@RMQValidate()
 	@RMQRoute(AuthSignUp.topic)
 	async signUp(
-		@Body() newUser: AuthSignUp.Request,
+		@Body() dto: AuthSignUp.Request,
 	): Promise<AuthSignUp.Response> {
 		return this.rmqService.send<UserSignUp.Request, UserSignUp.Response>(
 			UserSignUp.topic,
-			newUser,
+			dto,
 		);
 	}
 
 	@RMQValidate()
 	@RMQRoute(AuthValidateUser.topic)
 	async validateUser(
-		@Body() { email, password }: AuthValidateUser.Request,
+		@Body() dto: AuthValidateUser.Request,
 	): Promise<AuthValidateUser.Response> {
-		return this.authService.validateUser(email, password);
+		return this.authService.validateUser(dto);
 	}
 
 	@RMQValidate()
 	@RMQRoute(AuthSignInJwt.topic)
 	async loginUserByJwt(
-		@Body() { email, password }: AuthSignInJwt.Request,
+		@Body() dto: AuthSignInJwt.Request,
 	): Promise<AuthSignInJwt.Response> {
-		return this.authService.loginUser(
-			this.authService.validateUser(email, password),
-		);
+		return this.authService.loginUser(this.authService.validateUser(dto));
 	}
 }

@@ -17,6 +17,14 @@ import { Type } from 'class-transformer';
 import { IRecentView, IUser } from '@app/common';
 import { MediaType, Role } from '@app/common/types';
 
+export class GetUserDto {
+	@IsEmail()
+	email: string;
+
+	@IsString()
+	password: string;
+}
+
 export class RecentViewDto implements IRecentView {
 	tmdbId: string;
 	mediaType: MediaType;

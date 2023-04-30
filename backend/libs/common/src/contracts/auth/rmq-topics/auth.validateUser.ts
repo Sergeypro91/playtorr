@@ -1,5 +1,5 @@
-import { DBUserDto } from '../user';
-import { LoginUserDto } from './auth.dto';
+import { DBUserDto } from '../../user';
+import { LoginUserDto } from '../dtos';
 
 export namespace AuthValidateUser {
 	export const topic = 'auth.validateUser.command';

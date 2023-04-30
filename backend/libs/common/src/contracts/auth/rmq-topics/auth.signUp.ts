@@ -1,4 +1,4 @@
-import { UserDto, DBUserDto } from '../user';
+import { UserDto, DBUserDto } from '../../user';
 
 export namespace AuthSignUp {
 	export const topic = 'auth.signUp.command';

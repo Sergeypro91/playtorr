@@ -6,3 +6,4 @@ export * from './person';
 export * from './picture';
 export * from './telegram';
 export * from './user';
+export * from './webtorrent';

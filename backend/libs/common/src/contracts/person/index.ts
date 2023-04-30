@@ -1,2 +1,2 @@
-export * from './person.dto';
-export * from './person.getPersonData';
+export * from './dtos';
+export * from './rmq-topics';

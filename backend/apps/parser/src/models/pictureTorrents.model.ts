@@ -1,13 +1,12 @@
 import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
-	EnumStatus,
-	MediaType,
 	ISearchQueryData,
 	ITorrent,
 	IPictureTorrents,
 	ITracker,
-} from '@app/common';
+} from '@app/common/interfaces';
+import { EnumStatus, MediaType } from '@app/common/types';
 
 @Schema()
 export class Torrent extends Document implements ITorrent {

@@ -1,12 +1,13 @@
 import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiError, daysPassed } from '@app/common';
 import {
 	GetPersonDataDto,
 	PersonDetailDataDto,
 	TmdbGetTmdbPerson,
 } from '@app/common/contracts';
+import { ApiError } from '@app/common/constants';
+import { daysPassed } from '@app/common/utils';
 import { adaptPerson } from './utils';
 import { PersonRepository } from './repositories';
 

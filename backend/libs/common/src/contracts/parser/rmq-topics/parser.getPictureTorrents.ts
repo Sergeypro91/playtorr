@@ -1,4 +1,4 @@
-import { GetTorrentsDto, TrackerDto } from './parser.dto';
+import { GetTorrentsDto, TrackerDto } from '../dtos';
 
 export namespace ParserGetPictureTorrents {
 	export const topic = 'parser.getPictureTorrents.command';

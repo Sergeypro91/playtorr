@@ -1,12 +1,10 @@
 import puppeteer from 'puppeteer-extra';
 import stealthMode from 'puppeteer-extra-plugin-stealth';
 import { executablePath, ElementHandle } from 'puppeteer';
+import { ITracker } from '@app/common/interfaces';
+import { EnumStatus, ParserArgs } from '@app/common/types';
+import { shouldGoNext, stepHandle } from '@app/common/utils';
 import {
-	shouldGoNext,
-	stepHandle,
-	EnumStatus,
-	ParserArgs,
-	ITracker,
 	nnmAuthBtn,
 	nnmLoginField,
 	nnmPasswordField,
@@ -26,7 +24,7 @@ import {
 	nnmSortSelector,
 	nnmTbody,
 	nnmResultPageNav,
-} from '@app/common';
+} from './parser.nnm.selectors';
 
 export const parseNnmClub = async ({
 	url,

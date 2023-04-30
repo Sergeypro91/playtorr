@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { checkDirExist } from '@app/common/utils';
 import { LEVELS } from '@app/common/constants';
 
-export const pinoConfig = (directoryName: string) => {
+export const getPinoConfig = (directoryName: string) => {
 	checkDirExist(directoryName).then();
 
 	const date = format(Date.now(), 'yyyy-MM-dd');

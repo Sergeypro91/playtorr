@@ -7,13 +7,9 @@ import {
 	ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-	IPictureTorrents,
-	ISearchQueryData,
-	ITorrent,
-	ITracker,
-} from '@app/common';
 import { MediaType, EnumStatus } from '@app/common/types';
+import { IPictureTorrents, ITorrent, ITracker } from '@app/common/interfaces';
+import { SearchQueryDataDto } from './parser.dto';
 
 export class DBPictureTorrentsDto implements IPictureTorrents {
 	@IsString()
@@ -22,26 +18,13 @@ export class DBPictureTorrentsDto implements IPictureTorrents {
 	@IsString()
 	tmdbId: string;
 
-	@IsString()
+	@IsEnum(MediaType)
 	mediaType: MediaType;
 
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => SearchQueryDataDto)
 	searchRequests: SearchQueryDataDto[];
-}
-
-export class SearchQueryDataDto implements ISearchQueryData {
-	@IsString()
-	searchQuery: string;
-
-	@IsEnum(EnumStatus)
-	searchStatus: EnumStatus;
-
-	@IsArray()
-	@ValidateNested({ each: true })
-	@Type(() => TrackerDto)
-	trackers: TrackerDto[];
 }
 
 export class TrackerDto implements ITracker {
@@ -82,24 +65,4 @@ export class TorrentDto implements ITorrent {
 	@IsOptional()
 	@IsString()
 	leeches?: string;
-}
-
-export class GetTorrentsDto {
-	@IsString()
-	imdbId: string;
-
-	@IsString()
-	tmdbId: string;
-
-	@IsString()
-	mediaType: MediaType;
-
-	@IsString()
-	searchQuery: string;
-}
-
-export class TorrentInfoDto extends SearchQueryDataDto {
-	@IsOptional()
-	@IsString()
-	message?: string;
 }

@@ -1,9 +1,12 @@
-import { GetTorrentInfo, TorrentInfo } from '../dtos';
+import {
+	GetTorrentDistributionInfoDto,
+	TorrentDistributionInfoDto,
+} from '../dtos';
 
 export namespace WebtorrentGetTorrentInfo {
 	export const topic = 'webtorrent.getTorrentInfo.command';
 
-	export class Request extends GetTorrentInfo {}
+	export class Request extends GetTorrentDistributionInfoDto {}
 
-	export class Response extends TorrentInfo {}
+	export class Response extends TorrentDistributionInfoDto {}
 }

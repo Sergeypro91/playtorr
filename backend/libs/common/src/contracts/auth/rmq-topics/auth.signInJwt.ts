@@ -1,4 +1,4 @@
-import { LoginUserDto } from './auth.dto';
+import { LoginUserDto } from '../dtos';
 
 export namespace AuthSignInJwt {
 	export const topic = 'auth.jwtLogin.command';

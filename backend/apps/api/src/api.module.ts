@@ -2,7 +2,7 @@ import { RMQModule } from 'nestjs-rmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { configSession, getRMQConfig } from '@app/common';
+import { configSession, getRMQConfig } from '@app/common/configs';
 import {
 	TestController,
 	AuthController,

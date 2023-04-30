@@ -1,3 +1,2 @@
-export * from './minio.dto';
-export * from './minio.deleteFile';
-export * from './minio.uploadFile';
+export * from './dtos';
+export * from './rmq-topics';

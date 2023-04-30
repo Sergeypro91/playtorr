@@ -1,12 +1,10 @@
 import puppeteer from 'puppeteer-extra';
 import stealthMode from 'puppeteer-extra-plugin-stealth';
 import { ElementHandle, executablePath } from 'puppeteer';
+import { ITracker } from '@app/common/interfaces';
+import { EnumStatus, ParserArgs } from '@app/common/types';
+import { shouldGoNext, stepHandle } from '@app/common/utils';
 import {
-	shouldGoNext,
-	stepHandle,
-	EnumStatus,
-	ParserArgs,
-	ITracker,
 	rutorAuthBtn,
 	rutorLoginBtn,
 	rutorLoginField,
@@ -18,7 +16,7 @@ import {
 	rutorSortSelector,
 	rutorSortSelectorElem,
 	rutorTbody,
-} from '@app/common';
+} from './parser.rutor.selectors';
 
 export const parseRutor = async ({
 	url,

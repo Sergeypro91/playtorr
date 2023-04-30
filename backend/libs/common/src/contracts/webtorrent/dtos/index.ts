@@ -1,1 +1,2 @@
-export * from './getTorrentInfoDto'
+export * from './getTorrentDistributionInfoDto';
+export * from './uploadTorrentFilesInfoDto';

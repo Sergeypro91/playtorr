@@ -1,4 +1,4 @@
-import { GetTorrentsDto, TorrentInfoDto } from './parser.dto';
+import { GetTorrentsDto, TorrentInfoDto } from '../dtos';
 
 export namespace ParserParseTorrents {
 	export const topic = 'parser.parseTorrents.command';

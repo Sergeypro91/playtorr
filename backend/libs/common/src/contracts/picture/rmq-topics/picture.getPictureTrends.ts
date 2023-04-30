@@ -1,4 +1,4 @@
-import { SearchResultDto, GetPictureTrendsDto } from './dtos';
+import { SearchResultDto, GetPictureTrendsDto } from '../dtos';
 
 export namespace GetPictureTrends {
 	export const topic = 'picture.getPictureTrends.command';

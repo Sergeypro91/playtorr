@@ -15,9 +15,10 @@ import {
 } from '@nestjs/swagger';
 import {
 	ErrorDto,
-	TorrentInfo,
-	GetTorrentInfo,
+	TorrentInfoDto,
+	GetTorrentDistributionInfoDto,
 	WebtorrentGetTorrentInfo,
+	TorrentDistributionInfoDto,
 } from '@app/common/contracts';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import { AuthenticatedGuard } from '../guards';
@@ -33,7 +34,9 @@ export class WebtorrentController {
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
 	@Get()
-	async getTorrentInfo(@Body() dto: GetTorrentInfo): Promise<TorrentInfo> {
+	async getTorrentInfo(
+		@Body() dto: GetTorrentDistributionInfoDto,
+	): Promise<TorrentDistributionInfoDto> {
 		try {
 			return await this.rmqService.send<
 				WebtorrentGetTorrentInfo.Request,

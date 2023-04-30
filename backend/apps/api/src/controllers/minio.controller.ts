@@ -20,9 +20,9 @@ import {
 	MinIODeleteFile,
 	MinIOUploadFile,
 	ErrorDto,
-	MinIOFileUrlDto,
-	MinIODeletedFileDto,
-	MinIODeletingConfirmDto,
+	FileUrlDto,
+	DeletedFileDto,
+	DeletingConfirmDto,
 } from '@app/common';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -51,7 +51,7 @@ export class MinIOController {
 	@UseInterceptors(FileInterceptor('file'))
 	async uploadFile(
 		@UploadedFile() file: Express.Multer.File,
-	): Promise<MinIOFileUrlDto> {
+	): Promise<FileUrlDto> {
 		const fileDto = {
 			name: file.originalname,
 			mimetype: file.mimetype,
@@ -62,7 +62,7 @@ export class MinIOController {
 			return await this.rmqService.send<
 				MinIOUploadFile.Request,
 				MinIOUploadFile.Response
-			>(MinIOUploadFile.topic, fileDto);
+			>(MinIOUploadFile.topic, { fileDto, fileTypes: ['jpeg', 'png'] });
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);
@@ -73,14 +73,12 @@ export class MinIOController {
 	@ApiOperation({ summary: 'Удаление файлов с сервера' })
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@Delete()
-	async deleteFile(
-		@Body() filename: MinIODeletedFileDto,
-	): Promise<MinIODeletingConfirmDto> {
+	async deleteFile(@Body() dto: DeletedFileDto): Promise<DeletingConfirmDto> {
 		try {
 			return await this.rmqService.send<
 				MinIODeleteFile.Request,
 				MinIODeleteFile.Response
-			>(MinIODeleteFile.topic, filename);
+			>(MinIODeleteFile.topic, dto);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);

@@ -1,4 +1,4 @@
-import { SearchRequestDto, SearchResultDto } from './dtos';
+import { SearchRequestDto, SearchResultDto } from '../dtos';
 
 export namespace PictureSearch {
 	export const topic = 'picture.searchPicture.command';

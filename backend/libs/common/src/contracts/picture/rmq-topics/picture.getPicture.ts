@@ -1,4 +1,4 @@
-import { GetPicture, PictureDto } from './dtos';
+import { GetPicture, PictureDto } from '../dtos';
 
 export namespace PictureGetPicture {
 	export const topic = 'picture.getPicture.command';

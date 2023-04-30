@@ -10,7 +10,7 @@ import {
 	ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { MediaType, PictureStatus } from '@app/common/types';
+import { PictureStatus } from '@app/common/types';
 import {
 	ICredits,
 	IGenre,
@@ -27,28 +27,11 @@ import {
 	IPicture,
 	IResultsVideoObj,
 } from '@app/common/interfaces';
+import { BasePictureDto } from '../../base.dto';
 
-export class GetPicture {
-	@IsString()
-	tmdbId: string;
+export class GetPicture extends BasePictureDto {}
 
-	@IsEnum(MediaType)
-	mediaType: MediaType;
-}
-
-export class ExternalsIdsDto {
-	@IsNumber()
-	tmdbId: string;
-
-	@IsOptional()
-	@IsString()
-	imdbId: string | null;
-}
-
-export class PictureDto extends ExternalsIdsDto implements IPicture {
-	@IsEnum(() => MediaType)
-	mediaType: MediaType;
-
+export class PictureDto extends BasePictureDto implements IPicture {
 	@IsObject()
 	pictureData: MovieDto | TvDto;
 }

@@ -1,10 +1,7 @@
-import {
-	runParser,
-	EnumStatus,
-	RunParsersArgs,
-	ITracker,
-	TrackerDto,
-} from '@app/common';
+import { runParser } from '@app/common/utils';
+import { ITracker } from '@app/common/interfaces';
+import { TrackerDto } from '@app/common/contracts';
+import { EnumStatus, RunParsersArgs } from '@app/common/types';
 
 export const parse = async ({
 	user,

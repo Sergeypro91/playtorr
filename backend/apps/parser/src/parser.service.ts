@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-	parse,
-	EnumStatus,
 	DBPictureTorrentsDto,
 	GetTorrentsDto,
 	TorrentInfoDto,
 	TrackerDto,
-	ApiError,
-} from '@app/common';
+} from '@app/common/contracts';
+import { ApiError } from '@app/common/constants';
+import { EnumStatus } from '@app/common/types';
+import { parse } from '@app/common/utils';
 import { PictureTorrentsRepository } from './repositories/pictureTorrents.repository';
 import { PictureTorrentsEntity } from './entities';
 

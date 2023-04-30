@@ -1,4 +1,4 @@
-import { GetPersonDataDto, PersonDetailDataDto } from './person.dto';
+import { GetPersonDataDto, PersonDetailDataDto } from '../dtos';
 
 export namespace PersonGetPersonData {
 	export const topic = 'person.getPersonData.command';
