@@ -1,9 +1,9 @@
-import { TorrentDistributionDto } from '@app/common';
+import { WebTorrentFileInfoDto } from '@app/common';
 import { TorrentFile } from 'webtorrent';
 
 export const adaptTorrentFile = (
 	files: TorrentFile[],
-): TorrentDistributionDto[] => {
+): WebTorrentFileInfoDto[] => {
 	return files.map((file) => {
 		return {
 			name: file.name,

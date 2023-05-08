@@ -1,7 +1,7 @@
-import { Model, ObjectId } from 'mongoose';
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PERSON_EXIST_ERROR } from '@app/common';
+import { PERSON_EXIST_ERROR } from '@app/common/constants';
 import { Person } from '../model';
 import { PersonEntity } from '../entities';
 

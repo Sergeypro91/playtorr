@@ -18,7 +18,8 @@ import {
 	TorrentInfoDto,
 	GetTorrentDistributionInfoDto,
 	WebtorrentGetTorrentInfo,
-	TorrentDistributionInfoDto,
+	WebTorrentInfoDto,
+	WebTorrentDto,
 } from '@app/common/contracts';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import { AuthenticatedGuard } from '../guards';
@@ -36,7 +37,7 @@ export class WebtorrentController {
 	@Get()
 	async getTorrentInfo(
 		@Body() dto: GetTorrentDistributionInfoDto,
-	): Promise<TorrentDistributionInfoDto> {
+	): Promise<WebTorrentDto> {
 		try {
 			return await this.rmqService.send<
 				WebtorrentGetTorrentInfo.Request,

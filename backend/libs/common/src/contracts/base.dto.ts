@@ -5,6 +5,7 @@ export class BasePictureDto {
 	@IsString()
 	tmdbId: string;
 
+	// TODO refuse from null in imdbId
 	@IsOptional()
 	@IsString()
 	imdbId: string | null;

@@ -9,7 +9,7 @@ const MPEG2 = ['mpg', 'mpeg', 'm2v'];
 const MPEG1 = ['mpg', 'mpeg', 'm1v'];
 const GP3 = ['3gp', '3g2'];
 
-export const supportedFileType = [
+export const SUPPORTED_FILE_TYPE = [
 	MP4,
 	AVI,
 	MOV,

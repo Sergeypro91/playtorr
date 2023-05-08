@@ -1,9 +1,12 @@
 import { RMQModule } from 'nestjs-rmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { getRMQConfig } from '@app/common/configs';
+import { getMongoConfig, getRMQConfig } from '@app/common/configs';
 import { WebtorrentController } from './webtorrent.controller';
 import { WebtorrentService } from './webtorrent.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { WebTorrentRepository } from './repositories';
+import { WebTorrent, WebTorrentSchema } from './models';
 
 @Module({
 	controllers: [WebtorrentController],
@@ -18,7 +21,11 @@ import { WebtorrentService } from './webtorrent.service';
 			],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
+		MongooseModule.forRootAsync(getMongoConfig()),
+		MongooseModule.forFeature([
+			{ name: WebTorrent.name, schema: WebTorrentSchema },
+		]),
 	],
-	providers: [WebtorrentService],
+	providers: [WebtorrentService, WebTorrentRepository],
 })
 export class WebtorrentModule {}
