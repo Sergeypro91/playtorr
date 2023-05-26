@@ -1,7 +1,7 @@
 import { RMQModule } from 'nestjs-rmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { getMongoConfig, getRMQConfig } from '@app/common';
+import { getMongoConfig, getRMQConfig } from '@app/common/configs';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Picture, PictureSchema } from './models';
 import { PictureController } from './picture.controller';

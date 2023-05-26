@@ -1,16 +1,12 @@
-import {
-	hoursPassed,
-	EnumStatus,
-	TrackerAccount,
-	ITracker,
-	CHROME_DIR,
-	PARSERS,
-} from '@app/common';
+import { hoursPassed } from '@app/common/utils';
+import { ITracker } from '@app/common/interfaces';
+import { CHROME_DIR, PARSERS } from '@app/common/constants';
+import { EnumStatus, TrackerAccount } from '@app/common/types';
 
 export const runParser = async (
 	user: TrackerAccount,
 	searchQuery: string,
-	parserName: typeof PARSERS[number]['name'],
+	parserName: (typeof PARSERS)[number]['name'],
 	tracker?: ITracker,
 ): Promise<ITracker> => {
 	const parsersMap = new Map(PARSERS.map((parser) => [parser.name, parser]));

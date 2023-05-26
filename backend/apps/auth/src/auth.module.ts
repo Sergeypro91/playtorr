@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { RMQModule } from 'nestjs-rmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { getRMQConfig, getJWTConfig } from '@app/common';
+import { getRMQConfig, getJWTConfig } from '@app/common/configs';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 

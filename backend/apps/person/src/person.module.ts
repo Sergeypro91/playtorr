@@ -1,8 +1,8 @@
 import { RMQModule } from 'nestjs-rmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { getMongoConfig, getRMQConfig } from '@app/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { getMongoConfig, getRMQConfig } from '@app/common/configs';
 import { PersonController } from './person.controller';
 import { PersonService } from './person.service';
 import { Person, PersonSchema } from './model';

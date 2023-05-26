@@ -19,9 +19,9 @@ export class UserController {
 	@RMQValidate()
 	@RMQRoute(UserSignUp.topic)
 	async signUp(
-		@Body() newUserData: UserSignUp.Request,
+		@Body() dto: UserSignUp.Request,
 	): Promise<UserSignUp.Response> {
-		return this.userService.signUp(newUserData);
+		return this.userService.signUp(dto);
 	}
 
 	@RMQValidate()

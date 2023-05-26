@@ -1,15 +1,20 @@
 import { Client, Region } from 'minio';
 import { Logger, Injectable, HttpStatus } from '@nestjs/common';
-import { ApiError, MinIOOptions } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import {
-	MinIODeletingConfirmDto,
-	MinIOFileDto,
-	MinIOFileUrlDto,
+	ApiError,
 	FILE_DOESNT_EXIST,
 	FAILED_TO_UPLOAD,
 	FILE_TYPE_UNSUPPORTED,
-} from '@app/common';
+} from '@app/common/constants';
+import {
+	DeletedFileDto,
+	DeletingConfirmDto,
+	FileDto,
+	FileUrlDto,
+	UploadFile,
+} from '@app/common/contracts';
+import { MinIOOptions } from '@app/common/interfaces';
 import { getMinIOConfig } from './configs';
 import { defineBucketPolicy } from './policy';
 
@@ -59,10 +64,7 @@ export class MinIOService {
 		}
 	}
 
-	async upload(
-		fileDto: MinIOFileDto,
-		fileTypes: string[],
-	): Promise<MinIOFileUrlDto> {
+	async upload({ fileDto, fileTypes }: UploadFile): Promise<FileUrlDto> {
 		const PORT = this.options.port;
 		const ENDPOINT = this.options.endPoint;
 		const BUCKET_NAME = this.options.bucketName;
@@ -89,7 +91,7 @@ export class MinIOService {
 		}
 	}
 
-	async delete(filename: string): Promise<MinIODeletingConfirmDto> {
+	async delete({ filename }: DeletedFileDto): Promise<DeletingConfirmDto> {
 		try {
 			await this.client.statObject(this.options.bucketName, filename);
 			await this.client.removeObject(this.options.bucketName, filename);

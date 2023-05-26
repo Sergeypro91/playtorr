@@ -1,9 +1,10 @@
 import puppeteer from 'puppeteer-extra';
 import stealthMode from 'puppeteer-extra-plugin-stealth';
 import { executablePath, ElementHandle } from 'puppeteer';
+import { shouldGoNext, stepHandle } from '@app/common/utils';
+import { ITracker } from '@app/common/interfaces';
+import { ParserArgs, EnumStatus } from '@app/common/types';
 import {
-	shouldGoNext,
-	stepHandle,
 	rutrackerAuthBtn,
 	rutrackerLoginField,
 	rutrackerPasswordField,
@@ -16,9 +17,7 @@ import {
 	rutrackerSearchFieldBtnSecond,
 	rutrackerPaginationList,
 	rutrackerTbody,
-} from '@app/common';
-import { ITracker } from '@app/common/interfaces';
-import { ParserArgs, EnumStatus } from '@app/common/types';
+} from './parser.ruTracker.selectors';
 
 export const parseRuTracker = async ({
 	url,

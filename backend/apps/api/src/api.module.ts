@@ -2,7 +2,7 @@ import { RMQModule } from 'nestjs-rmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { configSession, getRMQConfig } from '@app/common';
+import { configSession, getRMQConfig } from '@app/common/configs';
 import {
 	TestController,
 	AuthController,
@@ -11,6 +11,7 @@ import {
 	ParserController,
 	PersonController,
 	PictureController,
+	WebtorrentController,
 } from './controllers';
 import { JwtStrategy, LocalStrategy } from './strategies';
 import { SessionSerializer } from './session';
@@ -26,6 +27,7 @@ import { LoggerModule } from './logger/logger.module';
 		ParserController,
 		PersonController,
 		PictureController,
+		WebtorrentController,
 	],
 	imports: [
 		ConfigModule.forRoot({
@@ -44,6 +46,7 @@ import { LoggerModule } from './logger/logger.module';
 })
 export class ApiModule implements NestModule {
 	constructor(private readonly configService: ConfigService) {}
+
 	configure(consumer: MiddlewareConsumer) {
 		return configSession(consumer, this.configService);
 	}

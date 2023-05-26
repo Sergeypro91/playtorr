@@ -5,3 +5,4 @@ export * from './parser.controller';
 export * from './person.controller';
 export * from './picture.controller';
 export * from './user.controller';
+export * from './webtorrent.controller';

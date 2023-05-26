@@ -5,7 +5,7 @@ import {
 	PictureSearch,
 	GetPictureTrends,
 	PictureGetRecentViewedPictures,
-} from '@app/common';
+} from '@app/common/contracts';
 import { PictureService } from './picture.service';
 
 @Controller()

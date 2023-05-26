@@ -1,6 +1,6 @@
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { Body, Controller } from '@nestjs/common';
-import { PersonGetPersonData } from '@app/common';
+import { PersonGetPersonData } from '@app/common/contracts';
 import { PersonService } from './person.service';
 
 @Controller()

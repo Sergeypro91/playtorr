@@ -6,4 +6,5 @@ export * from './person';
 export * from './picture';
 export * from './tmdb';
 export * from './user';
+export * from './webtorrent';
 export * from './base.dto';

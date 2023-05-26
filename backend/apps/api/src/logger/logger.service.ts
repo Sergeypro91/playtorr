@@ -1,14 +1,14 @@
 import { Logger } from 'pino';
 import { ConfigService } from '@nestjs/config';
 import { Injectable, LoggerService } from '@nestjs/common';
-import { pinoConfig } from '@app/common';
+import { getPinoConfig } from '@app/common/configs';
 
 @Injectable()
 export class RedefinedLoggerService implements LoggerService {
 	pinoLogger: Logger;
 
 	constructor(private readonly configService: ConfigService) {
-		this.pinoLogger = pinoConfig(
+		this.pinoLogger = getPinoConfig(
 			this.configService.get('LOGS_FOLDER_NAME', 'logs'),
 		);
 	}
