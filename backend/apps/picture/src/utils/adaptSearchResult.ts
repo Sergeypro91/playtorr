@@ -1,8 +1,35 @@
-import { IMovieSlim, IPersonSlim, ITvSlim } from '@app/common';
+import {
+	IImages,
+	IMovieSlim,
+	IPersonSlim,
+	ITvSlim,
+} from '@app/common/interfaces';
 import { MediaType } from '@app/common/types';
+
+const getHPoster = (images?: IImages) => {
+	if (images) {
+		const hPosters = images.backdrops
+			.filter((backdrop) =>
+				['en', 'uk', 'us', 'ru'].includes(backdrop['iso_639_1']),
+			)
+			.sort((a, b) => {
+				if (a['width'] === b['width']) {
+					return b['vote_average'] - a['vote_average'];
+				} else {
+					return b['width'] - a['width'];
+				}
+			});
+
+		return hPosters[0]?.['file_path'] || null;
+	}
+
+	return null;
+};
 
 const adaptToSlimMovie = (tmdbMovieSlim): IMovieSlim => ({
 	posterPath: tmdbMovieSlim['poster_path'],
+	hPosterPath: getHPoster(tmdbMovieSlim['images']),
+	backdropPath: tmdbMovieSlim['backdrop_path'],
 	releaseDate: tmdbMovieSlim['release_date'],
 	originalTitle: tmdbMovieSlim['original_title'],
 	genres: tmdbMovieSlim['genre_ids'],
@@ -15,6 +42,8 @@ const adaptToSlimMovie = (tmdbMovieSlim): IMovieSlim => ({
 
 const adaptToSlimTv = (tmdbMovieSlim): ITvSlim => ({
 	posterPath: tmdbMovieSlim['poster_path'],
+	hPosterPath: getHPoster(tmdbMovieSlim['images']),
+	backdropPath: tmdbMovieSlim['backdrop_path'],
 	popularity: tmdbMovieSlim['popularity'],
 	tmdbId: tmdbMovieSlim['id'],
 	overview: tmdbMovieSlim['overview'],

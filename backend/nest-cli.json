@@ -67,6 +67,15 @@
 				"tsConfigPath": "apps/picture/tsconfig.app.json"
 			}
 		},
+		"publicPreview": {
+			"type": "application",
+			"root": "apps/publicPreview",
+			"entryFile": "main",
+			"sourceRoot": "apps/publicPreview/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/publicPreview/tsconfig.app.json"
+			}
+		},
 		"telegram": {
 			"type": "application",
 			"root": "apps/telegram",

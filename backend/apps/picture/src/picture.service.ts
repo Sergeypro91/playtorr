@@ -94,7 +94,6 @@ export class PictureService {
 			results: pictureTrendsResult.results.map((searchResult) =>
 				adaptPictureTrendsResult({
 					...searchResult,
-					['media_type']: dto.mediaType,
 				}),
 			),
 		};

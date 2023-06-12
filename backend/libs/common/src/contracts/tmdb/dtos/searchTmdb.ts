@@ -5,19 +5,21 @@ import {
 	IsNumber,
 	IsOptional,
 	IsString,
+	Validate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { MediaType } from '@app/common/types';
 import { PaginationDto } from '@app/common/contracts/base.dto';
 import { TmdbSlimMovieDto, TmdbSlimTvDto } from './getTmdbPictureTrends';
+import { IsNumberOrString } from '@app/common/contracts';
 
 export class SearchRequestTmdbDto {
 	@IsString()
 	query: string;
 
 	@IsOptional()
-	@IsString()
-	page?: string;
+	@Validate(IsNumberOrString)
+	page?: string | number;
 }
 
 export class TmdbSlimMovieWithMediaTypeDto extends TmdbSlimMovieDto {

@@ -29,7 +29,11 @@ import {
 } from '@app/common/interfaces';
 import { BasePictureDto } from '../../base.dto';
 
-export class GetPicture extends BasePictureDto {}
+export class GetPicture extends BasePictureDto {
+	@IsOptional()
+	@IsString()
+	appends?: string;
+}
 
 export class PictureDto extends BasePictureDto implements IPicture {
 	@IsObject()

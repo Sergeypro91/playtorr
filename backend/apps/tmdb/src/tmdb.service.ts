@@ -1,7 +1,7 @@
 import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiError } from '@app/common';
+import { ApiError, MediaType } from '@app/common';
 import {
 	GetTmdbPersonDto,
 	GetTmdbPicture,
@@ -46,11 +46,11 @@ export class TmdbService {
 
 	public async searchTmdb({
 		query,
-		page,
+		page = 1,
 	}: SearchRequestTmdbDto): Promise<SearchResultTmdbDto> {
 		const queries = new URLSearchParams({
 			query,
-			page,
+			page: `${page}`,
 		}).toString();
 
 		return this.tmdbGet({
@@ -80,9 +80,10 @@ export class TmdbService {
 	public async getTmdbPicture({
 		tmdbId,
 		mediaType,
+		appends,
 	}: GetTmdbPicture): Promise<TmdbMovieDto | TmdbTvDto> {
 		const queries = new URLSearchParams({
-			append_to_response: 'videos,images,credits',
+			append_to_response: appends || 'videos,images,credits',
 		}).toString();
 		const [picture, external_ids] = await promiseAllSettledHandle([
 			this.tmdbGet({
@@ -100,15 +101,36 @@ export class TmdbService {
 	public async getTmdPictureTrends({
 		mediaType,
 		timeWindow,
-		page,
+		page = 1,
 	}: GetTmdbPictureTrendsDto): Promise<TmdbPictureTrendsDto> {
 		const queries = new URLSearchParams({
-			page,
+			page: `${page}`,
 		}).toString();
+		const expandedTrends = [];
 
-		return this.tmdbGet({
+		const trends = await this.tmdbGet({
 			route: `trending/${mediaType}/${timeWindow}`,
 			queries: [queries],
 		});
+
+		for (const trend of trends.results) {
+			const details = await this.getTmdbPicture({
+				tmdbId: `${trend['id']}`,
+				imdbId: null,
+				mediaType:
+					trend['media_type'] === 'tv'
+						? MediaType.TV
+						: MediaType.MOVIE,
+				appends: 'videos,images',
+			});
+
+			expandedTrends.push({
+				...trend,
+				videos: details['videos'],
+				images: details['images'],
+			});
+		}
+
+		return { ...trends, results: expandedTrends };
 	}
 }

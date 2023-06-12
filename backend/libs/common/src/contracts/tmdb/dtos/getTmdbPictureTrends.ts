@@ -5,10 +5,12 @@ import {
 	IsNumber,
 	IsOptional,
 	IsString,
+	Validate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PaginationDto } from '@app/common/contracts/base.dto';
 import { MediaType, TimeWindow } from '@app/common/types';
+import { IsNumberOrString } from '@app/common/contracts';
 
 export class GetTmdbPictureTrendsDto {
 	@IsEnum(MediaType)
@@ -18,8 +20,8 @@ export class GetTmdbPictureTrendsDto {
 	timeWindow: TimeWindow;
 
 	@IsOptional()
-	@IsString()
-	page?: string;
+	@Validate(IsNumberOrString)
+	page?: string | number;
 }
 
 export class TmdbPictureTrendsDto extends PaginationDto {
