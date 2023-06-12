@@ -30,7 +30,15 @@ export class SearchResultDto extends PaginationDto {
 export class MovieSlim implements IMovieSlim {
 	@IsOptional()
 	@IsString()
-	posterPath?: string | null;
+	posterPath: string | null; // poster_path
+
+	@IsOptional()
+	@IsString()
+	hPosterPath: string | null;
+
+	@IsOptional()
+	@IsString()
+	backdropPath: string | null; // backdrop_path
 
 	@IsString()
 	releaseDate: string; // release_date
@@ -45,7 +53,7 @@ export class MovieSlim implements IMovieSlim {
 	tmdbId: number; // id
 
 	@IsEnum(MediaType)
-	mediaType: MediaType; // media_type
+	mediaType: MediaType.MOVIE; // media_type
 
 	@IsString()
 	title: string;
@@ -62,6 +70,14 @@ export class TvSlim implements ITvSlim {
 	@IsString()
 	posterPath: string | null; // poster_path
 
+	@IsOptional()
+	@IsString()
+	hPosterPath: string | null;
+
+	@IsOptional()
+	@IsString()
+	backdropPath: string | null; // backdrop_path
+
 	@IsNumber()
 	popularity: number;
 
@@ -75,7 +91,7 @@ export class TvSlim implements ITvSlim {
 	voteAverage: number; // vote_average
 
 	@IsEnum(MediaType)
-	mediaType: MediaType; // media_type
+	mediaType: MediaType.TV; // media_type
 
 	@IsString()
 	releaseDate: string; // first_air_date
@@ -100,7 +116,7 @@ export class PersonSlim implements IPersonSlim {
 	tmdbId: number; // id
 
 	@IsEnum(MediaType)
-	mediaType: MediaType; // media_type
+	mediaType: MediaType.PERSON; // media_type
 
 	@IsString()
 	name: string;

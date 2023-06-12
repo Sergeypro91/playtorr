@@ -12,11 +12,14 @@ import {
 	PersonController,
 	PictureController,
 	WebtorrentController,
+	PublicPreviewController,
 } from './controllers';
 import { JwtStrategy, LocalStrategy } from './strategies';
 import { SessionSerializer } from './session';
 import { RolesGuard } from './guards';
 import { LoggerModule } from './logger/logger.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
 	controllers: [
@@ -27,6 +30,7 @@ import { LoggerModule } from './logger/logger.module';
 		ParserController,
 		PersonController,
 		PictureController,
+		PublicPreviewController,
 		WebtorrentController,
 	],
 	imports: [
@@ -37,6 +41,12 @@ import { LoggerModule } from './logger/logger.module';
 				'../envs/local.env', // if we`re running service local not in docker
 				`${process.env.NODE_ENV}.env`,
 			],
+		}),
+		// TODO change ServerStatic on MinIO
+		ServeStaticModule.forRoot({
+			rootPath: join(__dirname, '../publicPreview', 'posters'),
+			serveRoot: '/posters',
+			exclude: ['/api/(.*)'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
 		PassportModule.register({ session: true }),

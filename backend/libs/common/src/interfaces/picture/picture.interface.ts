@@ -6,12 +6,14 @@ export interface PictureIdType {
 }
 
 export interface IMovieSlim {
-	posterPath?: string | null;
+	posterPath: string | null;
+	hPosterPath: string | null;
+	backdropPath: string | null;
 	releaseDate: string;
 	originalTitle: string;
 	genres: number[];
 	tmdbId: number;
-	mediaType: MediaType;
+	mediaType: MediaType.MOVIE;
 	title: string;
 	popularity: number;
 	voteAverage: number;
@@ -19,11 +21,13 @@ export interface IMovieSlim {
 
 export interface ITvSlim {
 	posterPath: string | null;
+	hPosterPath: string | null;
+	backdropPath: string | null;
 	popularity: number;
 	tmdbId: number;
 	overview: string;
 	voteAverage: number;
-	mediaType: MediaType;
+	mediaType: MediaType.TV;
 	releaseDate: string;
 	genres: number[];
 	title: string;
@@ -33,7 +37,7 @@ export interface ITvSlim {
 export interface IPersonSlim {
 	profilePath: string | null;
 	tmdbId: number;
-	mediaType: MediaType;
+	mediaType: MediaType.PERSON;
 	name: string;
 	popularity: number;
 }
