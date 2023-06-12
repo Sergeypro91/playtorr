@@ -5,13 +5,13 @@ import { ApiError, MediaType } from '@app/common';
 import {
 	GetTmdbPersonDto,
 	GetTmdbPicture,
-	GetTmdbPictureTrendsDto,
+	GetTmdbPictureTrendsRequestDto,
 	SearchRequestTmdbDto,
 	SearchResultTmdbDto,
 	TmdbGetRequest,
 	TmdbMovieDto,
 	TmdbPersonDto,
-	TmdbPictureTrendsDto,
+	GetTmdbPictureTrendsResponseDto,
 	TmdbTvDto,
 } from '@app/common/contracts';
 import { promiseAllSettledHandle } from './utils';
@@ -102,7 +102,7 @@ export class TmdbService {
 		mediaType,
 		timeWindow,
 		page = 1,
-	}: GetTmdbPictureTrendsDto): Promise<TmdbPictureTrendsDto> {
+	}: GetTmdbPictureTrendsRequestDto): Promise<GetTmdbPictureTrendsResponseDto> {
 		const queries = new URLSearchParams({
 			page: `${page}`,
 		}).toString();

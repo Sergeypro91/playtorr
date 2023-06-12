@@ -78,11 +78,13 @@ export const adaptSearchResult = (
 
 export const adaptPictureTrendsResult = (
 	searchResult: unknown,
-): IMovieSlim | ITvSlim => {
+): IMovieSlim | ITvSlim | IPersonSlim => {
 	switch (searchResult['media_type']) {
 		case MediaType.MOVIE:
 			return adaptToSlimMovie(searchResult);
 		case MediaType.TV:
 			return adaptToSlimTv(searchResult);
+		case MediaType.PERSON:
+			return adaptToSlimPerson(searchResult);
 	}
 };

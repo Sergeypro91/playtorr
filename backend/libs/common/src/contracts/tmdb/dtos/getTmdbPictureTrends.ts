@@ -12,7 +12,7 @@ import { PaginationDto } from '@app/common/contracts/base.dto';
 import { MediaType, TimeWindow } from '@app/common/types';
 import { IsNumberOrString } from '@app/common/contracts';
 
-export class GetTmdbPictureTrendsDto {
+export class GetTmdbPictureTrendsRequestDto {
 	@IsEnum(MediaType)
 	mediaType: MediaType;
 
@@ -24,7 +24,7 @@ export class GetTmdbPictureTrendsDto {
 	page?: string | number;
 }
 
-export class TmdbPictureTrendsDto extends PaginationDto {
+export class GetTmdbPictureTrendsResponseDto extends PaginationDto {
 	@IsArray()
 	@Type(() => TmdbSlimMovieDto || TmdbSlimTvDto)
 	results: (TmdbSlimMovieDto | TmdbSlimTvDto)[];
