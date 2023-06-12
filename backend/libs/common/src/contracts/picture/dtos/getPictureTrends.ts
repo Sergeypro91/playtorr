@@ -1,17 +1,18 @@
 import {
-	IsString,
 	IsOptional,
 	IsEnum,
 	IsArray,
 	ValidateNested,
+	Validate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { OmitType } from '@nestjs/swagger';
 import { PaginationDto } from '@app/common/contracts/base.dto';
 import { MediaType, TimeWindow } from '@app/common/types';
-import { MovieSlim, TvSlim } from './search';
+import { MovieSlim, PersonSlim, SearchResultDto, TvSlim } from './search';
+import { IsNumberOrString } from '@app/common/contracts';
 
-export class GetPictureTrendsDto {
+export class GetPictureTrendsRequestDto {
 	@IsEnum(MediaType)
 	mediaType: MediaType;
 
@@ -19,18 +20,13 @@ export class GetPictureTrendsDto {
 	timeWindow: TimeWindow;
 
 	@IsOptional()
-	@IsString()
-	page?: string;
+	@Validate(IsNumberOrString)
+	page?: string | number;
 }
+
+export class GetPictureTrendsResponseDto extends SearchResultDto {}
 
 export class GetPictureTrendsApiGatewayDto extends OmitType(
-	GetPictureTrendsDto,
+	GetPictureTrendsRequestDto,
 	['page'],
 ) {}
-
-export class PictureTrendsDtoDto extends PaginationDto {
-	@IsArray()
-	@ValidateNested({ each: true })
-	@Type(() => MovieSlim || TvSlim)
-	results: (MovieSlim | TvSlim)[];
-}

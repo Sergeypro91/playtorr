@@ -56,8 +56,12 @@ export class PublicPreviewService {
 				sections: [
 					{
 						title: 'Popular today',
-						tiles: rawTrends.results.map((picture) =>
-							adaptTrendToPreview({ picture, posterBaseUrl }),
+						tiles: rawTrends.results.map((picture, position) =>
+							adaptTrendToPreview({
+								picture,
+								posterBaseUrl,
+								position,
+							}),
 						),
 					},
 				],

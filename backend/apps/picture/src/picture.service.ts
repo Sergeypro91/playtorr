@@ -10,8 +10,8 @@ import {
 	PictureDto,
 	SearchResultDto,
 	SearchRequestDto,
-	GetPictureTrendsDto,
-	PictureTrendsDtoDto,
+	GetPictureTrendsRequestDto,
+	GetPictureTrendsResponseDto,
 } from '@app/common/contracts';
 import { daysPassed } from '@app/common/utils';
 import { ApiError } from '@app/common/constants';
@@ -21,6 +21,7 @@ import {
 	adaptPictureTrendsResult,
 } from './utils';
 import { PictureRepository } from './repositories/picture.repository';
+import { TrendRepository } from './repositories/trend.repository';
 
 @Injectable()
 export class PictureService {
@@ -28,6 +29,7 @@ export class PictureService {
 		private readonly rmqService: RMQService,
 		private readonly configService: ConfigService,
 		private readonly pictureRepository: PictureRepository,
+		private readonly trendRepository: TrendRepository,
 	) {}
 
 	public async search(dto: SearchRequestDto): Promise<SearchResultDto> {
@@ -82,21 +84,42 @@ export class PictureService {
 	}
 
 	public async getPictureTrends(
-		dto: GetPictureTrendsDto,
-	): Promise<PictureTrendsDtoDto> {
-		const pictureTrendsResult = await this.rmqService.send<
-			TmdbGetTmdbPictureTrends.Request,
-			TmdbGetTmdbPictureTrends.Response
-		>(TmdbGetTmdbPictureTrends.topic, dto);
+		dto: GetPictureTrendsRequestDto,
+	): Promise<GetPictureTrendsResponseDto> {
+		let trend = await this.trendRepository.findTrendsPage(dto);
 
-		return {
-			...pictureTrendsResult,
-			results: pictureTrendsResult.results.map((searchResult) =>
-				adaptPictureTrendsResult({
-					...searchResult,
-				}),
-			),
+		const getTrend = async () => {
+			const rawTrendResponse = await this.rmqService.send<
+				TmdbGetTmdbPictureTrends.Request,
+				TmdbGetTmdbPictureTrends.Response
+			>(TmdbGetTmdbPictureTrends.topic, dto);
+
+			return {
+				trendRequest: dto,
+				trendResponse: {
+					...rawTrendResponse,
+					results: rawTrendResponse.results.map((searchResult) =>
+						adaptPictureTrendsResult({
+							...searchResult,
+						}),
+					),
+				},
+			};
 		};
+
+		if (!trend) {
+			trend = await this.trendRepository.saveTrends(await getTrend());
+		} else if (
+			daysPassed({
+				to: trend['updatedAt'],
+			}) >= 1
+		) {
+			trend = await this.trendRepository.updateTrendsPage(
+				await getTrend(),
+			);
+		}
+
+		return trend.trendResponse;
 	}
 
 	public async getRecentViewedPictures(email: string): Promise<PictureDto[]> {

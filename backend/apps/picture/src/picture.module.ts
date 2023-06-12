@@ -3,10 +3,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getMongoConfig, getRMQConfig } from '@app/common/configs';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Picture, PictureSchema } from './models';
+import { Picture, PictureSchema, Trend, TrendSchema } from './models';
 import { PictureController } from './picture.controller';
 import { PictureService } from './picture.service';
 import { PictureRepository } from './repositories/picture.repository';
+import { TrendRepository } from './repositories/trend.repository';
 
 @Module({
 	controllers: [PictureController],
@@ -25,7 +26,8 @@ import { PictureRepository } from './repositories/picture.repository';
 		MongooseModule.forFeature([
 			{ name: Picture.name, schema: PictureSchema },
 		]),
+		MongooseModule.forFeature([{ name: Trend.name, schema: TrendSchema }]),
 	],
-	providers: [PictureService, PictureRepository],
+	providers: [PictureService, PictureRepository, TrendRepository],
 })
 export class PictureModule {}

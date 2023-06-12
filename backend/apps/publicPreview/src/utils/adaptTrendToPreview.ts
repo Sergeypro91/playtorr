@@ -9,6 +9,7 @@ import { MediaType } from '@app/common';
 type AdaptTrendToPreviewArgs = {
 	picture: IMovieSlim | ITvSlim | IPersonSlim;
 	posterBaseUrl: string;
+	position?: number;
 };
 
 const getTitle = (picture: AdaptTrendToPreviewArgs['picture']) => {
@@ -54,6 +55,7 @@ export const getTrendImage = (picture: AdaptTrendToPreviewArgs['picture']) => {
 export const adaptTrendToPreview = ({
 	picture,
 	posterBaseUrl,
+	position,
 }: AdaptTrendToPreviewArgs): ISectionTile => {
 	return {
 		title: getTitle(picture),
@@ -61,5 +63,6 @@ export const adaptTrendToPreview = ({
 		image_url: `${posterBaseUrl}${getTrendImage(picture)}`,
 		action_data: `{\"videoIdx\": ${picture['tmdbId']}}`,
 		is_playable: false,
+		position,
 	};
 };
