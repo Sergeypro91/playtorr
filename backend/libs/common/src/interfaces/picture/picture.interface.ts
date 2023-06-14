@@ -6,45 +6,46 @@ export interface PictureIdType {
 }
 
 export interface IMovieSlim {
+	tmdbId: number;
+	mediaType: MediaType.MOVIE;
 	posterPath: string | null;
 	hPosterPath: string | null;
 	backdropPath: string | null;
-	releaseDate: string;
-	originalTitle: string;
-	genres: number[];
-	tmdbId: number;
-	mediaType: MediaType.MOVIE;
 	title: string;
+	originalTitle: string;
+	overview: string | null;
+	genres: number[];
+	releaseDate: string;
 	popularity: number;
 	voteAverage: number;
 }
 
 export interface ITvSlim {
+	tmdbId: number;
+	mediaType: MediaType.TV;
 	posterPath: string | null;
 	hPosterPath: string | null;
 	backdropPath: string | null;
-	popularity: number;
-	tmdbId: number;
-	overview: string;
-	voteAverage: number;
-	mediaType: MediaType.TV;
-	releaseDate: string;
-	genres: number[];
 	title: string;
 	originalTitle: string;
+	overview: string | null;
+	genres: number[];
+	releaseDate: string;
+	popularity: number;
+	voteAverage: number;
 }
 
 export interface IPersonSlim {
-	profilePath: string | null;
 	tmdbId: number;
 	mediaType: MediaType.PERSON;
 	name: string;
+	profilePath: string | null;
 	popularity: number;
 }
 
 export interface IExternalsIds {
 	tmdbId: string;
-	imdbId: string | null;
+	imdbId?: string | null;
 }
 
 export interface IPicture extends IExternalsIds {

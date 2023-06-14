@@ -6,14 +6,14 @@ import {
 	TmdbSearchTmdb,
 	TmdbGetTmdbPicture,
 	TmdbGetTmdbPictureTrends,
-	GetPicture,
+	GetPictureParams,
 	PictureDto,
 	SearchResultDto,
 	SearchRequestDto,
 	GetPictureTrendsRequestDto,
 	GetPictureTrendsResponseDto,
 } from '@app/common/contracts';
-import { daysPassed } from '@app/common/utils';
+import { daysPassed, ttlToDay } from '@app/common/utils';
 import { ApiError } from '@app/common/constants';
 import {
 	adaptSearchResult,
@@ -22,15 +22,24 @@ import {
 } from './utils';
 import { PictureRepository } from './repositories/picture.repository';
 import { TrendRepository } from './repositories/trend.repository';
+import { MediaType } from '@app/common';
 
 @Injectable()
 export class PictureService {
+	public movieTtl: number;
+	public tvTtl: number;
+	public trendsTtl: number;
+
 	constructor(
 		private readonly rmqService: RMQService,
 		private readonly configService: ConfigService,
 		private readonly pictureRepository: PictureRepository,
 		private readonly trendRepository: TrendRepository,
-	) {}
+	) {
+		this.movieTtl = parseInt(configService.get('MOVIE_TTL', '2592000'), 10);
+		this.tvTtl = parseInt(configService.get('TV_TTL', '604800'), 10);
+		this.trendsTtl = parseInt(configService.get('TRENDS_TTL', '86400'), 10);
+	}
 
 	public async search(dto: SearchRequestDto): Promise<SearchResultDto> {
 		const searchResult = await this.rmqService.send<
@@ -46,7 +55,7 @@ export class PictureService {
 		};
 	}
 
-	public async getPicture(dto: GetPicture): Promise<PictureDto> {
+	public async getPicture(dto: GetPictureParams): Promise<PictureDto> {
 		try {
 			let picture = await this.pictureRepository.findPictureByTmdbId(dto);
 
@@ -67,14 +76,21 @@ export class PictureService {
 				picture = await this.pictureRepository.savePicture(
 					await getTmdbPicture(),
 				);
-			} else if (
-				daysPassed({
+			} else {
+				const lastUpdateDayPassed = daysPassed({
 					to: picture['updatedAt'],
-				}) >= 7
-			) {
-				picture = await this.pictureRepository.updatePicture(
-					await getTmdbPicture(),
+				});
+				const ttlInDay = ttlToDay(
+					picture.mediaType === MediaType.MOVIE
+						? this.movieTtl
+						: this.tvTtl,
 				);
+
+				if (lastUpdateDayPassed > ttlInDay) {
+					picture = await this.pictureRepository.updatePicture(
+						await getTmdbPicture(),
+					);
+				}
 			}
 
 			return picture;
@@ -97,7 +113,9 @@ export class PictureService {
 			return {
 				trendRequest: dto,
 				trendResponse: {
-					...rawTrendResponse,
+					page: rawTrendResponse['page'],
+					totalPages: rawTrendResponse['total_pages'],
+					totalResults: rawTrendResponse['total_results'],
 					results: rawTrendResponse.results.map((searchResult) =>
 						adaptPictureTrendsResult({
 							...searchResult,
@@ -109,14 +127,17 @@ export class PictureService {
 
 		if (!trend) {
 			trend = await this.trendRepository.saveTrends(await getTrend());
-		} else if (
-			daysPassed({
+		} else {
+			const lastUpdateDayPassed = daysPassed({
 				to: trend['updatedAt'],
-			}) >= 1
-		) {
-			trend = await this.trendRepository.updateTrendsPage(
-				await getTrend(),
-			);
+			});
+			const ttlInDay = ttlToDay(this.trendsTtl);
+
+			if (lastUpdateDayPassed > ttlInDay) {
+				trend = await this.trendRepository.updateTrendsPage(
+					await getTrend(),
+				);
+			}
 		}
 
 		return trend.trendResponse;

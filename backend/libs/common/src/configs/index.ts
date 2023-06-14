@@ -4,3 +4,4 @@ export * from './getPinoConfig';
 export * from './rmq.config';
 export * from './session.config';
 export * from './swagger.config';
+export * from './cors.config';

@@ -1,32 +1,27 @@
-import {
-	IsOptional,
-	IsEnum,
-	IsArray,
-	ValidateNested,
-	Validate,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { OmitType } from '@nestjs/swagger';
-import { PaginationDto } from '@app/common/contracts/base.dto';
+import { IsEnum } from 'class-validator';
+import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 import { MediaType, TimeWindow } from '@app/common/types';
-import { MovieSlim, PersonSlim, SearchResultDto, TvSlim } from './search';
-import { IsNumberOrString } from '@app/common/contracts';
+import { SearchRequestDto, SearchResultDto } from './search';
 
-export class GetPictureTrendsRequestDto {
+export class GetPictureTrendsRequestDto extends PickType(SearchRequestDto, [
+	'page',
+]) {
+	@ApiProperty({ enum: MediaType })
 	@IsEnum(MediaType)
 	mediaType: MediaType;
 
+	@ApiProperty({ enum: TimeWindow })
 	@IsEnum(TimeWindow)
 	timeWindow: TimeWindow;
-
-	@IsOptional()
-	@Validate(IsNumberOrString)
-	page?: string | number;
 }
 
 export class GetPictureTrendsResponseDto extends SearchResultDto {}
 
-export class GetPictureTrendsApiGatewayDto extends OmitType(
+export class GetPictureTrendsParamsDto extends OmitType(
 	GetPictureTrendsRequestDto,
 	['page'],
 ) {}
+
+export class GetPictureTrendsQueriesDto extends PickType(SearchRequestDto, [
+	'page',
+]) {}

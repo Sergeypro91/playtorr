@@ -5,7 +5,6 @@ import {
 	IImage,
 	IMovie,
 	IParticipantPerson,
-	IPicture,
 	ISeason,
 	ITv,
 	IVideo,
@@ -203,8 +202,12 @@ export const adaptPicture = ({
 
 	return {
 		tmdbId: pictureData['id'],
-		imdbId: pictureData?.['imdb_id'] || null,
-		mediaType,
+		imdbId:
+			pictureData?.['imdb_id'] ||
+			`tempId-${pictureData['id']}/${
+				pictureData?.['media_type'] || mediaType
+			}`,
+		mediaType: pictureData?.['media_type'] || mediaType,
 		pictureData: adaptPictureData(pictureData),
 	};
 };

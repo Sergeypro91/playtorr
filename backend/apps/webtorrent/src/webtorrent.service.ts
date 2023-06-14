@@ -5,30 +5,30 @@ import WebTorrent, { TorrentOptions } from 'webtorrent';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+	GetFileMetadataDto,
+	GetTorrentDistributionInfoDto,
 	MetadataDto,
+	UploadTorrentFilesInfoDto,
 	WebTorrentDto,
 	WebTorrentInfoDto,
-	GetFileMetadataDto,
-	UploadTorrentFilesInfoDto,
-	GetTorrentDistributionInfoDto,
 } from '@app/common/contracts';
 import { daysPassed, ttlToDay } from '@app/common/utils';
 import { EnumStatus, MediaType } from '@app/common/types';
 import {
+	CANT_COLLECT_METADATA,
 	NO_PEERS,
 	SUPPORTED_FILE_TYPE,
-	CANT_COLLECT_METADATA,
 } from '@app/common/constants';
 import {
-	onDestroy,
-	getFileSize,
 	adaptTorrent,
+	adaptTorrentFile,
+	adaptTorrentFileMetadata,
 	getFileFormat,
 	getFileMetaData,
-	adaptTorrentFile,
+	getFileSize,
+	onDestroy,
 	torrentErrorHandling,
 	torrentLogger as logger,
-	adaptTorrentFileMetadata,
 } from '../utils';
 import { WebTorrentRepository } from './repositories';
 
@@ -44,6 +44,7 @@ export class WebtorrentService {
 		private readonly webTorrentRepository: WebTorrentRepository,
 	) {
 		this.clientOption = {
+			// TODO change on ENV props
 			path: '/Users/sergeyshevtsov/Developer/Project/PlayTorr/torrent',
 			destroyStoreOnDestroy: true,
 			store: FSChunkStore,
@@ -98,6 +99,9 @@ export class WebtorrentService {
 		if (!webTorrent) {
 			webTorrent = await this.webTorrentRepository.saveTorrentInfo({
 				...torrentIdentifiers,
+				imdbId:
+					torrentIdentifiers.imdbId ||
+					`tempId-${torrentIdentifiers.tmdbId}/${torrentIdentifiers.mediaType}`,
 				torrentInfo: await this.loadTorrentInfo(torrentIdentifiers),
 			});
 		} else {
@@ -136,13 +140,13 @@ export class WebtorrentService {
 			const fileId = filesToDownload.indexOf(fileToDownload);
 
 			if (fileToDownload.supported) {
-				const fileMetadata = await this.getFileMetadata({
-					...rest,
-					torrentUrl,
-					fileId,
-				});
-
-				torrentInfo.files[fileId].metadata = fileMetadata;
+				torrentInfo.files[fileId].metadata = await this.getFileMetadata(
+					{
+						...rest,
+						torrentUrl,
+						fileId,
+					},
+				);
 
 				await this.webTorrentRepository.updateTorrentInfo({
 					torrentUrl,
@@ -157,7 +161,7 @@ export class WebtorrentService {
 		torrentUrl,
 		fileId,
 	}: GetFileMetadataDto): Promise<MetadataDto> {
-		return new Promise(async (resolve, reject) => {
+		return new Promise(async (resolve) => {
 			const client = new WebTorrent();
 			const torrent = client.add(
 				torrentUrl,

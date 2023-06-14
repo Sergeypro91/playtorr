@@ -27,39 +27,40 @@ const getHPoster = (images?: IImages) => {
 };
 
 const adaptToSlimMovie = (tmdbMovieSlim): IMovieSlim => ({
+	tmdbId: tmdbMovieSlim['id'],
+	mediaType: tmdbMovieSlim['media_type'],
 	posterPath: tmdbMovieSlim['poster_path'],
 	hPosterPath: getHPoster(tmdbMovieSlim['images']),
 	backdropPath: tmdbMovieSlim['backdrop_path'],
-	releaseDate: tmdbMovieSlim['release_date'],
-	originalTitle: tmdbMovieSlim['original_title'],
-	genres: tmdbMovieSlim['genre_ids'],
-	tmdbId: tmdbMovieSlim['id'],
-	mediaType: tmdbMovieSlim['media_type'],
 	title: tmdbMovieSlim['title'],
+	originalTitle: tmdbMovieSlim['original_title'],
+	overview: tmdbMovieSlim['overview'],
+	genres: tmdbMovieSlim['genre_ids'],
+	releaseDate: tmdbMovieSlim['release_date'],
 	popularity: tmdbMovieSlim['popularity'],
 	voteAverage: tmdbMovieSlim['vote_average'],
 });
 
 const adaptToSlimTv = (tmdbMovieSlim): ITvSlim => ({
+	tmdbId: tmdbMovieSlim['id'],
+	mediaType: tmdbMovieSlim['media_type'],
 	posterPath: tmdbMovieSlim['poster_path'],
 	hPosterPath: getHPoster(tmdbMovieSlim['images']),
 	backdropPath: tmdbMovieSlim['backdrop_path'],
-	popularity: tmdbMovieSlim['popularity'],
-	tmdbId: tmdbMovieSlim['id'],
-	overview: tmdbMovieSlim['overview'],
-	voteAverage: tmdbMovieSlim['vote_average'],
-	mediaType: tmdbMovieSlim['media_type'],
-	releaseDate: tmdbMovieSlim['first_air_date'],
-	genres: tmdbMovieSlim['genre_ids'],
 	title: tmdbMovieSlim['name'],
 	originalTitle: tmdbMovieSlim['original_name'],
+	overview: tmdbMovieSlim['overview'],
+	genres: tmdbMovieSlim['genre_ids'],
+	popularity: tmdbMovieSlim['popularity'],
+	voteAverage: tmdbMovieSlim['vote_average'],
+	releaseDate: tmdbMovieSlim['first_air_date'],
 });
 
 const adaptToSlimPerson = (tmdbMovieSlim): IPersonSlim => ({
-	profilePath: tmdbMovieSlim['profile_path'],
 	tmdbId: tmdbMovieSlim['id'],
 	mediaType: tmdbMovieSlim['media_type'],
 	name: tmdbMovieSlim['name'],
+	profilePath: tmdbMovieSlim['profile_path'],
 	popularity: tmdbMovieSlim['popularity'],
 });
 

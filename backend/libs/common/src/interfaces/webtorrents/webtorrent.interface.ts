@@ -2,7 +2,7 @@ import { EnumStatus, MediaType } from '@app/common/types';
 
 export interface IBaseWebTorrent {
 	tmdbId: string;
-	imdbId: string;
+	imdbId?: string | null;
 	mediaType: MediaType;
 }
 

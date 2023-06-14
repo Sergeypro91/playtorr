@@ -18,18 +18,20 @@ import {
 	ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import {
-	ErrorDto,
-	SearchResultDto,
-	SearchRequestDto,
-	UserPushUserRecentView,
-	PictureGetPicture,
 	PictureSearch,
 	GetPictureTrends,
+	PictureGetPicture,
+	UserPushUserRecentView,
 	PictureGetRecentViewedPictures,
+	ErrorDto,
 	PictureDto,
-	GetPictureTrendsApiGatewayDto,
+	SearchResultDto,
+	SearchRequestDto,
+	GetPictureTrendsQueriesDto,
+	GetPictureTrendsParamsDto,
+	GetPictureQueries,
 } from '@app/common';
-import { GetPicture } from '@app/common/contracts';
+import { GetPictureParams } from '@app/common/contracts';
 import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Picture')
@@ -68,7 +70,8 @@ export class PictureController {
 	@UseGuards(AuthenticatedGuard)
 	@Get(':tmdbId/:mediaType')
 	async getPictureData(
-		@Param() param: GetPicture,
+		@Param() param: GetPictureParams,
+		@Query() query: GetPictureQueries,
 		@Session() { passport }: Record<string, any>,
 	): Promise<PictureDto> {
 		// Save "Picture" IDs to user entity -> recentViews
@@ -89,7 +92,7 @@ export class PictureController {
 			return await this.rmqService.send<
 				PictureGetPicture.Request,
 				PictureGetPicture.Response
-			>(PictureGetPicture.topic, param);
+			>(PictureGetPicture.topic, { ...param, ...query });
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
@@ -104,17 +107,17 @@ export class PictureController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	@UseGuards(AuthenticatedGuard)
+	// @UseGuards(AuthenticatedGuard)
 	@Get('trends/:mediaType/:timeWindow')
 	async getPictureTrends(
-		@Param() param: GetPictureTrendsApiGatewayDto,
-		@Query('page') page?: string,
+		@Param() param: GetPictureTrendsParamsDto,
+		@Query() query: GetPictureTrendsQueriesDto,
 	): Promise<SearchResultDto> {
 		try {
 			return await this.rmqService.send<
 				GetPictureTrends.Request,
 				GetPictureTrends.Response
-			>(GetPictureTrends.topic, { ...param, page });
+			>(GetPictureTrends.topic, { ...param, ...query });
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
