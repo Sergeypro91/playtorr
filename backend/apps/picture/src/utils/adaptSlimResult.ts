@@ -26,12 +26,30 @@ const getHPoster = (images?: IImages) => {
 	return null;
 };
 
+const getBackdrop = (images?: IImages) => {
+	if (images) {
+		const hPosters = images.backdrops
+			.filter((backdrop) => !backdrop['iso_639_1'])
+			.sort((a, b) => {
+				if (a['width'] === b['width']) {
+					return b['vote_count'] - a['vote_count'];
+				} else {
+					return b['width'] - a['width'];
+				}
+			});
+
+		return hPosters[0]?.['file_path'] || null;
+	}
+
+	return null;
+};
+
 const adaptToSlimMovie = (tmdbMovieSlim): IMovieSlim => ({
 	tmdbId: tmdbMovieSlim['id'],
 	mediaType: tmdbMovieSlim['media_type'],
 	posterPath: tmdbMovieSlim['poster_path'],
 	hPosterPath: getHPoster(tmdbMovieSlim['images']),
-	backdropPath: tmdbMovieSlim['backdrop_path'],
+	backdropPath: getBackdrop(tmdbMovieSlim['images']),
 	title: tmdbMovieSlim['title'],
 	originalTitle: tmdbMovieSlim['original_title'],
 	overview: tmdbMovieSlim['overview'],
@@ -46,7 +64,7 @@ const adaptToSlimTv = (tmdbMovieSlim): ITvSlim => ({
 	mediaType: tmdbMovieSlim['media_type'],
 	posterPath: tmdbMovieSlim['poster_path'],
 	hPosterPath: getHPoster(tmdbMovieSlim['images']),
-	backdropPath: tmdbMovieSlim['backdrop_path'],
+	backdropPath: getBackdrop(tmdbMovieSlim['images']),
 	title: tmdbMovieSlim['name'],
 	originalTitle: tmdbMovieSlim['original_name'],
 	overview: tmdbMovieSlim['overview'],
@@ -64,20 +82,7 @@ const adaptToSlimPerson = (tmdbMovieSlim): IPersonSlim => ({
 	popularity: tmdbMovieSlim['popularity'],
 });
 
-export const adaptSearchResult = (
-	searchResult: unknown,
-): IMovieSlim | ITvSlim | IPersonSlim => {
-	switch (searchResult['media_type']) {
-		case MediaType.MOVIE:
-			return adaptToSlimMovie(searchResult);
-		case MediaType.TV:
-			return adaptToSlimTv(searchResult);
-		case MediaType.PERSON:
-			return adaptToSlimPerson(searchResult);
-	}
-};
-
-export const adaptPictureTrendsResult = (
+export const adaptSlimResult = (
 	searchResult: unknown,
 ): IMovieSlim | ITvSlim | IPersonSlim => {
 	switch (searchResult['media_type']) {

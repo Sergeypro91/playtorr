@@ -1,4 +1,4 @@
-import { SearchRequestTmdbDto, SearchResultTmdbDto } from './dtos';
+import { SearchRequestTmdbDto, SearchResultTmdbDto } from '../dtos';
 
 export namespace TmdbSearchTmdb {
 	export const topic = 'tmdb.searchTmdb.command';

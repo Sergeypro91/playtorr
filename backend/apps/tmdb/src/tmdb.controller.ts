@@ -5,7 +5,8 @@ import {
 	TmdbGetTmdbPerson,
 	TmdbGetTmdbPicture,
 	TmdbGetTmdbPictureTrends,
-} from '@app/common';
+	TmdbGetTmdbNetworkPictures,
+} from '@app/common/contracts';
 import { TmdbService } from './tmdb.service';
 
 @Controller()
@@ -44,5 +45,13 @@ export class TmdbController {
 		@Body() dto: TmdbGetTmdbPictureTrends.Request,
 	): Promise<TmdbGetTmdbPictureTrends.Response> {
 		return this.tmdbService.getTmdPictureTrends(dto);
+	}
+
+	@RMQValidate()
+	@RMQRoute(TmdbGetTmdbNetworkPictures.topic)
+	public async getTmdbNetworkPictures(
+		@Body() dto: TmdbGetTmdbNetworkPictures.Request,
+	): Promise<TmdbGetTmdbNetworkPictures.Response> {
+		return this.tmdbService.getTmdbNetworkPictures(dto);
 	}
 }

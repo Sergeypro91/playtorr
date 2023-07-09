@@ -39,16 +39,26 @@ export const parseRutor = async ({
 		// Browser startup
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox'],
-			// headless: false,
+			headless: 'new',
 			ignoreHTTPSErrors: true,
 			executablePath: chromeDir || executablePath(),
 		});
+
+		browser.on('targetchanged', async (target) => {
+			if (!target.url().startsWith(url)) {
+				const parasitePage = await target.page();
+				parasitePage?.close();
+			}
+		});
+
 		const page = await browser.newPage();
 
 		// Open page
 		await stepHandle(
 			async () => {
-				await page.goto(url, { waitUntil: 'domcontentloaded' });
+				await page.goto(url, {
+					waitUntil: 'domcontentloaded',
+				});
 			},
 			browser,
 			'Open page',

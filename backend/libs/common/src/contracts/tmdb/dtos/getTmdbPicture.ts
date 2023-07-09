@@ -11,9 +11,9 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PictureStatus } from '@app/common/types';
-import { GetPicture } from '@app/common/contracts';
+import { GetPictureRequestDto } from '@app/common/contracts';
 
-export class GetTmdbPicture extends GetPicture {}
+export class GetTmdbPicture extends GetPictureRequestDto {}
 
 export class TmdbExternalsIdsDto {
 	@IsOptional()

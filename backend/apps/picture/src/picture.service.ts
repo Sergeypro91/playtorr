@@ -6,23 +6,23 @@ import {
 	TmdbSearchTmdb,
 	TmdbGetTmdbPicture,
 	TmdbGetTmdbPictureTrends,
+	TmdbGetTmdbNetworkPictures,
 	GetPictureParams,
-	PictureDto,
+	GetPictureResponseDto,
 	SearchResultDto,
 	SearchRequestDto,
 	GetPictureTrendsRequestDto,
 	GetPictureTrendsResponseDto,
+	GetNetworkPicturesRequestDto,
+	GetNetworkPicturesResponseDto,
 } from '@app/common/contracts';
+import { MediaType } from '@app/common/types';
 import { daysPassed, ttlToDay } from '@app/common/utils';
 import { ApiError } from '@app/common/constants';
-import {
-	adaptSearchResult,
-	adaptPicture,
-	adaptPictureTrendsResult,
-} from './utils';
+import { adaptSlimResult, adaptPicture } from './utils';
 import { PictureRepository } from './repositories/picture.repository';
 import { TrendRepository } from './repositories/trend.repository';
-import { MediaType } from '@app/common';
+import { NetworkPictureRepository } from './repositories/networkPicture.repository';
 
 @Injectable()
 export class PictureService {
@@ -35,6 +35,7 @@ export class PictureService {
 		private readonly configService: ConfigService,
 		private readonly pictureRepository: PictureRepository,
 		private readonly trendRepository: TrendRepository,
+		private readonly networkPictureRepository: NetworkPictureRepository,
 	) {
 		this.movieTtl = parseInt(configService.get('MOVIE_TTL', '2592000'), 10);
 		this.tvTtl = parseInt(configService.get('TV_TTL', '604800'), 10);
@@ -50,12 +51,14 @@ export class PictureService {
 		return {
 			...searchResult,
 			results: searchResult.results.map((searchResult) =>
-				adaptSearchResult(searchResult),
+				adaptSlimResult(searchResult),
 			),
 		};
 	}
 
-	public async getPicture(dto: GetPictureParams): Promise<PictureDto> {
+	public async getPicture(
+		dto: GetPictureParams,
+	): Promise<GetPictureResponseDto> {
 		try {
 			let picture = await this.pictureRepository.findPictureByTmdbId(dto);
 
@@ -110,17 +113,27 @@ export class PictureService {
 				TmdbGetTmdbPictureTrends.Response
 			>(TmdbGetTmdbPictureTrends.topic, dto);
 
+			const adaptResults = async (results) => {
+				const resultArr = [];
+
+				for (const result of results) {
+					const resultObject = adaptSlimResult(result);
+
+					resultArr.push({ ...resultObject });
+				}
+
+				return resultArr;
+			};
+
+			const results = await adaptResults(rawTrendResponse.results);
+
 			return {
 				trendRequest: dto,
 				trendResponse: {
 					page: rawTrendResponse['page'],
 					totalPages: rawTrendResponse['total_pages'],
 					totalResults: rawTrendResponse['total_results'],
-					results: rawTrendResponse.results.map((searchResult) =>
-						adaptPictureTrendsResult({
-							...searchResult,
-						}),
-					),
+					results,
 				},
 			};
 		};
@@ -133,7 +146,7 @@ export class PictureService {
 			});
 			const ttlInDay = ttlToDay(this.trendsTtl);
 
-			if (lastUpdateDayPassed > ttlInDay) {
+			if (lastUpdateDayPassed >= ttlInDay) {
 				trend = await this.trendRepository.updateTrendsPage(
 					await getTrend(),
 				);
@@ -143,7 +156,70 @@ export class PictureService {
 		return trend.trendResponse;
 	}
 
-	public async getRecentViewedPictures(email: string): Promise<PictureDto[]> {
+	public async getNetworkPictures(
+		dto: GetNetworkPicturesRequestDto,
+	): Promise<GetNetworkPicturesResponseDto> {
+		let networkPicture =
+			await this.networkPictureRepository.findNetworkPicturesPage(dto);
+
+		const getNetworkPictures = async () => {
+			const rawNetworkPicturesResponse = await this.rmqService.send<
+				TmdbGetTmdbNetworkPictures.Request,
+				TmdbGetTmdbNetworkPictures.Response
+			>(TmdbGetTmdbNetworkPictures.topic, dto);
+
+			const adaptResults = async (results) => {
+				const resultArr = [];
+
+				for (const result of results) {
+					const resultObject = adaptSlimResult(result);
+
+					resultArr.push({ ...resultObject });
+				}
+
+				return resultArr;
+			};
+
+			const results = await adaptResults(
+				rawNetworkPicturesResponse.results,
+			);
+
+			return {
+				networkPictureRequest: dto,
+				networkPictureResponse: {
+					page: rawNetworkPicturesResponse['page'],
+					totalPages: rawNetworkPicturesResponse['total_pages'],
+					totalResults: rawNetworkPicturesResponse['total_results'],
+					results,
+				},
+			};
+		};
+
+		if (!networkPicture) {
+			networkPicture =
+				await this.networkPictureRepository.saveNetworkPictures(
+					await getNetworkPictures(),
+				);
+		} else {
+			const lastUpdateDayPassed = daysPassed({
+				to: networkPicture['updatedAt'],
+			});
+			const ttlInDay = ttlToDay(this.trendsTtl);
+
+			if (lastUpdateDayPassed >= ttlInDay) {
+				networkPicture =
+					await this.networkPictureRepository.updateNetworkPicturesPage(
+						await getNetworkPictures(),
+					);
+			}
+		}
+
+		return networkPicture.networkPictureResponse;
+	}
+
+	public async getRecentViewedPictures(
+		email: string,
+	): Promise<GetPictureResponseDto[]> {
 		try {
 			const user = await this.rmqService.send<
 				UserGetUser.Request,

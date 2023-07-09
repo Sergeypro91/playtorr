@@ -18,7 +18,7 @@ export const stepHandle = async (
 		try {
 			await fn();
 		} catch (error) {
-			console.log('PARSER ERROR DETAIL', error.message);
+			console.log(`PARSER ERROR DETAIL STEP - "${name}"`, error.message);
 			rej(timeoutMessage || error.message);
 			return;
 		}

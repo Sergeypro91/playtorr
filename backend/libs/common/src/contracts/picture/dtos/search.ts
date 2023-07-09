@@ -9,7 +9,7 @@ import { Transform, Type } from 'class-transformer';
 import { MediaType } from '@app/common/types';
 import { PaginationDto } from '@app/common/contracts/base.dto';
 import { IMovieSlim, IPersonSlim, ITvSlim } from '@app/common/interfaces';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { ApiModelPropertyOptional } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 
 export class SearchRequestDto {
@@ -31,8 +31,8 @@ export class SearchRequestDto {
 
 export class MovieSlim implements IMovieSlim {
 	@ApiProperty()
-	@IsNumber()
-	tmdbId: number; // id
+	@IsString()
+	tmdbId: string; // id
 
 	@ApiProperty()
 	@IsString()
@@ -48,7 +48,7 @@ export class MovieSlim implements IMovieSlim {
 	@IsString()
 	hPosterPath: string | null;
 
-	@ApiProperty({ type: String, nullable: true })
+	@ApiProperty({ nullable: true })
 	@IsOptional()
 	@IsString()
 	backdropPath: string | null; // backdrop_path
@@ -85,8 +85,8 @@ export class MovieSlim implements IMovieSlim {
 
 export class TvSlim implements ITvSlim {
 	@ApiProperty()
-	@IsNumber()
-	tmdbId: number; // id
+	@IsString()
+	tmdbId: string; // id
 
 	@ApiProperty()
 	@IsString()
@@ -102,7 +102,7 @@ export class TvSlim implements ITvSlim {
 	@IsString()
 	hPosterPath: string | null;
 
-	@ApiProperty({ type: String, nullable: true })
+	@ApiProperty({ nullable: true })
 	@IsOptional()
 	@IsString()
 	backdropPath: string | null; // backdrop_path
@@ -139,8 +139,8 @@ export class TvSlim implements ITvSlim {
 
 export class PersonSlim implements IPersonSlim {
 	@ApiProperty()
-	@IsNumber()
-	tmdbId: number; // id
+	@IsString()
+	tmdbId: string; // id
 
 	@ApiProperty()
 	@IsString()
@@ -160,8 +160,18 @@ export class PersonSlim implements IPersonSlim {
 	popularity: number;
 }
 
+@ApiExtraModels(MovieSlim, TvSlim, PersonSlim)
 export class SearchResultDto extends PaginationDto {
-	@ApiProperty({ type: [MovieSlim || TvSlim || PersonSlim] })
+	@ApiProperty({
+		type: 'array',
+		items: {
+			oneOf: [
+				{ $ref: getSchemaPath(MovieSlim) },
+				{ $ref: getSchemaPath(TvSlim) },
+				{ $ref: getSchemaPath(PersonSlim) },
+			],
+		},
+	})
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => MovieSlim || TvSlim || PersonSlim)

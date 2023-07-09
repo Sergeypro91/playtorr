@@ -3,11 +3,19 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getMongoConfig, getRMQConfig } from '@app/common/configs';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Picture, PictureSchema, Trend, TrendSchema } from './models';
+import {
+	Picture,
+	PictureSchema,
+	Trend,
+	TrendSchema,
+	NetworkPicture,
+	NetworkPictureSchema,
+} from './models';
 import { PictureController } from './picture.controller';
 import { PictureService } from './picture.service';
 import { PictureRepository } from './repositories/picture.repository';
 import { TrendRepository } from './repositories/trend.repository';
+import { NetworkPictureRepository } from './repositories/networkPicture.repository';
 
 @Module({
 	controllers: [PictureController],
@@ -27,7 +35,15 @@ import { TrendRepository } from './repositories/trend.repository';
 			{ name: Picture.name, schema: PictureSchema },
 		]),
 		MongooseModule.forFeature([{ name: Trend.name, schema: TrendSchema }]),
+		MongooseModule.forFeature([
+			{ name: NetworkPicture.name, schema: NetworkPictureSchema },
+		]),
 	],
-	providers: [PictureService, PictureRepository, TrendRepository],
+	providers: [
+		PictureService,
+		PictureRepository,
+		TrendRepository,
+		NetworkPictureRepository,
+	],
 })
 export class PictureModule {}

@@ -1,3 +1,3 @@
 export * from './adaptPictureTrends';
-export * from './adaptSearchResult';
+export * from './adaptSlimResult';
 export * from './adaptPicture';

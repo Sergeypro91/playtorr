@@ -1,4 +1,4 @@
-import { MediaType, PictureStatus } from '@app/common/types';
+import { MediaType, PictureStatus } from "@app/common/types";
 
 export interface PictureIdType {
 	tmdbId: string;
@@ -6,7 +6,7 @@ export interface PictureIdType {
 }
 
 export interface IMovieSlim {
-	tmdbId: number;
+	tmdbId: string;
 	mediaType: MediaType.MOVIE;
 	posterPath: string | null;
 	hPosterPath: string | null;
@@ -21,7 +21,7 @@ export interface IMovieSlim {
 }
 
 export interface ITvSlim {
-	tmdbId: number;
+	tmdbId: string;
 	mediaType: MediaType.TV;
 	posterPath: string | null;
 	hPosterPath: string | null;
@@ -36,7 +36,7 @@ export interface ITvSlim {
 }
 
 export interface IPersonSlim {
-	tmdbId: number;
+	tmdbId: string;
 	mediaType: MediaType.PERSON;
 	name: string;
 	profilePath: string | null;

@@ -35,7 +35,7 @@ export class TrendRepository {
 		return this.pictureModel
 			.findOneAndUpdate(
 				{ trendRequest },
-				{ $set: trendResponse },
+				{ $set: { trendResponse } },
 				{
 					new: true,
 				},

@@ -5,6 +5,8 @@
 	"monorepo": true,
 	"root": "apps/api",
 	"compilerOptions": {
+		"builder": "swc",
+		"typeCheck": true,
 		"webpack": true,
 		"tsConfigPath": "apps/auth/tsconfig.app.json",
 		"deleteOutDir": true,

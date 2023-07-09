@@ -1,4 +1,4 @@
-import { GetTmdbPersonDto, TmdbPersonDto } from './dtos';
+import { GetTmdbPersonDto, TmdbPersonDto } from '../dtos';
 
 export namespace TmdbGetTmdbPerson {
 	export const topic = 'tmdb.getTmdbPerson.command';

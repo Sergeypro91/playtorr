@@ -13,6 +13,7 @@ import {
 	PictureController,
 	WebtorrentController,
 	PublicPreviewController,
+	ImageController,
 } from './controllers';
 import { JwtStrategy, LocalStrategy } from './strategies';
 import { SessionSerializer } from './session';
@@ -24,6 +25,7 @@ import { join } from 'path';
 @Module({
 	controllers: [
 		TestController,
+		ImageController,
 		AuthController,
 		UserController,
 		MinIOController,

@@ -3,35 +3,40 @@ import {
 	Get,
 	Param,
 	Query,
+	Logger,
 	Session,
 	UseGuards,
 	Controller,
-	HttpException,
 	HttpStatus,
-	Logger,
+	HttpException,
 } from '@nestjs/common';
 import {
 	ApiTags,
 	ApiOperation,
 	ApiNotFoundResponse,
-	ApiUnauthorizedResponse,
 	ApiBadRequestResponse,
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
+	GetPicture,
 	PictureSearch,
 	GetPictureTrends,
-	PictureGetPicture,
+	GetNetworkPictures,
 	UserPushUserRecentView,
 	PictureGetRecentViewedPictures,
 	ErrorDto,
-	PictureDto,
 	SearchResultDto,
 	SearchRequestDto,
-	GetPictureTrendsQueriesDto,
-	GetPictureTrendsParamsDto,
+	GetPictureParams,
 	GetPictureQueries,
-} from '@app/common';
-import { GetPictureParams } from '@app/common/contracts';
+	GetPictureResponseDto,
+	GetPictureTrendsParamsDto,
+	GetPictureTrendsQueriesDto,
+	GetNetworkPicturesParamsDto,
+	GetPictureTrendsResponseDto,
+	GetNetworkPicturesQueriesDto,
+	GetNetworkPicturesResponseDto,
+} from '@app/common/contracts';
 import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Picture')
@@ -73,7 +78,7 @@ export class PictureController {
 		@Param() param: GetPictureParams,
 		@Query() query: GetPictureQueries,
 		@Session() { passport }: Record<string, any>,
-	): Promise<PictureDto> {
+	): Promise<GetPictureResponseDto> {
 		// Save "Picture" IDs to user entity -> recentViews
 		try {
 			await this.rmqService.send<
@@ -90,9 +95,9 @@ export class PictureController {
 		// "Picture" request itself
 		try {
 			return await this.rmqService.send<
-				PictureGetPicture.Request,
-				PictureGetPicture.Response
-			>(PictureGetPicture.topic, { ...param, ...query });
+				GetPicture.Request,
+				GetPicture.Response
+			>(GetPicture.topic, { ...param, ...query });
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
@@ -112,12 +117,39 @@ export class PictureController {
 	async getPictureTrends(
 		@Param() param: GetPictureTrendsParamsDto,
 		@Query() query: GetPictureTrendsQueriesDto,
-	): Promise<SearchResultDto> {
+	): Promise<GetPictureTrendsResponseDto> {
 		try {
 			return await this.rmqService.send<
 				GetPictureTrends.Request,
 				GetPictureTrends.Response
 			>(GetPictureTrends.topic, { ...param, ...query });
+		} catch (error) {
+			if (error instanceof RMQError) {
+				throw new HttpException(
+					error.message,
+					error.code || HttpStatus.REQUEST_TIMEOUT,
+				);
+			}
+		}
+	}
+
+	@ApiOperation({
+		summary: 'Получение фильмов/сериалов определенной компании',
+	})
+	@ApiUnauthorizedResponse({ type: ErrorDto })
+	@ApiBadRequestResponse({ type: ErrorDto })
+	@ApiNotFoundResponse({ type: ErrorDto })
+	// @UseGuards(AuthenticatedGuard)
+	@Get('network/:mediaType/:network')
+	async getNetworkPictures(
+		@Param() param: GetNetworkPicturesParamsDto,
+		@Query() query: GetNetworkPicturesQueriesDto,
+	): Promise<GetNetworkPicturesResponseDto> {
+		try {
+			return await this.rmqService.send<
+				GetNetworkPictures.Request,
+				GetNetworkPictures.Response
+			>(GetNetworkPictures.topic, { ...param, ...query });
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
@@ -138,7 +170,7 @@ export class PictureController {
 	@Get('recent-viewed')
 	async getRecentViewedPictures(
 		@Session() { passport }: Record<string, any>,
-	): Promise<PictureDto[]> {
+	): Promise<GetPictureResponseDto[]> {
 		try {
 			return await this.rmqService.send<
 				PictureGetRecentViewedPictures.Request[],

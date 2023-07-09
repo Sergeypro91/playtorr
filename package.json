@@ -24,7 +24,7 @@
     "k8s": "cd k8s && kubectl apply -f=deployment.yml"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.1.2",
+    "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.1.0",
     "husky": "^8.0.0",
     "tsc-files": "^1.1.3"

@@ -47,10 +47,18 @@ export const parseNnmClub = async ({
 		// Browser startup
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox'],
-			// headless: false /* Its run browser when parse */,
+			headless: 'new' /* Its run browser when parse */,
 			ignoreHTTPSErrors: true,
 			executablePath: chromeDir || executablePath(),
 		});
+
+		browser.on('targetchanged', async (target) => {
+			if (!target.url().startsWith(url)) {
+				const parasitePage = await target.page();
+				parasitePage?.close();
+			}
+		});
+
 		const page = await browser.newPage();
 
 		// Open page

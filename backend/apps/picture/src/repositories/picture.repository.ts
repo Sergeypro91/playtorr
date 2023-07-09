@@ -72,7 +72,7 @@ export class PictureRepository {
 		return this.pictureModel
 			.findOneAndUpdate(
 				{ tmdbId, mediaType },
-				{ $set: rest },
+				{ $set: { ...rest } },
 				{
 					new: true,
 				},

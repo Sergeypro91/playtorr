@@ -40,9 +40,16 @@ export const parseRuTracker = async ({
 		// Browser startup
 		const browser = await puppeteer.launch({
 			args: ['--no-sandbox'],
-			// headless: false /* Its run browser when parse */,
+			headless: 'new' /* Its run browser when parse */,
 			ignoreHTTPSErrors: true,
 			executablePath: chromeDir || executablePath(),
+		});
+
+		browser.on('targetchanged', async (target) => {
+			if (!target.url().startsWith(url)) {
+				const parasitePage = await target.page();
+				parasitePage?.close();
+			}
 		});
 
 		const page = await browser.newPage();
@@ -183,7 +190,7 @@ export const parseRuTracker = async ({
 		);
 
 		// Close browser
-		// await browser.close();
+		await browser.close();
 
 		// Return result
 		return result;

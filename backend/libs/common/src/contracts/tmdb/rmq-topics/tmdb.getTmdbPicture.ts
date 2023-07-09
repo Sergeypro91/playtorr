@@ -1,4 +1,4 @@
-import { GetTmdbPicture, TmdbMovieDto, TmdbTvDto } from './dtos';
+import { GetTmdbPicture, TmdbMovieDto, TmdbTvDto } from '../dtos';
 
 export namespace TmdbGetTmdbPicture {
 	export const topic = 'tmdb.getTmdbPicture.command';

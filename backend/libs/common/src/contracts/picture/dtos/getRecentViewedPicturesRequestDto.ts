@@ -1,6 +1,6 @@
 import { IsEmail } from 'class-validator';
 
-export class GetRecentViewedPictures {
+export class GetRecentViewedPicturesRequestDto {
 	@IsEmail()
 	email: string;
 }

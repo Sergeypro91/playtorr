@@ -1,7 +1,12 @@
 import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiError, MediaType } from '@app/common';
+import {
+	ApiError,
+	GetTmdbNetworkPicturesRequestDto,
+	GetTmdbNetworkPicturesResponseDto,
+	MediaType,
+} from '@app/common';
 import {
 	GetTmdbPersonDto,
 	GetTmdbPicture,
@@ -15,6 +20,7 @@ import {
 	TmdbTvDto,
 } from '@app/common/contracts';
 import { promiseAllSettledHandle } from './utils';
+import moment from 'moment';
 
 @Injectable()
 export class TmdbService {
@@ -82,6 +88,7 @@ export class TmdbService {
 		mediaType,
 		appends,
 	}: GetTmdbPicture): Promise<TmdbMovieDto | TmdbTvDto> {
+		console.log('REQUEST', tmdbId);
 		const queries = new URLSearchParams({
 			append_to_response: appends || 'videos,images,credits',
 		}).toString();
@@ -117,10 +124,7 @@ export class TmdbService {
 			const details = await this.getTmdbPicture({
 				tmdbId: `${trend['id']}`,
 				imdbId: null,
-				mediaType:
-					trend['media_type'] === 'tv'
-						? MediaType.TV
-						: MediaType.MOVIE,
+				mediaType: trend['media_type'] ?? mediaType,
 				appends: 'videos,images',
 			});
 
@@ -132,5 +136,42 @@ export class TmdbService {
 		}
 
 		return { ...trends, results: expandedTrends };
+	}
+
+	public async getTmdbNetworkPictures({
+		mediaType,
+		network,
+		page,
+	}: GetTmdbNetworkPicturesRequestDto): Promise<GetTmdbNetworkPicturesResponseDto> {
+		const queries = new URLSearchParams({
+			'with_networks': `${network}`,
+			'sort_by': 'popularity.desc',
+			'air_date.lte': moment().format('YYYY-MM-DD'),
+			'page': `${page}`,
+		}).toString();
+		const expandedNetworkPictures = [];
+
+		const pictures = await this.tmdbGet({
+			route: `discover/${mediaType}`,
+			queries: [queries],
+		});
+
+		for (const picture of pictures.results) {
+			const details = await this.getTmdbPicture({
+				tmdbId: `${picture['id']}`,
+				imdbId: null,
+				mediaType: picture['media_type'] ?? mediaType,
+				appends: 'videos,images',
+			});
+
+			expandedNetworkPictures.push({
+				...picture,
+				media_type: picture['media_type'] ?? mediaType,
+				videos: details['videos'],
+				images: details['images'],
+			});
+		}
+
+		return { ...pictures, results: expandedNetworkPictures };
 	}
 }

@@ -497,12 +497,12 @@ export class GetPictureQueries extends PickType(BasePictureDto, ['imdbId']) {
 	appends?: string;
 }
 
-export class GetPicture extends IntersectionType(
+export class GetPictureRequestDto extends IntersectionType(
 	GetPictureParams,
 	GetPictureQueries,
 ) {}
 
-export class PictureDto extends BasePictureDto implements IPicture {
+export class GetPictureResponseDto extends BasePictureDto implements IPicture {
 	@ApiProperty({ type: MovieDto || TvDto })
 	@IsObject()
 	pictureData: MovieDto | TvDto;

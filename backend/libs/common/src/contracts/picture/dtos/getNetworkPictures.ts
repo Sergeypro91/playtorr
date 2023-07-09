@@ -12,23 +12,14 @@ import {
 	getSchemaPath,
 	IntersectionType,
 } from '@nestjs/swagger';
-import { MediaType, TimeWindow } from '@app/common/types';
+import { MediaType } from '@app/common/types';
 import { PaginationDto } from '@app/common/contracts/base.dto';
 import { ApiModelPropertyOptional } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
-import { MovieSlim, PersonSlim, TvSlim } from './search';
+import { MovieSlim, TvSlim } from './search';
 
-export class GetPictureTrendsParamsDto {
-	@ApiProperty({ enum: MediaType })
-	@IsEnum(MediaType)
-	mediaType: MediaType;
-
-	@ApiProperty({ enum: TimeWindow })
-	@IsEnum(TimeWindow)
-	timeWindow: TimeWindow;
-}
-
-export class GetPictureTrendsQueriesDto {
+export class GetNetworkPicturesQueriesDto {
 	@ApiModelPropertyOptional({
+		required: false,
 		minimum: 1,
 		default: 1,
 	})
@@ -40,25 +31,37 @@ export class GetPictureTrendsQueriesDto {
 	page?: number;
 }
 
-export class GetPictureTrendsRequestDto extends IntersectionType(
-	GetPictureTrendsQueriesDto,
-	GetPictureTrendsParamsDto,
+export class GetNetworkPicturesParamsDto {
+	@ApiProperty({ enum: MediaType })
+	@IsEnum(MediaType)
+	mediaType: MediaType;
+
+	@ApiProperty()
+	@IsNumber()
+	@Transform(({ value }) => {
+		return parseInt(value, 10);
+	})
+	network: number;
+}
+
+export class GetNetworkPicturesRequestDto extends IntersectionType(
+	GetNetworkPicturesQueriesDto,
+	GetNetworkPicturesParamsDto,
 ) {}
 
-@ApiExtraModels(MovieSlim, TvSlim, PersonSlim)
-export class GetPictureTrendsResponseDto extends PaginationDto {
+@ApiExtraModels(MovieSlim, TvSlim)
+export class GetNetworkPicturesResponseDto extends PaginationDto {
 	@ApiProperty({
 		type: 'array',
 		items: {
 			oneOf: [
 				{ $ref: getSchemaPath(MovieSlim) },
 				{ $ref: getSchemaPath(TvSlim) },
-				{ $ref: getSchemaPath(PersonSlim) },
 			],
 		},
 	})
 	@IsArray()
 	@ValidateNested({ each: true })
-	@Type(() => MovieSlim || TvSlim || PersonSlim)
-	results: (MovieSlim | TvSlim | PersonSlim)[];
+	@Type(() => MovieSlim || TvSlim)
+	results: (MovieSlim | TvSlim)[];
 }
