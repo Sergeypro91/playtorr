@@ -1,10 +1,10 @@
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { Body, Controller } from '@nestjs/common';
 import {
-	TmdbSearchTmdb,
-	TmdbGetTmdbPerson,
-	TmdbGetTmdbPicture,
-	TmdbGetTmdbPictureTrends,
+	GetTmdbSearch,
+	GetTmdbPerson,
+	GetTmdbPicture,
+	GetTmdbPictureTrends,
 	TmdbGetTmdbNetworkPictures,
 } from '@app/common/contracts';
 import { TmdbService } from './tmdb.service';
@@ -14,36 +14,34 @@ export class TmdbController {
 	constructor(private readonly tmdbService: TmdbService) {}
 
 	@RMQValidate()
-	@RMQRoute(TmdbSearchTmdb.topic)
+	@RMQRoute(GetTmdbSearch.topic)
 	public async searchTmdb(
-		@Body() dto: TmdbSearchTmdb.Request,
-	): Promise<TmdbSearchTmdb.Response> {
+		@Body() dto: GetTmdbSearch.Request,
+	): Promise<GetTmdbSearch.Response> {
 		return this.tmdbService.searchTmdb(dto);
 	}
 
 	@RMQValidate()
-	@RMQRoute(TmdbGetTmdbPerson.topic)
+	@RMQRoute(GetTmdbPerson.topic)
 	public async getTmdbPerson(
-		@Body() dto: TmdbGetTmdbPerson.Request,
-	): Promise<TmdbGetTmdbPerson.Response> {
+		@Body() dto: GetTmdbPerson.Request,
+	): Promise<GetTmdbPerson.Response> {
 		return this.tmdbService.getTmdbPerson(dto);
 	}
 
 	@RMQValidate()
-	@RMQRoute(TmdbGetTmdbPicture.topic)
+	@RMQRoute(GetTmdbPicture.topic)
 	public async getTmdbPicture(
-		@Body() dto: TmdbGetTmdbPicture.Request,
-	): Promise<
-		TmdbGetTmdbPicture.ResponseMovie | TmdbGetTmdbPicture.ResponseTv
-	> {
+		@Body() dto: GetTmdbPicture.Request,
+	): Promise<GetTmdbPicture.ResponseMovie | GetTmdbPicture.ResponseTv> {
 		return this.tmdbService.getTmdbPicture(dto);
 	}
 
 	@RMQValidate()
-	@RMQRoute(TmdbGetTmdbPictureTrends.topic)
+	@RMQRoute(GetTmdbPictureTrends.topic)
 	public async getTmdPictureTrends(
-		@Body() dto: TmdbGetTmdbPictureTrends.Request,
-	): Promise<TmdbGetTmdbPictureTrends.Response> {
+		@Body() dto: GetTmdbPictureTrends.Request,
+	): Promise<GetTmdbPictureTrends.Response> {
 		return this.tmdbService.getTmdPictureTrends(dto);
 	}
 

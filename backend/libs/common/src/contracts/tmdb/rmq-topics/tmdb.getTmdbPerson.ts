@@ -1,9 +1,9 @@
-import { GetTmdbPersonDto, TmdbPersonDto } from '../dtos';
+import { GetTmdbPersonRequestDto, GetTmdbPersonResponseDto } from '../dtos';
 
-export namespace TmdbGetTmdbPerson {
+export namespace GetTmdbPerson {
 	export const topic = 'tmdb.getTmdbPerson.command';
 
-	export class Request extends GetTmdbPersonDto {}
+	export class Request extends GetTmdbPersonRequestDto {}
 
-	export class Response extends TmdbPersonDto {}
+	export class Response extends GetTmdbPersonResponseDto {}
 }

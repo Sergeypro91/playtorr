@@ -1,3 +1,3 @@
 export * from './getFileMetadata';
-export * from './getTorrentDistributionInfoDto';
+export * from './getTorrentDistributionInfoRequestDto';
 export * from './uploadTorrentFilesInfoDto';

@@ -12,10 +12,14 @@ import { MediaType } from '@app/common/types';
 import { PaginationDto } from '@app/common/contracts/base.dto';
 import { TmdbSlimMovieDto, TmdbSlimTvDto } from './getTmdbPictureTrends';
 import { IsNumberOrString } from '@app/common/contracts';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class SearchRequestTmdbDto {
+export class GetTmdbSearchRequestDto {
 	@IsString()
 	query: string;
+
+	@IsEnum(MediaType)
+	mediaType: MediaType;
 
 	@IsOptional()
 	@Validate(IsNumberOrString)
@@ -56,7 +60,7 @@ export class TmdbSlimPersonDto {
 	popularity: number;
 }
 
-export class SearchResultTmdbDto extends PaginationDto {
+export class GetTmdbSearchResultDto extends PaginationDto {
 	@IsArray()
 	@Type(
 		() =>

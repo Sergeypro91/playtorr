@@ -8,16 +8,16 @@ import {
 	MediaType,
 } from '@app/common';
 import {
-	GetTmdbPersonDto,
-	GetTmdbPicture,
+	GetTmdbMovieResponseDto,
+	GetTmdbPersonRequestDto,
+	GetTmdbPersonResponseDto,
+	GetTmdbPictureRequestDto,
 	GetTmdbPictureTrendsRequestDto,
-	SearchRequestTmdbDto,
-	SearchResultTmdbDto,
-	TmdbGetRequest,
-	TmdbMovieDto,
-	TmdbPersonDto,
 	GetTmdbPictureTrendsResponseDto,
-	TmdbTvDto,
+	GetTmdbSearchRequestDto,
+	GetTmdbSearchResultDto,
+	GetTmdbTvResponseDto,
+	TmdbGetRequest,
 } from '@app/common/contracts';
 import { promiseAllSettledHandle } from './utils';
 import moment from 'moment';
@@ -52,22 +52,25 @@ export class TmdbService {
 
 	public async searchTmdb({
 		query,
+		mediaType,
 		page = 1,
-	}: SearchRequestTmdbDto): Promise<SearchResultTmdbDto> {
+	}: GetTmdbSearchRequestDto): Promise<GetTmdbSearchResultDto> {
 		const queries = new URLSearchParams({
 			query,
 			page: `${page}`,
 		}).toString();
 
 		return this.tmdbGet({
-			route: `search/multi`,
+			route: `search/${
+				mediaType === MediaType.ALL ? 'multi' : mediaType
+			}`,
 			queries: [queries],
 		});
 	}
 
 	public async getTmdbPerson({
 		tmdbId,
-	}: GetTmdbPersonDto): Promise<TmdbPersonDto> {
+	}: GetTmdbPersonRequestDto): Promise<GetTmdbPersonResponseDto> {
 		const [details, movies, tvs] = await promiseAllSettledHandle([
 			this.tmdbGet({
 				route: `person/${tmdbId}`,
@@ -87,7 +90,9 @@ export class TmdbService {
 		tmdbId,
 		mediaType,
 		appends,
-	}: GetTmdbPicture): Promise<TmdbMovieDto | TmdbTvDto> {
+	}: GetTmdbPictureRequestDto): Promise<
+		GetTmdbMovieResponseDto | GetTmdbTvResponseDto
+	> {
 		console.log('REQUEST', tmdbId);
 		const queries = new URLSearchParams({
 			append_to_response: appends || 'videos,images,credits',

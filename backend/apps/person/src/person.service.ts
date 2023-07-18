@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import {
 	GetPersonDataDto,
 	PersonDetailDataDto,
-	TmdbGetTmdbPerson,
+	GetTmdbPerson,
 } from '@app/common/contracts';
 import { ApiError } from '@app/common/constants';
 import { daysPassed } from '@app/common/utils';
@@ -28,9 +28,9 @@ export class PersonService {
 			const getTmdbPerson = () => {
 				try {
 					return this.rmqService.send<
-						TmdbGetTmdbPerson.Request,
-						TmdbGetTmdbPerson.Response
-					>(TmdbGetTmdbPerson.topic, { tmdbId });
+						GetTmdbPerson.Request,
+						GetTmdbPerson.Response
+					>(GetTmdbPerson.topic, { tmdbId });
 				} catch (error) {}
 			};
 

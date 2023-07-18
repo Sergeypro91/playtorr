@@ -21,7 +21,7 @@ import {
 } from '@app/common/interfaces';
 import { EnumStatus, MediaType } from '@app/common/types';
 
-export class GetTorrentDistributionInfoDto extends BasePictureDto {
+export class GetTorrentDistributionInfoRequestDto extends BasePictureDto {
 	@IsString()
 	torrentUrl: string;
 }
@@ -189,7 +189,7 @@ export class WebTorrentInfoDto implements IWebTorrentInfo {
 	created: string | Date;
 }
 
-export class WebTorrentDto {
+export class GetTorrentDistributionInfoResponseDto {
 	@IsString()
 	tmdbId: string;
 

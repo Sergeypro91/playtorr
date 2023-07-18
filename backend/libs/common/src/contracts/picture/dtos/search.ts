@@ -1,5 +1,6 @@
 import {
 	IsArray,
+	IsEnum,
 	IsNumber,
 	IsOptional,
 	IsString,
@@ -16,6 +17,10 @@ export class SearchRequestDto {
 	@ApiProperty()
 	@IsString()
 	query: string;
+
+	@ApiProperty({ enum: MediaType })
+	@IsEnum(MediaType)
+	mediaType: MediaType;
 
 	@ApiModelPropertyOptional({
 		minimum: 1,
@@ -81,6 +86,11 @@ export class MovieSlim implements IMovieSlim {
 	@ApiProperty()
 	@IsNumber()
 	voteAverage: number; // vote_average
+
+	@ApiProperty({ nullable: true })
+	@IsOptional()
+	@IsString()
+	trailer: string;
 }
 
 export class TvSlim implements ITvSlim {
@@ -135,6 +145,11 @@ export class TvSlim implements ITvSlim {
 	@ApiProperty()
 	@IsNumber()
 	voteAverage: number; // vote_average
+
+	@ApiProperty({ nullable: true })
+	@IsOptional()
+	@IsString()
+	trailer: string;
 }
 
 export class PersonSlim implements IPersonSlim {

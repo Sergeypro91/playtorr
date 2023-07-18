@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { GetTorrentDistributionInfoDto } from '@app/common';
+import { GetTorrentDistributionInfoRequestDto } from '@app/common';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { WEBTORRENT_INFO_EXIST_ERROR } from '@app/common/constants';
 import { WebTorrent } from '../models';
@@ -29,7 +29,7 @@ export class WebTorrentRepository {
 		tmdbId,
 		mediaType,
 		torrentUrl,
-	}: GetTorrentDistributionInfoDto): Promise<WebTorrent> {
+	}: GetTorrentDistributionInfoRequestDto): Promise<WebTorrent> {
 		return this.webTorrentModel
 			.findOne({
 				tmdbId,
@@ -45,7 +45,7 @@ export class WebTorrentRepository {
 		mediaType,
 		torrentUrl,
 		...rest
-	}: GetTorrentDistributionInfoDto &
+	}: GetTorrentDistributionInfoRequestDto &
 		Partial<WebTorrentEntity>): Promise<WebTorrent> {
 		return this.webTorrentModel
 			.findOneAndUpdate(
@@ -68,7 +68,7 @@ export class WebTorrentRepository {
 		// imdbId,
 		mediaType,
 		torrentUrl,
-	}: GetTorrentDistributionInfoDto): Promise<WebTorrent> {
+	}: GetTorrentDistributionInfoRequestDto): Promise<WebTorrent> {
 		return this.webTorrentModel
 			.findOneAndDelete({
 				tmdbId,

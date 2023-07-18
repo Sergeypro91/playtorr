@@ -6,10 +6,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
 	GetFileMetadataDto,
-	GetTorrentDistributionInfoDto,
+	GetTorrentDistributionInfoRequestDto,
 	MetadataDto,
 	UploadTorrentFilesInfoDto,
-	WebTorrentDto,
+	GetTorrentDistributionInfoResponseDto,
 	WebTorrentInfoDto,
 } from '@app/common/contracts';
 import { daysPassed, ttlToDay } from '@app/common/utils';
@@ -54,7 +54,7 @@ export class WebtorrentService {
 	}
 
 	public async loadTorrentInfo(
-		torrentIdentifiers: GetTorrentDistributionInfoDto,
+		torrentIdentifiers: GetTorrentDistributionInfoRequestDto,
 	): Promise<WebTorrentInfoDto> {
 		return new Promise((resolve, reject) => {
 			const client = new WebTorrent();
@@ -90,8 +90,8 @@ export class WebtorrentService {
 	}
 
 	public async getTorrentInfo(
-		torrentIdentifiers: GetTorrentDistributionInfoDto,
-	): Promise<WebTorrentDto> {
+		torrentIdentifiers: GetTorrentDistributionInfoRequestDto,
+	): Promise<GetTorrentDistributionInfoResponseDto> {
 		let webTorrent = await this.webTorrentRepository.findTorrentInfo(
 			torrentIdentifiers,
 		);

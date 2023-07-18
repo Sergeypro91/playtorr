@@ -1,7 +1,7 @@
 import { IsNumber } from 'class-validator';
-import { GetTorrentDistributionInfoDto } from './getTorrentDistributionInfoDto';
+import { GetTorrentDistributionInfoRequestDto } from './getTorrentDistributionInfoRequestDto';
 
-export class GetFileMetadataDto extends GetTorrentDistributionInfoDto {
+export class GetFileMetadataDto extends GetTorrentDistributionInfoRequestDto {
 	@IsNumber()
 	fileId: number;
 }

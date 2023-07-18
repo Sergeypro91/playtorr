@@ -1,1 +1,1 @@
-export * from './webtorrent.getTorrentInfo';
+export * from './webtorrent.getTorrentDistributionInfo';

@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
 	UserGetUser,
-	TmdbSearchTmdb,
-	TmdbGetTmdbPicture,
-	TmdbGetTmdbPictureTrends,
+	GetTmdbSearch,
+	GetTmdbPicture,
+	GetTmdbPictureTrends,
 	TmdbGetTmdbNetworkPictures,
 	GetPictureParams,
 	GetPictureResponseDto,
@@ -44,14 +44,20 @@ export class PictureService {
 
 	public async search(dto: SearchRequestDto): Promise<SearchResultDto> {
 		const searchResult = await this.rmqService.send<
-			TmdbSearchTmdb.Request,
-			TmdbSearchTmdb.Response
-		>(TmdbSearchTmdb.topic, dto);
+			GetTmdbSearch.Request,
+			GetTmdbSearch.Response
+		>(GetTmdbSearch.topic, dto);
 
 		return {
 			...searchResult,
 			results: searchResult.results.map((searchResult) =>
-				adaptSlimResult(searchResult),
+				adaptSlimResult({
+					searchResult: {
+						...searchResult,
+						media_type: searchResult['media_type'] ?? dto.mediaType,
+					},
+					config: this.configService,
+				}),
 			),
 		};
 	}
@@ -64,10 +70,9 @@ export class PictureService {
 
 			const getTmdbPicture = async () => {
 				const pictureData = await this.rmqService.send<
-					TmdbGetTmdbPicture.Request,
-					| TmdbGetTmdbPicture.ResponseMovie
-					| TmdbGetTmdbPicture.ResponseTv
-				>(TmdbGetTmdbPicture.topic, dto);
+					GetTmdbPicture.Request,
+					GetTmdbPicture.ResponseMovie | GetTmdbPicture.ResponseTv
+				>(GetTmdbPicture.topic, dto);
 
 				return adaptPicture({
 					pictureData,
@@ -109,15 +114,18 @@ export class PictureService {
 
 		const getTrend = async () => {
 			const rawTrendResponse = await this.rmqService.send<
-				TmdbGetTmdbPictureTrends.Request,
-				TmdbGetTmdbPictureTrends.Response
-			>(TmdbGetTmdbPictureTrends.topic, dto);
+				GetTmdbPictureTrends.Request,
+				GetTmdbPictureTrends.Response
+			>(GetTmdbPictureTrends.topic, dto);
 
 			const adaptResults = async (results) => {
 				const resultArr = [];
 
 				for (const result of results) {
-					const resultObject = adaptSlimResult(result);
+					const resultObject = adaptSlimResult({
+						searchResult: result,
+						config: this.configService,
+					});
 
 					resultArr.push({ ...resultObject });
 				}
@@ -172,7 +180,10 @@ export class PictureService {
 				const resultArr = [];
 
 				for (const result of results) {
-					const resultObject = adaptSlimResult(result);
+					const resultObject = adaptSlimResult({
+						searchResult: result,
+						config: this.configService,
+					});
 
 					resultArr.push({ ...resultObject });
 				}

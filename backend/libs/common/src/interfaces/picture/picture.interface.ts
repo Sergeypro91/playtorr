@@ -1,4 +1,4 @@
-import { MediaType, PictureStatus } from "@app/common/types";
+import { MediaType, PictureStatus } from '@app/common/types';
 
 export interface PictureIdType {
 	tmdbId: string;
@@ -18,6 +18,7 @@ export interface IMovieSlim {
 	releaseDate: string;
 	popularity: number;
 	voteAverage: number;
+	trailer: string | null;
 }
 
 export interface ITvSlim {
@@ -33,6 +34,7 @@ export interface ITvSlim {
 	releaseDate: string;
 	popularity: number;
 	voteAverage: number;
+	trailer: string | null;
 }
 
 export interface IPersonSlim {

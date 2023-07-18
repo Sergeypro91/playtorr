@@ -1,11 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsObject } from 'class-validator';
 import {
-	GetTorrentDistributionInfoDto,
+	GetTorrentDistributionInfoRequestDto,
 	WebTorrentInfoDto,
-} from './getTorrentDistributionInfoDto';
+} from './getTorrentDistributionInfoRequestDto';
 
-export class UploadTorrentFilesInfoDto extends GetTorrentDistributionInfoDto {
+export class UploadTorrentFilesInfoDto extends GetTorrentDistributionInfoRequestDto {
 	@IsObject()
 	@Type(() => WebTorrentInfoDto)
 	torrentInfo: WebTorrentInfoDto;

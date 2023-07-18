@@ -1,12 +1,12 @@
 import { PersonEntity } from '../entities';
-import { TmdbPersonDto } from '@app/common';
+import { GetTmdbPersonResponseDto } from '@app/common';
 import { MediaType } from '@app/common/types';
 
 export const adaptPerson = ({
 	details,
 	movies,
 	tvs,
-}: TmdbPersonDto): PersonEntity => {
+}: GetTmdbPersonResponseDto): PersonEntity => {
 	const simplify = (arr: { id: number }[], mediaType: MediaType) =>
 		arr.map((elem) => ({
 			tmdbId: elem.id.toString(),

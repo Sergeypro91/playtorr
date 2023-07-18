@@ -3,7 +3,7 @@ import {
 	GetTmdbPictureTrendsResponseDto,
 } from '../dtos';
 
-export namespace TmdbGetTmdbPictureTrends {
+export namespace GetTmdbPictureTrends {
 	export const topic = 'tmdb.getTmdbPictureTrends.command';
 
 	export class Request extends GetTmdbPictureTrendsRequestDto {}

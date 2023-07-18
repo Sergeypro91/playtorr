@@ -13,7 +13,7 @@ import { Type } from 'class-transformer';
 import { PictureStatus } from '@app/common/types';
 import { GetPictureRequestDto } from '@app/common/contracts';
 
-export class GetTmdbPicture extends GetPictureRequestDto {}
+export class GetTmdbPictureRequestDto extends GetPictureRequestDto {}
 
 export class TmdbExternalsIdsDto {
 	@IsOptional()
@@ -269,7 +269,7 @@ export class TmdbImagesDto {
 	posters: TmdbImageDto[];
 }
 
-export class TmdbMovieDto extends TmdbExternalsIdsDto {
+export class GetTmdbMovieResponseDto extends TmdbExternalsIdsDto {
 	@IsBoolean()
 	adult: boolean;
 
@@ -495,7 +495,7 @@ class TmdbSeasons {
 	season_number: number;
 }
 
-export class TmdbTvDto extends TmdbExternalsIdsDto {
+export class GetTmdbTvResponseDto extends TmdbExternalsIdsDto {
 	@IsOptional()
 	@IsString()
 	backdrop_path: string | null;

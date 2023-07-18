@@ -10,7 +10,7 @@ import {
 import { Type } from 'class-transformer';
 import { GetPersonDataDto } from '@app/common/contracts';
 
-export class GetTmdbPersonDto extends GetPersonDataDto {}
+export class GetTmdbPersonRequestDto extends GetPersonDataDto {}
 
 export class PersonDetailsDto {
 	@IsOptional()
@@ -306,7 +306,7 @@ export class PersonTvsDto {
 	crew: TvCrewDto[];
 }
 
-export class TmdbPersonDto {
+export class GetTmdbPersonResponseDto {
 	@IsObject()
 	@ValidateNested()
 	@Type(() => PersonDetailsDto)
