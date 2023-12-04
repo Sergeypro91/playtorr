@@ -1,2 +1,2 @@
 export * from './parser.getPictureTorrents';
-export * from './parser.parseTorrents';
+export * from './parser.parsePictureTorrents';

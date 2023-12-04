@@ -86,7 +86,7 @@ const adaptToSlimMovie = ({
 	searchResult: tmdbMovieSlim,
 	config,
 }: AdaptOptions): IMovieSlim => ({
-	tmdbId: tmdbMovieSlim['id'],
+	tmdbId: String(tmdbMovieSlim['id']),
 	mediaType: tmdbMovieSlim['media_type'],
 	posterPath: tmdbMovieSlim['poster_path'],
 	hPosterPath: getHPoster(tmdbMovieSlim['images']),
@@ -106,7 +106,7 @@ const adaptToSlimTv = ({
 	searchResult: tmdbTvSlim,
 	config,
 }: AdaptOptions): ITvSlim => ({
-	tmdbId: tmdbTvSlim['id'],
+	tmdbId: String(tmdbTvSlim['id']),
 	mediaType: tmdbTvSlim['media_type'],
 	posterPath: tmdbTvSlim['poster_path'],
 	hPosterPath: getHPoster(tmdbTvSlim['images']),
@@ -125,7 +125,7 @@ const adaptToSlimTv = ({
 const adaptToSlimPerson = ({
 	searchResult: tmdbPersonSlim,
 }: AdaptOptions): IPersonSlim => ({
-	tmdbId: tmdbPersonSlim['id'],
+	tmdbId: String(tmdbPersonSlim['id']),
 	mediaType: tmdbPersonSlim['media_type'],
 	name: tmdbPersonSlim['name'],
 	profilePath: tmdbPersonSlim['profile_path'],

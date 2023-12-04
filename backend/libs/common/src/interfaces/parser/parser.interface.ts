@@ -23,7 +23,7 @@ export interface ITorrent {
 }
 
 export interface IPictureTorrents {
-	imdbId: string;
+	imdbId: null | string;
 	tmdbId: string;
 	mediaType: MediaType;
 	searchRequests: ISearchQueryData[];

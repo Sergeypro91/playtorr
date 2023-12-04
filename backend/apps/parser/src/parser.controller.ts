@@ -2,7 +2,7 @@ import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { Body, Controller } from '@nestjs/common';
 import {
 	ParserGetPictureTorrents,
-	ParserParseTorrents,
+	ParserParsePictureTorrents,
 } from '@app/common/contracts';
 import { ParserService } from './parser.service';
 
@@ -11,11 +11,11 @@ export class ParserController {
 	constructor(private readonly parserService: ParserService) {}
 
 	@RMQValidate()
-	@RMQRoute(ParserParseTorrents.topic)
-	async parseTorrents(
-		@Body() dto: ParserParseTorrents.Request,
-	): Promise<ParserParseTorrents.Response> {
-		return this.parserService.parseTorrents(dto);
+	@RMQRoute(ParserParsePictureTorrents.topic)
+	async parsePictureTorrents(
+		@Body() dto: ParserParsePictureTorrents.Request,
+	): Promise<ParserParsePictureTorrents.Response> {
+		return this.parserService.parsePictureTorrents(dto);
 	}
 
 	@RMQValidate()

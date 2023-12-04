@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
 	DBPictureTorrentsDto,
-	GetTorrentsDto,
-	TorrentInfoDto,
-	TrackerDto,
+	ParsePictureTorrentsResponseDto,
+	ParsePictureTorrentsRequestDto,
+	GetTorrentsResponseDto,
 } from '@app/common/contracts';
 import { ApiError } from '@app/common/constants';
 import { EnumStatus } from '@app/common/types';
@@ -19,12 +19,12 @@ export class ParserService {
 		private readonly pictureTorrentsRepository: PictureTorrentsRepository,
 	) {}
 
-	public async parseTorrents({
-		imdbId,
+	public async parsePictureTorrents({
+		imdbId = null,
 		tmdbId,
 		mediaType,
 		searchQuery,
-	}: GetTorrentsDto): Promise<TorrentInfoDto> {
+	}: ParsePictureTorrentsRequestDto): Promise<ParsePictureTorrentsResponseDto> {
 		const user = {
 			login: this.configService.get('NNM_LOGIN'),
 			password: this.configService.get('NNM_PASSWORD'),
@@ -37,8 +37,8 @@ export class ParserService {
 
 		if (!currPictureTorrents) {
 			const newPictureTorrents = new PictureTorrentsEntity({
-				imdbId,
 				tmdbId,
+				imdbId,
 				mediaType,
 				searchRequests: [],
 			});
@@ -50,14 +50,15 @@ export class ParserService {
 		}
 
 		const newSearchQueryData = {
-			searchQuery,
+			searchQuery: searchQuery.toLowerCase(),
 			lastUpdate: new Date().toISOString(),
 			searchStatus: EnumStatus.CREATED,
 			message: undefined,
 			trackers: [],
 		};
 		const [oldSearchQueryData] = currPictureTorrents.searchRequests.filter(
-			(searchQueryData) => searchQueryData.searchQuery === searchQuery,
+			(searchQueryData) =>
+				searchQueryData.searchQuery === searchQuery.toLowerCase(),
 		);
 		const searchQueryData = oldSearchQueryData || newSearchQueryData;
 
@@ -65,14 +66,15 @@ export class ParserService {
 		try {
 			await parse({
 				user,
-				searchQuery,
+
+				searchQuery: searchQuery.toLowerCase(),
 				searchQueryData,
 			});
 
 			const { searchRequests } = currPictureTorrents;
 			const currSearchQueryDataId = searchRequests.findIndex(
 				(searchQueryData) =>
-					searchQueryData.searchQuery === searchQuery,
+					searchQueryData.searchQuery === searchQuery.toLowerCase(),
 			);
 
 			if (currSearchQueryDataId >= 0) {
@@ -98,12 +100,12 @@ export class ParserService {
 		tmdbId,
 		mediaType,
 		searchQuery,
-	}: GetTorrentsDto): Promise<TrackerDto[]> {
+	}: ParsePictureTorrentsRequestDto): Promise<GetTorrentsResponseDto[]> {
 		try {
 			return await this.pictureTorrentsRepository.getPictureTorrents({
 				tmdbId,
 				mediaType,
-				searchQuery,
+				searchQuery: searchQuery.toLowerCase(),
 			});
 		} catch (error) {
 			throw new ApiError(error.code, error.message);

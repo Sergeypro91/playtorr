@@ -189,13 +189,15 @@ export const parseRutor = async ({
 };
 
 // FOR PARSER LOCAL TESTING ↓
+// import { CHROME_DIR } from '@app/common/constants';
 // (async () =>
 // 	console.log(
 // 		'TEST',
 // 		await parseRutor({
 // 			url: 'https://rutor.org',
 // 			user: { login: 'playtorr', password: '01011990PlayTorr' },
-// 			searchQuery: 'Мстители The Avengers 2012',
+// 			parserName: 'rutor',
+// 			searchQuery: 'мстители the avengers 2012',
 // 			chromeDir: CHROME_DIR,
 // 		}),
 // 	))();

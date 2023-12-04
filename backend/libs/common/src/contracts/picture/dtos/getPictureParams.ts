@@ -104,11 +104,25 @@ export class ParticipantPersonDto implements IParticipantPerson {
 
 	@ApiProperty()
 	@IsString()
+	department: string;
+
+	@ApiProperty({ nullable: true })
+	@IsOptional()
+	@IsString()
+	job: string | null;
+
+	@ApiProperty()
+	@IsString()
 	name: string;
 
 	@ApiProperty()
 	@IsString()
 	originalName: string; // original_name
+
+	@ApiProperty({ nullable: true })
+	@IsOptional()
+	@IsString()
+	character: string | null;
 
 	@ApiProperty()
 	@IsNumber()
@@ -222,7 +236,7 @@ export class MovieDto implements IMovie {
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CompanyDto)
-	productionCompanies: CompanyDto[]; // production_companies
+	production: CompanyDto[]; // production_companies
 
 	@ApiProperty()
 	@IsDateString()
@@ -392,20 +406,15 @@ export class TvDto implements ITv {
 	@IsString()
 	lastAirDate: string; // last_air_date
 
-	@ApiProperty({ type: EpisodeToAirDto })
+	@ApiProperty({ nullable: true, type: EpisodeToAirDto || null })
+	@IsOptional()
 	@IsObject()
-	@Type(() => EpisodeToAirDto)
-	lastEpisodeToAir: EpisodeToAirDto; // last_episode_to_air
+	@Type(() => EpisodeToAirDto || null)
+	lastEpisodeToAir: EpisodeToAirDto | null; // last_episode_to_air
 
 	@ApiProperty()
 	@IsString()
-	name: string;
-
-	@ApiProperty({ type: [CompanyDto] })
-	@IsArray()
-	@ValidateNested({ each: true })
-	@Type(() => CompanyDto)
-	networks: CompanyDto[];
+	title: string; // name
 
 	@ApiProperty()
 	@ApiProperty()
@@ -439,7 +448,7 @@ export class TvDto implements ITv {
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CompanyDto)
-	productionCompanies: CompanyDto[]; // production_companies
+	production: CompanyDto[]; // production_companies / networks
 
 	@ApiProperty({ type: [SeasonDto] })
 	@IsArray()

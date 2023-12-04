@@ -1,5 +1,5 @@
 import {
-	Get,
+	Post,
 	Body,
 	UseGuards,
 	Controller,
@@ -14,12 +14,13 @@ import {
 	ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import {
-	ParserParseTorrents,
-	GetTorrentsDto,
-	TorrentInfoDto,
+	ParserParsePictureTorrents,
+	ParsePictureTorrentsRequestDto,
+	ParsePictureTorrentsResponseDto,
 	ErrorDto,
 	ParserGetPictureTorrents,
-	TrackerDto,
+	GetTorrentsRequestDto,
+	GetTorrentsResponseDto,
 } from '@app/common';
 import { RMQError, RMQService } from 'nestjs-rmq';
 import { AuthenticatedGuard } from '../guards';
@@ -34,15 +35,15 @@ export class ParserController {
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
-	@Get('parse')
-	async parseTorrents(
-		@Body() query: GetTorrentsDto,
-	): Promise<TorrentInfoDto> {
+	@Post('parse')
+	async parsePictureTorrents(
+		@Body() query: ParsePictureTorrentsRequestDto,
+	): Promise<ParsePictureTorrentsResponseDto> {
 		try {
 			return await this.rmqService.send<
-				ParserParseTorrents.Request,
-				ParserParseTorrents.Response
-			>(ParserParseTorrents.topic, query);
+				ParserParsePictureTorrents.Request,
+				ParserParsePictureTorrents.Response
+			>(ParserParsePictureTorrents.topic, query);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(
@@ -58,10 +59,10 @@ export class ParserController {
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
 	@UseGuards(AuthenticatedGuard)
-	@Get()
+	@Post()
 	async getPictureTorrents(
-		@Body() query: GetTorrentsDto,
-	): Promise<TrackerDto[]> {
+		@Body() query: GetTorrentsRequestDto,
+	): Promise<GetTorrentsResponseDto[]> {
 		try {
 			return await this.rmqService.send<
 				ParserGetPictureTorrents.Request,

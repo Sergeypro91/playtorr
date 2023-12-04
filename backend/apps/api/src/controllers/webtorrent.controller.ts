@@ -15,7 +15,7 @@ import {
 } from '@nestjs/swagger';
 import {
 	ErrorDto,
-	TorrentInfoDto,
+	ParsePictureTorrentsResponseDto,
 	GetTorrentDistributionInfoRequestDto,
 	GetTorrentDistributionInfo,
 	WebTorrentInfoDto,

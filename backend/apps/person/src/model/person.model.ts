@@ -1,4 +1,4 @@
-import { now, Document, Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IPerson, IPersonPicture } from '@app/common/interfaces/person';
 import { MediaType } from '@app/common/types';

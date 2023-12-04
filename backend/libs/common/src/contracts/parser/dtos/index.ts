@@ -1,3 +1,3 @@
 export * from './parser.dto';
-export * from './parseTorrents';
+export * from './parsePictureTorrents';
 export * from './getPictureTorrents';

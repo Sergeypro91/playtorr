@@ -1,6 +1,6 @@
 import { runParser } from '@app/common/utils';
 import { ITracker } from '@app/common/interfaces';
-import { TrackerDto } from '@app/common/contracts';
+import { GetTorrentsResponseDto } from '@app/common/contracts';
 import { EnumStatus, RunParsersArgs } from '@app/common/types';
 
 export const parse = async ({
@@ -8,7 +8,7 @@ export const parse = async ({
 	searchQuery,
 	searchQueryData,
 }: RunParsersArgs) => {
-	let parseData: TrackerDto[];
+	let parseData: GetTorrentsResponseDto[];
 	const trackersMap: Map<string, ITracker> = new Map(
 		searchQueryData.trackers.map((tracker) => [
 			tracker.trackerLabel,
@@ -24,7 +24,7 @@ export const parse = async ({
 		parseData = (
 			results.filter(
 				({ status }) => status === 'fulfilled',
-			) as PromiseFulfilledResult<TrackerDto>[]
+			) as PromiseFulfilledResult<GetTorrentsResponseDto>[]
 		).map(({ value }) => value);
 	});
 

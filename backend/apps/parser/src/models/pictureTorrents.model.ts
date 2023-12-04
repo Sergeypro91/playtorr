@@ -68,8 +68,8 @@ export const SearchQueryDataSchema =
 
 @Schema()
 export class PictureTorrents extends Document implements IPictureTorrents {
-	@Prop({ unique: true, required: true })
-	imdbId: string;
+	@Prop()
+	imdbId: null | string;
 
 	@Prop({ required: true })
 	tmdbId: string;

@@ -16,7 +16,7 @@ const adaptCompany = (company): ICompany => {
 	return {
 		id: company['id'],
 		name: company['name'],
-		logoPath: company['logoPath'],
+		logoPath: company['logo_path'],
 	};
 };
 
@@ -36,8 +36,11 @@ const adaptVideo = (video: unknown): IVideo => {
 const adaptCredit = (person: unknown): IParticipantPerson => {
 	return {
 		tmdbId: person['id'],
+		department: person['known_for_department'],
+		job: person['job'],
 		name: person['name'],
 		originalName: person['original_name'],
+		character: person['character'] ?? null,
 		popularity: person['popularity'],
 		profilePath: person['profile_path'],
 	};
@@ -75,16 +78,18 @@ const adaptSeason = (season: unknown): ISeason => {
 };
 
 const adaptEpisodeToAirDto = (episode: unknown): IEpisodeToAir => {
-	return {
-		airDate: episode?.['air_date'] || '',
-		episodeNumber: episode['episode_number'],
-		id: episode['id'],
-		name: episode['name'],
-		overview: episode['overview'],
-		seasonNumber: episode['season_number'],
-		stillPath: episode['still_path'],
-		voteAverage: episode['vote_average'],
-	};
+	return episode
+		? {
+				airDate: episode?.['air_date'] || '',
+				episodeNumber: episode['episode_number'],
+				id: episode['id'],
+				name: episode['name'],
+				overview: episode['overview'],
+				seasonNumber: episode['season_number'],
+				stillPath: episode['still_path'],
+				voteAverage: episode['vote_average'],
+		  }
+		: null;
 };
 
 const adaptToMovie = (data: unknown): IMovie => {
@@ -96,7 +101,7 @@ const adaptToMovie = (data: unknown): IMovie => {
 		overview: data['overview'],
 		popularity: data['popularity'],
 		posterPath: data['poster_path'],
-		productionCompanies: data['production_companies'].map((company) =>
+		production: data['production_companies'].map((company) =>
 			adaptCompany(company),
 		),
 		releaseDate: data['release_date'],
@@ -141,17 +146,19 @@ const adaptTv = (data: unknown): ITv => {
 		inProduction: data['in_production'],
 		lastAirDate: data['last_air_date'],
 		lastEpisodeToAir: adaptEpisodeToAirDto(data['last_episode_to_air']),
-		name: data['name'],
-		networks: data['networks'].map((company) => adaptCompany(company)),
+		title: data['name'],
 		numberOfEpisodes: data['number_of_episodes'],
 		numberOfSeasons: data['number_of_seasons'],
 		originalName: data['original_name'],
 		overview: data['overview'],
 		popularity: data['popularity'],
 		posterPath: data['poster_path'],
-		productionCompanies: data['production_companies'].map((company) =>
-			adaptCompany(company),
-		),
+		production: [
+			...data['networks'].map((company) => adaptCompany(company)),
+			...data['production_companies'].map((company) =>
+				adaptCompany(company),
+			),
+		],
 		seasons: data['seasons']?.map((season) => adaptSeason(season)) || [],
 		status: data['status'],
 		tagline: data['tagline'],
@@ -201,7 +208,7 @@ export const adaptPicture = ({
 	};
 
 	return {
-		tmdbId: pictureData['id'],
+		tmdbId: String(pictureData['id']),
 		imdbId:
 			pictureData?.['imdb_id'] ||
 			`tempId-${pictureData['id']}/${

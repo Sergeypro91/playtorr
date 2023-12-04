@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ConflictException, Injectable } from '@nestjs/common';
 import {
 	PictureIdType,
-	TrackerDto,
+	GetTorrentsResponseDto,
 	PICTURE_TORRENTS_EXIST_ERROR,
 } from '@app/common';
 import { PictureTorrentsEntity } from '../entities';
@@ -24,11 +24,7 @@ export class PictureTorrentsRepository {
 		});
 
 		if (!existPictureTorrent) {
-			const newPictureTorrents = new this.pictureTorrentsModel(
-				pictureTorrents,
-			);
-
-			return newPictureTorrents.save();
+			return new this.pictureTorrentsModel(pictureTorrents).save();
 		}
 
 		throw new ConflictException(PICTURE_TORRENTS_EXIST_ERROR);
@@ -42,7 +38,9 @@ export class PictureTorrentsRepository {
 		tmdbId,
 		mediaType,
 		searchQuery,
-	}: PictureIdType & { searchQuery: string }): Promise<TrackerDto[]> {
+	}: PictureIdType & { searchQuery: string }): Promise<
+		GetTorrentsResponseDto[]
+	> {
 		try {
 			const result = await this.pictureTorrentsModel
 				.findOne(

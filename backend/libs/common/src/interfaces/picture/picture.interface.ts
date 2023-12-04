@@ -79,8 +79,11 @@ export interface IVideo {
 
 export interface IParticipantPerson {
 	tmdbId: number; // id
+	department: string; // known_for_department
+	job: string; // known_for_department
 	name: string;
 	originalName: string;
+	character: string | null;
 	popularity: number;
 	profilePath: string | null;
 }
@@ -113,7 +116,7 @@ export interface IMovie {
 	overview: string | null;
 	popularity: number;
 	posterPath: string | null;
-	productionCompanies: ICompany[];
+	production: ICompany[];
 	releaseDate: string;
 	revenue: number;
 	runtime: number | null;
@@ -167,16 +170,15 @@ export interface ITv {
 	genres: IGenre[];
 	inProduction: boolean;
 	lastAirDate: string;
-	lastEpisodeToAir: IEpisodeToAir;
-	name: string;
-	networks: ICompany[];
+	lastEpisodeToAir: IEpisodeToAir | null;
+	title: string;
 	numberOfEpisodes: number;
 	numberOfSeasons: number;
 	originalName: string;
 	overview: string | null;
 	popularity: number;
 	posterPath: string | null;
-	productionCompanies: ICompany[];
+	production: ICompany[];
 	seasons: ISeason[];
 	status: string;
 	tagline: string | null;
