@@ -23,7 +23,7 @@ export class LoggerInterceptor implements NestInterceptor {
 
 	private logHttpCall(context: ExecutionContext, next: CallHandler) {
 		const request = context.switchToHttp().getRequest();
-		const userAgent = request.get('user-agent') || '';
+		const userAgent = request.get('users-agent') || '';
 		const now = Date.now();
 		const { ip, method, path: url } = request;
 		const correlationKey = uuidv4();

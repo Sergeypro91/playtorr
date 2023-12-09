@@ -2,7 +2,7 @@ import { RMQService } from 'nestjs-rmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-	UserGetUser,
+	UsersFindUserByEmail,
 	GetTmdbSearch,
 	GetTmdbPicture,
 	GetTmdbPictureTrends,
@@ -233,13 +233,11 @@ export class PictureService {
 	): Promise<GetPictureResponseDto[]> {
 		try {
 			const user = await this.rmqService.send<
-				UserGetUser.Request,
-				UserGetUser.Response[]
-			>(UserGetUser.topic, { email });
+				UsersFindUserByEmail.Request,
+				UsersFindUserByEmail.Response[]
+			>(UsersFindUserByEmail.topic, { email });
 
-			return await this.pictureRepository.findPicturesByTmdbId(
-				user[0].recentViews,
-			);
+			return [];
 		} catch (error) {
 			throw new ApiError(error.statusCode, error.message);
 		}

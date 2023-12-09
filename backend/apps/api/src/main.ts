@@ -1,18 +1,15 @@
+import * as cookieParser from 'cookie-parser';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { ApiModule } from './api.module';
 import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
 import { setupCors, setupSwagger } from '@app/common/configs';
+import { ApiModule } from './api.module';
+import * as process from 'process';
 
 async function bootstrap() {
 	const app = await NestFactory.create(ApiModule);
 	const logger = new Logger('API-GATEWAY');
 	const globalPrefix = 'api';
-	const configService = await app.get(ConfigService);
-	const MAIN_API_PORT = parseInt(
-		configService.get('MAIN_API_PORT', '3000'),
-		10,
-	);
+	const MAIN_API_PORT = parseInt(process.env.MAIN_API_PORT, 10);
 
 	app.setGlobalPrefix(globalPrefix);
 
@@ -26,6 +23,9 @@ async function bootstrap() {
 
 	// SWAGGER SETUPS
 	setupSwagger(app);
+
+	// COOKIE PARSER  SETUP
+	app.use(cookieParser());
 
 	// LISTENING
 	await app.listen(MAIN_API_PORT, async () => {

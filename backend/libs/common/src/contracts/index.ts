@@ -6,7 +6,7 @@ export * from './person';
 export * from './picture';
 export * from './publicPreview';
 export * from './tmdb';
-export * from './user';
+export * from './users';
 export * from './webtorrent';
 export * from './base.dto';
 export * from './custom.validator';

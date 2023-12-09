@@ -1,10 +1,10 @@
-import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQService, RMQValidate } from 'nestjs-rmq';
+import { Body, Controller } from '@nestjs/common';
 import {
-	AuthSignInJwt,
-	AuthSignUp,
-	AuthValidateUser,
-	UserSignUp,
+	AuthLogout,
+	AuthSigninLocal,
+	AuthSignupLocal,
+	AuthRefreshToken,
 } from '@app/common/contracts';
 import { AuthService } from './auth.service';
 
@@ -16,29 +16,30 @@ export class AuthController {
 	) {}
 
 	@RMQValidate()
-	@RMQRoute(AuthSignUp.topic)
-	async signUp(
-		@Body() dto: AuthSignUp.Request,
-	): Promise<AuthSignUp.Response> {
-		return this.rmqService.send<UserSignUp.Request, UserSignUp.Response>(
-			UserSignUp.topic,
-			dto,
-		);
+	@RMQRoute(AuthSignupLocal.topic)
+	async signupLocal(
+		@Body() newUser: AuthSignupLocal.Request,
+	): Promise<AuthSignupLocal.Response> {
+		return this.authService.signupLocal(newUser);
 	}
 
 	@RMQValidate()
-	@RMQRoute(AuthValidateUser.topic)
-	async validateUser(
-		@Body() dto: AuthValidateUser.Request,
-	): Promise<AuthValidateUser.Response> {
-		return this.authService.validateUser(dto);
+	@RMQRoute(AuthSigninLocal.topic)
+	async signinLocal(
+		@Body() credentials: AuthSigninLocal.Request,
+	): Promise<AuthSigninLocal.Response> {
+		return this.authService.signinLocal(credentials);
 	}
 
 	@RMQValidate()
-	@RMQRoute(AuthSignInJwt.topic)
-	async loginUserByJwt(
-		@Body() dto: AuthSignInJwt.Request,
-	): Promise<AuthSignInJwt.Response> {
-		return this.authService.loginUser(this.authService.validateUser(dto));
+	@RMQRoute(AuthLogout.topic)
+	async logout() {
+		return this.authService.logout();
+	}
+
+	@RMQValidate()
+	@RMQRoute(AuthRefreshToken.topic)
+	async refreshTokens() {
+		return this.authService.refreshTokens();
 	}
 }

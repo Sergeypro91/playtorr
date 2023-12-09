@@ -6,5 +6,5 @@ export * from './person.controller';
 export * from './picture.controller';
 export * from './publicPreview.controller';
 export * from './test.controller';
-export * from './user.controller';
+export * from './users.controller';
 export * from './webtorrent.controller';

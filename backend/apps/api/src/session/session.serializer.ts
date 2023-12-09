@@ -9,20 +9,20 @@ export class SessionSerializer extends PassportSerializer {
 	}
 
 	serializeUser(
-		user: Pick<UserDto, 'email' | 'tgId' | 'role'>,
+		user: Pick<UserDto, 'email' | 'role'>,
 		done: (
 			error: null | Error,
-			user: Pick<UserDto, 'email' | 'tgId' | 'role'>,
+			user: Pick<UserDto, 'email' | 'role'>,
 		) => void,
 	) {
 		done(null, user);
 	}
 
 	async deserializeUser(
-		payload: Pick<UserDto, 'email' | 'tgId' | 'role'>,
+		payload: Pick<UserDto, 'email' | 'role'>,
 		done: (
 			error: null | Error,
-			payload: Pick<UserDto, 'email' | 'tgId' | 'role'>,
+			payload: Pick<UserDto, 'email' | 'role'>,
 		) => void,
 	) {
 		return done(null, payload);

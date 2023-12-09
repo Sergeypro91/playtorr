@@ -1,12 +1,11 @@
 import { RMQModule } from 'nestjs-rmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PassportModule } from '@nestjs/passport';
 import { configSession, getRMQConfig } from '@app/common/configs';
 import {
 	TestController,
 	AuthController,
-	UserController,
+	UsersController,
 	MinIOController,
 	ParserController,
 	PersonController,
@@ -15,19 +14,18 @@ import {
 	PublicPreviewController,
 	ImageController,
 } from './controllers';
-import { JwtStrategy, LocalStrategy } from './strategies';
-import { SessionSerializer } from './session';
 import { RolesGuard } from './guards';
 import { LoggerModule } from './logger/logger.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
 	controllers: [
 		TestController,
 		ImageController,
 		AuthController,
-		UserController,
+		UsersController,
 		MinIOController,
 		ParserController,
 		PersonController,
@@ -51,10 +49,9 @@ import { join } from 'path';
 			exclude: ['/api/(.*)'],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
-		PassportModule.register({ session: true }),
 		LoggerModule,
 	],
-	providers: [JwtStrategy, LocalStrategy, SessionSerializer, RolesGuard],
+	providers: [RolesGuard, JwtService],
 })
 export class ApiModule implements NestModule {
 	constructor(private readonly configService: ConfigService) {}

@@ -1,3 +1,4 @@
-export * from './auth.signUp';
-export * from './auth.validateUser';
-export * from './auth.signInJwt';
+export * from './auth.signupLocal';
+export * from './auth.signinLocal';
+export * from './auth.logout';
+export * from './auth.refreshToken';

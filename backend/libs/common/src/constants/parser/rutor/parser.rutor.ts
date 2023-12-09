@@ -195,7 +195,7 @@ export const parseRutor = async ({
 // 		'TEST',
 // 		await parseRutor({
 // 			url: 'https://rutor.org',
-// 			user: { login: 'playtorr', password: '01011990PlayTorr' },
+// 			users: { login: 'playtorr', password: '01011990PlayTorr' },
 // 			parserName: 'rutor',
 // 			searchQuery: 'мстители the avengers 2012',
 // 			chromeDir: CHROME_DIR,

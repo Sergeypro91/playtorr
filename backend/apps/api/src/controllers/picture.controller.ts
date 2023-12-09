@@ -22,7 +22,6 @@ import {
 	PictureSearch,
 	GetPictureTrends,
 	GetNetworkPictures,
-	UserPushUserRecentView,
 	PictureGetRecentViewedPictures,
 	ErrorDto,
 	SearchResultDto,
@@ -79,18 +78,18 @@ export class PictureController {
 		@Query() query: GetPictureQueries,
 		@Session() { passport }: Record<string, any>,
 	): Promise<GetPictureResponseDto> {
-		// Save "Picture" IDs to user entity -> recentViews
-		try {
-			await this.rmqService.send<
-				UserPushUserRecentView.Request,
-				UserPushUserRecentView.Response
-			>(UserPushUserRecentView.topic, {
-				...param,
-				email: passport.user.email,
-			});
-		} catch (error) {
-			this.logger.error(error);
-		}
+		// Save "Picture" IDs to users entity -> recentViews
+		// try {
+		// 	await this.rmqService.send<
+		// 		UsersPushUserRecentView.Request,
+		// 		UsersPushUserRecentView.Response
+		// 	>(UsersPushUserRecentView.topic, {
+		// 		...param,
+		// 		email: passport.user.email,
+		// 	});
+		// } catch (error) {
+		// 	this.logger.error(error);
+		// }
 
 		// "Picture" request itself
 		try {

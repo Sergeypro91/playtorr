@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RMQModule } from 'nestjs-rmq';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { getRMQConfig, getJWTConfig } from '@app/common/configs';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -19,12 +19,7 @@ import { AuthService } from './auth.service';
 			],
 		}),
 		RMQModule.forRootAsync(getRMQConfig()),
-		JwtModule.registerAsync({
-			imports: [ConfigModule],
-			inject: [ConfigService],
-			useFactory: getJWTConfig,
-		}),
 	],
-	providers: [AuthService],
+	providers: [AuthService, JwtService],
 })
 export class AuthModule {}

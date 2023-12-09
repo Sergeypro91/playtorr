@@ -1,18 +1,10 @@
-import { Request } from 'express';
-import { Role, IRecentView, UserSessionDto } from '@app/common';
+import { Role } from '@app/common/types';
 
 export interface IUser {
-	email: string;
+	_id: string;
 	role: Role;
+	email: string;
 	passwordHash: string;
-	nickname?: string;
-	firstName?: string;
-	lastName?: string;
-	tgId?: number;
+	userName?: string;
 	image?: string;
-	recentViews?: IRecentView[];
-}
-
-export interface RequestWithUserSession extends Request {
-	user: UserSessionDto;
 }

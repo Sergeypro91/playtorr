@@ -208,7 +208,7 @@ export const parseRuTracker = async ({
 // 		'TEST',
 // 		await parseRuTracker({
 // 			url: 'https://rutracker.org',
-// 			user: { login: 'playtorr', password: '01011990PlayTorr' },
+// 			users: { login: 'playtorr', password: '01011990PlayTorr' },
 // 			parserName: 'rutracker',
 // 			searchQuery: 'Мстители The Avengers 2012',
 // 			chromeDir:

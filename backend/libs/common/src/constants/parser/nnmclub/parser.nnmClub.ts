@@ -225,7 +225,7 @@ export const parseNnmClub = async ({
 // 		'TEST',
 // 		await parseNnmClub({
 // 			url: 'https://nnmclub.to',
-// 			user: { login: 'playtorr', password: '01011990PlayTorr' },
+// 			users: { login: 'playtorr', password: '01011990PlayTorr' },
 // 			searchQuery: 'Мстители The Avengers 2012',
 // 			chromeDir: CHROME_DIR,
 // 		}),

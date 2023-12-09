@@ -1,16 +1,18 @@
 import { compare } from 'bcryptjs';
-import { RMQService } from 'nestjs-rmq';
+import { RMQError, RMQService } from 'nestjs-rmq';
 import { JwtService } from '@nestjs/jwt';
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import {
-	DBUserDto,
-	UserValidateUser,
-	LoginUserDto,
+	RefreshToken,
+	SigninLocalDto,
+	SignupLocalDto,
+	UsersCreateUser,
+	UsersGetUserUnsafe,
 } from '@app/common/contracts';
 import {
 	ApiError,
-	USER_NOT_FOUND_ERROR,
 	WRONG_PASSWORD_ERROR,
+	WRONG_CREDENTIALS_ERROR,
 } from '@app/common/constants';
 
 @Injectable()
@@ -24,20 +26,27 @@ export class AuthService {
 		this.logger = new Logger(AuthService.name);
 	}
 
-	public async validateUser({
-		email,
-		password,
-	}: LoginUserDto): Promise<DBUserDto> {
-		const user = await this.rmqService.send<
-			UserValidateUser.Request,
-			UserValidateUser.Response
-		>(UserValidateUser.topic, { email });
+	public async signupLocal(newUser: SignupLocalDto) {
+		return this.rmqService.send<
+			UsersCreateUser.Request,
+			UsersCreateUser.Response
+		>(UsersCreateUser.topic, newUser);
+	}
+
+	public async signinLocal({ email, password }: SigninLocalDto) {
+		const { passwordHash, ...user } = await this.rmqService.send<
+			UsersGetUserUnsafe.Request,
+			UsersGetUserUnsafe.Response
+		>(UsersGetUserUnsafe.topic, { email });
 
 		if (!user) {
-			throw new ApiError(HttpStatus.NOT_FOUND, USER_NOT_FOUND_ERROR);
+			throw new ApiError(
+				HttpStatus.UNAUTHORIZED,
+				WRONG_CREDENTIALS_ERROR,
+			);
 		}
 
-		const isCorrectPassword = await compare(password, user.passwordHash);
+		const isCorrectPassword = await compare(password, passwordHash);
 
 		if (!isCorrectPassword) {
 			throw new ApiError(HttpStatus.UNAUTHORIZED, WRONG_PASSWORD_ERROR);
@@ -46,9 +55,11 @@ export class AuthService {
 		return user;
 	}
 
-	public async loginUser(user: Promise<DBUserDto>): Promise<string> {
-		const { email, role } = await user;
+	public async logout() {
+		return 'logout';
+	}
 
-		return this.jwtService.signAsync({ email, role });
+	public async refreshTokens() {
+		return 'refreshToken';
 	}
 }

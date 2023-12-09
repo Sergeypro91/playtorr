@@ -1,36 +1,19 @@
-import {
-	Get,
-	Res,
-	Req,
-	Post,
-	Body,
-	Session,
-	HttpCode,
-	UseGuards,
-	Controller,
-	HttpException,
-	HttpStatus,
-} from '@nestjs/common';
-import { Response } from 'express';
-import {
-	UserDto,
-	ErrorDto,
-	DBUserDto,
-	LoginUserDto,
-	LogoutUserDto,
-	UserSessionDto,
-	AuthSignInJwt,
-	AuthSignUp,
-} from '@app/common';
+import { RMQError, RMQService } from 'nestjs-rmq';
+import { Get, Post, Controller, HttpException, Body } from '@nestjs/common';
 import {
 	ApiTags,
 	ApiOperation,
 	ApiBadRequestResponse,
 	ApiUnauthorizedResponse,
-	ApiInternalServerErrorResponse,
+	ApiForbiddenResponse,
 } from '@nestjs/swagger';
-import { RMQError, RMQService } from 'nestjs-rmq';
-import { LocalAuthGuard, AuthenticatedGuard } from '../guards';
+import {
+	ErrorDto,
+	AuthLogout,
+	AuthSigninLocal,
+	AuthSignupLocal,
+	AuthRefreshToken,
+} from '@app/common/contracts';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -38,15 +21,16 @@ export class AuthController {
 	constructor(private readonly rmqService: RMQService) {}
 
 	@ApiOperation({ summary: 'Регистрация пользователя' })
-	@ApiInternalServerErrorResponse({ type: ErrorDto })
+	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
-	@Post('sign-up')
-	async signUp(@Body() newUser: UserDto): Promise<DBUserDto> {
+	@ApiForbiddenResponse({ type: ErrorDto })
+	@Post('local/signup')
+	async signupLocal(@Body() newUser: AuthSignupLocal.Request) {
 		try {
 			return await this.rmqService.send<
-				AuthSignUp.Request,
-				AuthSignUp.Response
-			>(AuthSignUp.topic, newUser);
+				AuthSignupLocal.Request,
+				AuthSignupLocal.Response
+			>(AuthSignupLocal.topic, newUser);
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);
@@ -54,29 +38,35 @@ export class AuthController {
 		}
 	}
 
-	@ApiOperation({ summary: 'Сессионная авторизация пользователя' })
+	@ApiOperation({ summary: 'Авторизация пользователя' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
-	@UseGuards(LocalAuthGuard)
-	@HttpCode(HttpStatus.OK)
-	@Post('sign-in')
-	async signIn(
-		@Body() user: LoginUserDto,
-		@Session() { passport }: { passport: { user: UserSessionDto } },
-	): Promise<UserSessionDto> {
-		return passport.user;
+	@ApiForbiddenResponse({ type: ErrorDto })
+	@Post('local/signin')
+	async signinLocal(@Body() credentials: AuthSigninLocal.Request) {
+		try {
+			return await this.rmqService.send<
+				AuthSigninLocal.Request,
+				AuthSigninLocal.Response
+			>(AuthSigninLocal.topic, credentials);
+		} catch (error) {
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
+			}
+		}
 	}
 
-	@ApiOperation({ summary: 'Удаление сессии пользователя' })
+	@ApiOperation({ summary: 'Выход из профиля' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
-	@UseGuards(AuthenticatedGuard)
+	@ApiBadRequestResponse({ type: ErrorDto })
+	@ApiForbiddenResponse({ type: ErrorDto })
 	@Get('logout')
-	async logout(@Session() session): Promise<LogoutUserDto> {
+	async logout() {
 		try {
-			session.destroy();
-			return {
-				message: `User session for - ${session.passport.user.email} is end`,
-			};
+			return await this.rmqService.send<
+				AuthLogout.Request,
+				AuthLogout.Response
+			>(AuthLogout.topic, {});
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);
@@ -84,36 +74,17 @@ export class AuthController {
 		}
 	}
 
-	@ApiOperation({ summary: 'Проверка активной сессии пользователя' })
-	@ApiUnauthorizedResponse({ type: ErrorDto })
-	@UseGuards(AuthenticatedGuard)
-	@Get('check-in')
-	async checkIn(
-		@Req() { user: userSession }: { user: UserSessionDto },
-	): Promise<UserSessionDto> {
-		return userSession;
-	}
-
-	@ApiOperation({ summary: 'JWT авторизация пользователя' })
+	@ApiOperation({ summary: 'Обновления accessToken' })
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
-	@HttpCode(HttpStatus.OK)
-	@Post('sign-in-jwt')
-	async loginUserByJwt(
-		@Res({ passthrough: true }) response: Response,
-		@Body() { email, password }: LoginUserDto,
-	) {
+	@ApiForbiddenResponse({ type: ErrorDto })
+	@Get('refresh')
+	async refreshTokens() {
 		try {
-			const accessToken = await this.rmqService.send<
-				AuthSignInJwt.Request,
-				AuthSignInJwt.Response
-			>(AuthSignInJwt.topic, { email, password });
-
-			response.cookie('accessToken', accessToken, {
-				secure: true,
-				httpOnly: true,
-				sameSite: true,
-			});
+			return await this.rmqService.send<
+				AuthRefreshToken.Request,
+				AuthRefreshToken.Response
+			>(AuthRefreshToken.topic, {});
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);
