@@ -1,5 +1,5 @@
 import { IsEmail, IsString } from 'class-validator';
-import { UserWithoutPasswordDto } from '../dtos';
+import { WrappedUserDto } from '../dtos';
 
 export namespace UsersFindUserByEmail {
 	export const topic = 'users.findUserByEmail.command';
@@ -10,5 +10,5 @@ export namespace UsersFindUserByEmail {
 		email: string;
 	}
 
-	export class Response extends UserWithoutPasswordDto {}
+	export class Response extends WrappedUserDto {}
 }

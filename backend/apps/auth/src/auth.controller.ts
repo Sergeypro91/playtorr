@@ -5,6 +5,7 @@ import {
 	AuthSigninLocal,
 	AuthSignupLocal,
 	AuthRefreshToken,
+	AuthGoogleAuth,
 } from '@app/common/contracts';
 import { AuthService } from './auth.service';
 
@@ -19,7 +20,7 @@ export class AuthController {
 	@RMQRoute(AuthSignupLocal.topic)
 	async signupLocal(
 		@Body() newUser: AuthSignupLocal.Request,
-	): Promise<AuthSignupLocal.Response> {
+	): Promise<string> {
 		return this.authService.signupLocal(newUser);
 	}
 
@@ -33,13 +34,24 @@ export class AuthController {
 
 	@RMQValidate()
 	@RMQRoute(AuthLogout.topic)
-	async logout() {
-		return this.authService.logout();
+	async logout(@Body() { userId }: AuthLogout.Request): Promise<boolean> {
+		return this.authService.logout(userId);
 	}
 
 	@RMQValidate()
 	@RMQRoute(AuthRefreshToken.topic)
-	async refreshTokens() {
-		return this.authService.refreshTokens();
+	async refreshTokens(
+		@Body() { userId, refreshToken }: AuthRefreshToken.Request,
+	): Promise<AuthRefreshToken.Response> {
+		return this.authService.refreshTokens({ userId, refreshToken });
+	}
+
+	// GOOGLE
+	@RMQValidate()
+	@RMQRoute(AuthGoogleAuth.topic)
+	async googleAuth(
+		@Body() user: AuthGoogleAuth.Request,
+	): Promise<AuthGoogleAuth.Response> {
+		return this.authService.googleAuth(user);
 	}
 }

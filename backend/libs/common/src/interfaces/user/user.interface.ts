@@ -7,4 +7,5 @@ export interface IUser {
 	passwordHash: string;
 	userName?: string;
 	image?: string;
+	refreshTokenHash?: string;
 }

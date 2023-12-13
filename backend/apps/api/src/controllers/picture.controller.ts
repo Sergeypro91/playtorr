@@ -5,7 +5,6 @@ import {
 	Query,
 	Logger,
 	Session,
-	UseGuards,
 	Controller,
 	HttpStatus,
 	HttpException,
@@ -36,7 +35,6 @@ import {
 	GetNetworkPicturesQueriesDto,
 	GetNetworkPicturesResponseDto,
 } from '@app/common/contracts';
-import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Picture')
 @Controller('picture')
@@ -49,7 +47,6 @@ export class PictureController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	// @UseGuards(AuthenticatedGuard)
 	@Get()
 	async search(@Query() query: SearchRequestDto): Promise<SearchResultDto> {
 		try {
@@ -71,7 +68,6 @@ export class PictureController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	// @UseGuards(AuthenticatedGuard)
 	@Get(':tmdbId/:mediaType')
 	async getPictureData(
 		@Param() param: GetPictureParams,
@@ -111,7 +107,6 @@ export class PictureController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	// @UseGuards(AuthenticatedGuard)
 	@Get('trends/:mediaType/:timeWindow')
 	async getPictureTrends(
 		@Param() param: GetPictureTrendsParamsDto,
@@ -138,7 +133,6 @@ export class PictureController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	// @UseGuards(AuthenticatedGuard)
 	@Get('network/:mediaType/:network')
 	async getNetworkPictures(
 		@Param() param: GetNetworkPicturesParamsDto,
@@ -165,7 +159,6 @@ export class PictureController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	@UseGuards(AuthenticatedGuard)
 	@Get('recent-viewed')
 	async getRecentViewedPictures(
 		@Session() { passport }: Record<string, any>,

@@ -1,11 +1,5 @@
-import {
-	ApiOperation,
-	ApiTags,
-	ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { ErrorDto } from '@app/common';
-import { JwtGuard } from '../guards';
+import { ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 @ApiTags('Test')
@@ -13,7 +7,7 @@ import { Request, Response } from 'express';
 export class TestController {
 	// @ApiOperation({ summary: 'Тестовая ручка' })
 	// @ApiUnauthorizedResponse({ type: ErrorDto })
-	// @UseGuards(JwtGuard)
+	// @UseGuards(AccessTokenGuard)
 	@Post()
 	checkIn(
 		@Req() req: Request,

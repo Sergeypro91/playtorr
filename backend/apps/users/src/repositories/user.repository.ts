@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EditableUserDto } from '@app/common/contracts';
+import { EditableUserDto, UserDto } from '@app/common/contracts';
 import { USER_NOT_CHANGE_ERROR } from '@app/common/constants';
 import { UserEntity } from '../entities';
 import { User } from '../models';
@@ -24,7 +24,7 @@ export class UserRepository {
 		return this.userModel.findById({ _id: id }).lean().exec();
 	}
 
-	public async findOneByEmail(email: string) {
+	public async findOneByEmail(email: string): Promise<null | UserDto> {
 		return this.userModel.findOne({ email }).lean().exec();
 	}
 

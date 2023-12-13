@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsEmail, IsEnum } from 'class-validator';
+import {
+	IsString,
+	IsOptional,
+	IsEmail,
+	IsEnum,
+	IsObject,
+	IsArray,
+} from 'class-validator';
 import {
 	PickType,
 	OmitType,
@@ -8,6 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { IUser } from '@app/common/interfaces';
 import { Role } from '@app/common/types';
+import { Type } from 'class-transformer';
 
 export class UserDto implements IUser {
 	@ApiProperty()
@@ -35,6 +43,11 @@ export class UserDto implements IUser {
 	@IsOptional()
 	@IsString()
 	image?: string;
+
+	@ApiProperty({ nullable: true })
+	@IsOptional()
+	@IsString()
+	refreshTokenHash?: string;
 }
 
 export class NewUserDto extends IntersectionType(
@@ -46,10 +59,24 @@ export class NewUserDto extends IntersectionType(
 }
 
 export class UserWithoutPasswordDto extends IntersectionType(
-	OmitType(UserDto, ['passwordHash']),
+	OmitType(UserDto, ['passwordHash', 'refreshTokenHash']),
 ) {}
 
 export class EditableUserDto extends IntersectionType(
 	PickType(UserDto, ['_id']),
 	PartialType(OmitType(UserDto, ['_id', 'passwordHash'])),
 ) {}
+
+export class WrappedUserDto {
+	@ApiProperty({ type: UserWithoutPasswordDto })
+	@IsObject()
+	@Type(() => UserWithoutPasswordDto)
+	user: UserWithoutPasswordDto;
+}
+
+export class WrappedUsersDto {
+	@ApiProperty({ type: [UserWithoutPasswordDto] })
+	@IsArray()
+	@Type(() => UserWithoutPasswordDto)
+	users: UserWithoutPasswordDto[];
+}

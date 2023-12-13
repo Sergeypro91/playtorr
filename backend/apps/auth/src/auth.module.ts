@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { RMQModule } from 'nestjs-rmq';
 import { ConfigModule } from '@nestjs/config';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { getRMQConfig, getJWTConfig } from '@app/common/configs';
+import { JwtService } from '@nestjs/jwt';
+import { getRMQConfig } from '@app/common/configs';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 

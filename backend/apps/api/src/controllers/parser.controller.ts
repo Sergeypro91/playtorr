@@ -1,7 +1,6 @@
 import {
 	Post,
 	Body,
-	UseGuards,
 	Controller,
 	HttpException,
 	HttpStatus,
@@ -23,7 +22,6 @@ import {
 	GetTorrentsResponseDto,
 } from '@app/common';
 import { RMQError, RMQService } from 'nestjs-rmq';
-import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Parser')
 @Controller('parser')
@@ -34,7 +32,6 @@ export class ParserController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	@UseGuards(AuthenticatedGuard)
 	@Post('parse')
 	async parsePictureTorrents(
 		@Body() query: ParsePictureTorrentsRequestDto,
@@ -58,7 +55,6 @@ export class ParserController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	@UseGuards(AuthenticatedGuard)
 	@Post()
 	async getPictureTorrents(
 		@Body() query: GetTorrentsRequestDto,

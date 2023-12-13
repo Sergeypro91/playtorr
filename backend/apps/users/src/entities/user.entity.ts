@@ -9,12 +9,14 @@ export class UserEntity implements IUser {
 	passwordHash: string;
 	userName?: string;
 	image?: string;
+	refreshTokenHash?: string;
 
 	constructor(user: Omit<IUser, 'passwordHash'>) {
 		this.email = user.email;
 		this.role = user.role;
 		this.userName = user.userName;
 		this.image = user.image;
+		this.refreshTokenHash = user.refreshTokenHash;
 	}
 
 	public async setPassword(password: string) {

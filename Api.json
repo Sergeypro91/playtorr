@@ -1,0 +1,2365 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/test": {
+      "post": {
+        "operationId": "TestController_checkIn",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Test"
+        ]
+      }
+    },
+    "/api/image/{imageSize}/{imageName}": {
+      "get": {
+        "operationId": "ImageController_getImage",
+        "summary": "Получение трендов фильмов/сериалов",
+        "parameters": [
+          {
+            "name": "imageSize",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "imageName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Image"
+        ]
+      }
+    },
+    "/api/auth/local/signup": {
+      "post": {
+        "operationId": "AuthController_signupLocal",
+        "summary": "Регистрация пользователя",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupLocalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserWithoutPasswordDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/local/signin": {
+      "post": {
+        "operationId": "AuthController_signinLocal",
+        "summary": "Авторизация пользователя",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SigninLocalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "summary": "Выход из профиля",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refreshTokens",
+        "summary": "Обновления accessToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "operationId": "UsersController_getUser",
+        "summary": "Получение данных пользователя",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WrappedUserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_editUser",
+        "summary": "Редактирование данных пользователя",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_deleteUser",
+        "summary": "Удаление пользователя",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users": {
+      "post": {
+        "operationId": "UsersController_getUsers",
+        "summary": "Получение данных пользователей",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsersEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WrappedUsersDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/file": {
+      "post": {
+        "operationId": "MinIOController_uploadFile",
+        "summary": "Загрузка файлов на сервер",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUrlDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "File"
+        ]
+      },
+      "delete": {
+        "operationId": "MinIOController_deleteFile",
+        "summary": "Удаление файлов с сервера",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeletedFileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletingConfirmDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "File"
+        ]
+      }
+    },
+    "/api/parser/parse": {
+      "post": {
+        "operationId": "ParserController_parsePictureTorrents",
+        "summary": "Парсинг торрентов по фильму/сериалу из запроса",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParsePictureTorrentsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParsePictureTorrentsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Parser"
+        ]
+      }
+    },
+    "/api/parser": {
+      "post": {
+        "operationId": "ParserController_getPictureTorrents",
+        "summary": "Получение торрент файлов по заданному запросу",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetTorrentsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetTorrentsResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Parser"
+        ]
+      }
+    },
+    "/api/person/{tmdbId}": {
+      "get": {
+        "operationId": "PersonController_getPersonData",
+        "summary": "Получение данных по Личности",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDataDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Person"
+        ]
+      }
+    },
+    "/api/picture": {
+      "get": {
+        "operationId": "PictureController_search",
+        "summary": "Поиск фильма/сериала по запросу",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mediaType",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "all",
+                "movie",
+                "tv",
+                "person"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Picture"
+        ]
+      }
+    },
+    "/api/picture/{tmdbId}/{mediaType}": {
+      "get": {
+        "operationId": "PictureController_getPictureData",
+        "summary": "Получение даных о фильме/сериале",
+        "parameters": [
+          {
+            "name": "tmdbId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mediaType",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "all",
+                "movie",
+                "tv",
+                "person"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "imdbId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          {
+            "name": "appends",
+            "required": false,
+            "in": "query",
+            "description": "May contain additional data in the request - \"videos,images,credits\"",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPictureResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Picture"
+        ]
+      }
+    },
+    "/api/picture/trends/{mediaType}/{timeWindow}": {
+      "get": {
+        "operationId": "PictureController_getPictureTrends",
+        "summary": "Получение трендов фильмов/сериалов",
+        "parameters": [
+          {
+            "name": "mediaType",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "all",
+                "movie",
+                "tv",
+                "person"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeWindow",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "day",
+                "week"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPictureTrendsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Picture"
+        ]
+      }
+    },
+    "/api/picture/network/{mediaType}/{network}": {
+      "get": {
+        "operationId": "PictureController_getNetworkPictures",
+        "summary": "Получение фильмов/сериалов определенной компании",
+        "parameters": [
+          {
+            "name": "mediaType",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "all",
+                "movie",
+                "tv",
+                "person"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "network",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetNetworkPicturesResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Picture"
+        ]
+      }
+    },
+    "/api/picture/recent-viewed": {
+      "get": {
+        "operationId": "PictureController_getRecentViewedPictures",
+        "summary": "Получение перечня недавно просматриваемых фильмов/сериалов",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetPictureResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Picture"
+        ]
+      }
+    },
+    "/api/preview": {
+      "get": {
+        "operationId": "PublicPreviewController_getPreview",
+        "summary": "JSON объект трендов Фильмов/Сериалов для Samsung PublicPreview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPreviewResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "PublicPreview"
+        ]
+      }
+    },
+    "/api/webtorrent": {
+      "get": {
+        "operationId": "WebtorrentController_getTorrentInfo",
+        "summary": "Получение информации о торрент файле",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetTorrentDistributionInfoRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTorrentDistributionInfoResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Webtorrent"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "PlayTorr.API",
+    "description": "PlayTorr <a href=\"/api-json\">API JSON docs</a>",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "SignupLocalDto": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userName",
+          "email",
+          "password"
+        ]
+      },
+      "UserWithoutPasswordDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "guest",
+              "member",
+              "premium",
+              "blocked"
+            ],
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "_id",
+          "role",
+          "email"
+        ]
+      },
+      "ErrorDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "statusCode",
+          "message"
+        ]
+      },
+      "SigninLocalDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "TokensDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "WrappedUserDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserWithoutPasswordDto"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "UsersEmailDto": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "users"
+        ]
+      },
+      "WrappedUsersDto": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserWithoutPasswordDto"
+            }
+          }
+        },
+        "required": [
+          "users"
+        ]
+      },
+      "Request": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "guest",
+              "member",
+              "premium",
+              "blocked"
+            ],
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          },
+          "refreshTokenHash": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "_id"
+        ]
+      },
+      "Response": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "guest",
+              "member",
+              "premium",
+              "blocked"
+            ],
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "_id",
+          "role",
+          "email"
+        ]
+      },
+      "FileUrlDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DeletedFileDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DeletingConfirmDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ParsePictureTorrentsRequestDto": {
+        "type": "object",
+        "properties": {
+          "tmdbId": {
+            "type": "string"
+          },
+          "imdbId": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaType": {
+            "type": "string",
+            "enum": [
+              "all",
+              "movie",
+              "tv",
+              "person"
+            ]
+          },
+          "searchQuery": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "tmdbId",
+          "mediaType",
+          "searchQuery"
+        ]
+      },
+      "TorrentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          },
+          "seeders": {
+            "type": "string",
+            "nullable": true
+          },
+          "leeches": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "size",
+          "link",
+          "seeders",
+          "leeches"
+        ]
+      },
+      "GetTorrentsResponseDto": {
+        "type": "object",
+        "properties": {
+          "trackerLabel": {
+            "type": "string"
+          },
+          "torrents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TorrentDto"
+            }
+          },
+          "trackerStatus": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updating",
+              "finished",
+              "warning",
+              "error"
+            ]
+          },
+          "lastUpdate": {
+            "type": "string"
+          },
+          "trackerMessage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "trackerLabel",
+          "torrents",
+          "trackerStatus",
+          "lastUpdate",
+          "trackerMessage"
+        ]
+      },
+      "ParsePictureTorrentsResponseDto": {
+        "type": "object",
+        "properties": {
+          "searchQuery": {
+            "type": "string"
+          },
+          "searchStatus": {
+            "enum": [
+              "created",
+              "updating",
+              "finished",
+              "warning",
+              "error"
+            ],
+            "type": "string"
+          },
+          "trackers": {
+            "type": "array",
+            "items": {
+              "required": true,
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/GetTorrentsResponseDto"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "searchQuery",
+          "searchStatus",
+          "trackers",
+          "message"
+        ]
+      },
+      "GetTorrentsRequestDto": {
+        "type": "object",
+        "properties": {
+          "tmdbId": {
+            "type": "string"
+          },
+          "imdbId": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaType": {
+            "type": "string",
+            "enum": [
+              "all",
+              "movie",
+              "tv",
+              "person"
+            ]
+          },
+          "searchQuery": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "tmdbId",
+          "mediaType",
+          "searchQuery"
+        ]
+      },
+      "PersonDetailDataDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "MovieSlim": {
+        "type": "object",
+        "properties": {
+          "tmdbId": {
+            "type": "string"
+          },
+          "mediaType": {
+            "type": "string"
+          },
+          "posterPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "hPosterPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "backdropPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "originalTitle": {
+            "type": "string"
+          },
+          "overview": {
+            "type": "string",
+            "nullable": true
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "releaseDate": {
+            "type": "string"
+          },
+          "popularity": {
+            "type": "number"
+          },
+          "voteAverage": {
+            "type": "number"
+          },
+          "trailer": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "tmdbId",
+          "mediaType",
+          "posterPath",
+          "hPosterPath",
+          "backdropPath",
+          "title",
+          "originalTitle",
+          "overview",
+          "genres",
+          "releaseDate",
+          "popularity",
+          "voteAverage",
+          "trailer"
+        ]
+      },
+      "TvSlim": {
+        "type": "object",
+        "properties": {
+          "tmdbId": {
+            "type": "string"
+          },
+          "mediaType": {
+            "type": "string"
+          },
+          "posterPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "hPosterPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "backdropPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "originalTitle": {
+            "type": "string"
+          },
+          "overview": {
+            "type": "string"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "releaseDate": {
+            "type": "string"
+          },
+          "popularity": {
+            "type": "number"
+          },
+          "voteAverage": {
+            "type": "number"
+          },
+          "trailer": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "tmdbId",
+          "mediaType",
+          "posterPath",
+          "hPosterPath",
+          "backdropPath",
+          "title",
+          "originalTitle",
+          "overview",
+          "genres",
+          "releaseDate",
+          "popularity",
+          "voteAverage",
+          "trailer"
+        ]
+      },
+      "PersonSlim": {
+        "type": "object",
+        "properties": {
+          "tmdbId": {
+            "type": "string"
+          },
+          "mediaType": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "profilePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "popularity": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "tmdbId",
+          "mediaType",
+          "name",
+          "profilePath",
+          "popularity"
+        ]
+      },
+      "SearchResultDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "totalPages": {
+            "type": "number"
+          },
+          "totalResults": {
+            "type": "number"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/MovieSlim"
+                },
+                {
+                  "$ref": "#/components/schemas/TvSlim"
+                },
+                {
+                  "$ref": "#/components/schemas/PersonSlim"
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "page",
+          "totalPages",
+          "totalResults",
+          "results"
+        ]
+      },
+      "GenresDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "CompanyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "logoPath": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "logoPath"
+        ]
+      },
+      "VideoDto": {
+        "type": "object",
+        "properties": {
+          "iso": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "site": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string"
+          },
+          "official": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "key",
+          "site",
+          "size",
+          "type",
+          "official",
+          "publishedAt"
+        ]
+      },
+      "ResultsVideoObjDto": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VideoDto"
+            }
+          }
+        },
+        "required": [
+          "results"
+        ]
+      },
+      "ParticipantPersonDto": {
+        "type": "object",
+        "properties": {
+          "tmdbId": {
+            "type": "number"
+          },
+          "department": {
+            "type": "string"
+          },
+          "job": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "originalName": {
+            "type": "string"
+          },
+          "character": {
+            "type": "string",
+            "nullable": true
+          },
+          "popularity": {
+            "type": "number"
+          },
+          "profilePath": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "tmdbId",
+          "department",
+          "job",
+          "name",
+          "originalName",
+          "character",
+          "popularity",
+          "profilePath"
+        ]
+      },
+      "CreditsDto": {
+        "type": "object",
+        "properties": {
+          "cast": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParticipantPersonDto"
+            }
+          },
+          "crew": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParticipantPersonDto"
+            }
+          }
+        },
+        "required": [
+          "cast",
+          "crew"
+        ]
+      },
+      "ImageDto": {
+        "type": "object",
+        "properties": {
+          "aspectRatio": {
+            "type": "number"
+          },
+          "filePath": {
+            "type": "string"
+          },
+          "height": {
+            "type": "number"
+          },
+          "iso": {
+            "type": "string",
+            "nullable": true
+          },
+          "voteAverage": {
+            "type": "number"
+          },
+          "width": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "aspectRatio",
+          "filePath",
+          "height",
+          "iso",
+          "voteAverage",
+          "width"
+        ]
+      },
+      "ImagesDto": {
+        "type": "object",
+        "properties": {
+          "backdrops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageDto"
+            }
+          },
+          "logos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageDto"
+            }
+          },
+          "posters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageDto"
+            }
+          }
+        },
+        "required": [
+          "backdrops",
+          "logos",
+          "posters"
+        ]
+      },
+      "MovieDto": {
+        "type": "object",
+        "properties": {
+          "backdropPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "budget": {
+            "type": "number"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenresDto"
+            }
+          },
+          "originalTitle": {
+            "type": "string"
+          },
+          "overview": {
+            "type": "string",
+            "nullable": true
+          },
+          "popularity": {
+            "type": "number"
+          },
+          "posterPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "production": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompanyDto"
+            }
+          },
+          "releaseDate": {
+            "type": "string"
+          },
+          "revenue": {
+            "type": "number"
+          },
+          "runtime": {
+            "type": "number",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Rumored",
+              "Planned",
+              "In Production",
+              "Post Production",
+              "Released",
+              "Canceled"
+            ]
+          },
+          "tagline": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "voteAverage": {
+            "type": "number"
+          },
+          "videos": {
+            "$ref": "#/components/schemas/ResultsVideoObjDto"
+          },
+          "credits": {
+            "$ref": "#/components/schemas/CreditsDto"
+          },
+          "images": {
+            "$ref": "#/components/schemas/ImagesDto"
+          }
+        },
+        "required": [
+          "backdropPath",
+          "budget",
+          "genres",
+          "originalTitle",
+          "overview",
+          "popularity",
+          "posterPath",
+          "production",
+          "releaseDate",
+          "revenue",
+          "runtime",
+          "status",
+          "tagline",
+          "title",
+          "voteAverage",
+          "videos",
+          "credits",
+          "images"
+        ]
+      },
+      "GetPictureResponseDto": {
+        "type": "object",
+        "properties": {
+          "tmdbId": {
+            "type": "string"
+          },
+          "imdbId": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaType": {
+            "enum": [
+              "all",
+              "movie",
+              "tv",
+              "person"
+            ],
+            "type": "string"
+          },
+          "pictureData": {
+            "$ref": "#/components/schemas/MovieDto"
+          }
+        },
+        "required": [
+          "tmdbId",
+          "mediaType",
+          "pictureData"
+        ]
+      },
+      "GetPictureTrendsResponseDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "totalPages": {
+            "type": "number"
+          },
+          "totalResults": {
+            "type": "number"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/MovieSlim"
+                },
+                {
+                  "$ref": "#/components/schemas/TvSlim"
+                },
+                {
+                  "$ref": "#/components/schemas/PersonSlim"
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "page",
+          "totalPages",
+          "totalResults",
+          "results"
+        ]
+      },
+      "GetNetworkPicturesResponseDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "totalPages": {
+            "type": "number"
+          },
+          "totalResults": {
+            "type": "number"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/MovieSlim"
+                },
+                {
+                  "$ref": "#/components/schemas/TvSlim"
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "page",
+          "totalPages",
+          "totalResults",
+          "results"
+        ]
+      },
+      "GetPreviewResultDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GetTorrentDistributionInfoRequestDto": {
+        "type": "object",
+        "properties": {
+          "tmdbId": {
+            "type": "string"
+          },
+          "imdbId": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaType": {
+            "enum": [
+              "all",
+              "movie",
+              "tv",
+              "person"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "tmdbId",
+          "mediaType"
+        ]
+      },
+      "GetTorrentDistributionInfoResponseDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

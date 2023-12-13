@@ -1,7 +1,6 @@
 import { RMQError, RMQService } from 'nestjs-rmq';
 import {
 	Get,
-	UseGuards,
 	Controller,
 	HttpException,
 	HttpStatus,
@@ -21,7 +20,6 @@ import {
 	PersonDetailDataDto,
 	PersonGetPersonData,
 } from '@app/common';
-import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Person')
 @Controller('person')
@@ -34,7 +32,6 @@ export class PersonController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	@UseGuards(AuthenticatedGuard)
 	@Get(':tmdbId')
 	async getPersonData(
 		@Param() param: GetPersonDataDto,

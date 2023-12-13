@@ -22,6 +22,9 @@ export class User
 
 	@Prop()
 	image?: string;
+
+	@Prop()
+	refreshTokenHash?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

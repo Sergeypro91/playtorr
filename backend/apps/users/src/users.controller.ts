@@ -6,8 +6,9 @@ import {
 	UsersCreateUser,
 	UsersDeleteUser,
 	UsersFindUserById,
-	UsersGetUserUnsafe,
 	UsersFindUserByEmail,
+	UsersGetUserUnsafeById,
+	UsersGetUserUnsafeByEmail,
 } from '@app/common/contracts';
 import { UsersService } from './users.service';
 
@@ -27,32 +28,40 @@ export class UsersController {
 	@RMQRoute(UsersFindUserById.topic)
 	async findUserById(
 		@Body() { id }: UsersFindUserById.Request,
-	): Promise<UsersFindUserById.Response> {
-		return this.userService.findUserById(id);
+	): Promise<null | UsersFindUserById.Response> {
+		return { user: await this.userService.findUserById(id) };
 	}
 
 	@RMQValidate()
 	@RMQRoute(UsersFindUserByEmail.topic)
 	async findUserByEmail(
 		@Body() { email }: UsersFindUserByEmail.Request,
-	): Promise<UsersFindUserByEmail.Response> {
-		return this.userService.findUserByEmail(email);
+	): Promise<null | UsersFindUserByEmail.Response> {
+		return { user: await this.userService.findUserByEmail(email) };
 	}
 
 	@RMQValidate()
 	@RMQRoute(UsersGetUsers.topic)
 	async getUsers(
 		@Body() { users }: UsersGetUsers.Request,
-	): Promise<UsersGetUsers.Response[]> {
-		return this.userService.getUsers({ users });
+	): Promise<UsersGetUsers.Response> {
+		return { users: await this.userService.getUsers({ users }) };
 	}
 
 	@RMQValidate()
-	@RMQRoute(UsersGetUserUnsafe.topic)
-	async getUserUnsafe(
-		@Body() { email }: UsersGetUserUnsafe.Request,
-	): Promise<UsersGetUserUnsafe.Response> {
-		return this.userService.getUserUnsafe(email);
+	@RMQRoute(UsersGetUserUnsafeById.topic)
+	async getUserUnsafeById(
+		@Body() { id }: UsersGetUserUnsafeById.Request,
+	): Promise<UsersGetUserUnsafeById.Response> {
+		return { user: await this.userService.getUserUnsafeById(id) };
+	}
+
+	@RMQValidate()
+	@RMQRoute(UsersGetUserUnsafeByEmail.topic)
+	async getUserUnsafeByEmail(
+		@Body() { email }: UsersGetUserUnsafeByEmail.Request,
+	): Promise<UsersGetUserUnsafeByEmail.Response> {
+		return { user: await this.userService.getUserUnsafeByEmail(email) };
 	}
 
 	@RMQValidate()

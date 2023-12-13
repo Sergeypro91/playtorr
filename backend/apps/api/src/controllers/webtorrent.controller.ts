@@ -1,7 +1,6 @@
 import {
 	Get,
 	Body,
-	UseGuards,
 	Controller,
 	HttpStatus,
 	HttpException,
@@ -15,14 +14,11 @@ import {
 } from '@nestjs/swagger';
 import {
 	ErrorDto,
-	ParsePictureTorrentsResponseDto,
 	GetTorrentDistributionInfoRequestDto,
 	GetTorrentDistributionInfo,
-	WebTorrentInfoDto,
 	GetTorrentDistributionInfoResponseDto,
 } from '@app/common/contracts';
 import { RMQError, RMQService } from 'nestjs-rmq';
-import { AuthenticatedGuard } from '../guards';
 
 @ApiTags('Webtorrent')
 @Controller('webtorrent')
@@ -33,7 +29,6 @@ export class WebtorrentController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiNotFoundResponse({ type: ErrorDto })
-	@UseGuards(AuthenticatedGuard)
 	@Get()
 	async getTorrentInfo(
 		@Body() dto: GetTorrentDistributionInfoRequestDto,

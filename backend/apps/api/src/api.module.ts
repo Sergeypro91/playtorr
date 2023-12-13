@@ -1,24 +1,25 @@
+import { join } from 'path';
 import { RMQModule } from 'nestjs-rmq';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { configSession, getRMQConfig } from '@app/common/configs';
+import { Module } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
+import { getRMQConfig } from '@app/common/configs';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import {
 	TestController,
 	AuthController,
 	UsersController,
 	MinIOController,
+	ImageController,
 	ParserController,
 	PersonController,
 	PictureController,
 	WebtorrentController,
 	PublicPreviewController,
-	ImageController,
 } from './controllers';
-import { RolesGuard } from './guards';
+import { ApiService } from './api.service';
 import { LoggerModule } from './logger/logger.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
-import { JwtService } from '@nestjs/jwt';
+import { AccessStrategy, RefreshStrategy, GoogleStrategy } from './strategies';
 
 @Module({
 	controllers: [
@@ -30,8 +31,8 @@ import { JwtService } from '@nestjs/jwt';
 		ParserController,
 		PersonController,
 		PictureController,
-		PublicPreviewController,
 		WebtorrentController,
+		PublicPreviewController,
 	],
 	imports: [
 		ConfigModule.forRoot({
@@ -51,12 +52,12 @@ import { JwtService } from '@nestjs/jwt';
 		RMQModule.forRootAsync(getRMQConfig()),
 		LoggerModule,
 	],
-	providers: [RolesGuard, JwtService],
+	providers: [
+		JwtService,
+		ApiService,
+		AccessStrategy,
+		RefreshStrategy,
+		GoogleStrategy,
+	],
 })
-export class ApiModule implements NestModule {
-	constructor(private readonly configService: ConfigService) {}
-
-	configure(consumer: MiddlewareConsumer) {
-		return configSession(consumer, this.configService);
-	}
-}
+export class ApiModule {}

@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator';
-import { UserWithoutPasswordDto } from '../dtos';
+import { WrappedUserDto } from '../dtos';
 
 export namespace UsersFindUserById {
 	export const topic = 'users.findUserById.command';
@@ -9,5 +9,5 @@ export namespace UsersFindUserById {
 		id: string;
 	}
 
-	export class Response extends UserWithoutPasswordDto {}
+	export class Response extends WrappedUserDto {}
 }

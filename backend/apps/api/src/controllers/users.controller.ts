@@ -18,6 +18,10 @@ import {
 } from '@nestjs/swagger';
 import {
 	ErrorDto,
+	UsersEmailDto,
+	WrappedUserDto,
+	WrappedUsersDto,
+	UserWithoutPasswordDto,
 	UsersGetUsers,
 	UsersEditUser,
 	UsersDeleteUser,
@@ -34,11 +38,11 @@ export class UsersController {
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiForbiddenResponse({ type: ErrorDto })
 	@Get(':id')
-	async getUser(@Param('id') id: string) {
+	async getUser(@Param('id') id: string): Promise<WrappedUserDto> {
 		try {
 			return await this.rmqService.send<
 				UsersFindUserById.Request,
-				UsersFindUserById.Response[]
+				UsersFindUserById.Response
 			>(UsersFindUserById.topic, { id });
 		} catch (error) {
 			if (error instanceof RMQError) {
@@ -52,11 +56,11 @@ export class UsersController {
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiForbiddenResponse({ type: ErrorDto })
 	@Post()
-	async getUsers(@Body() users: UsersGetUsers.Request) {
+	async getUsers(@Body() users: UsersEmailDto): Promise<WrappedUsersDto> {
 		try {
 			return await this.rmqService.send<
 				UsersGetUsers.Request,
-				UsersGetUsers.Response[]
+				UsersGetUsers.Response
 			>(UsersGetUsers.topic, users);
 		} catch (error) {
 			if (error instanceof RMQError) {
@@ -70,7 +74,7 @@ export class UsersController {
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiForbiddenResponse({ type: ErrorDto })
 	@Patch(':id')
-	async editUser(@Body() editableUser: UsersEditUser.Request) {
+	async editUser(@Body() editableUser: UserWithoutPasswordDto) {
 		try {
 			return await this.rmqService.send<
 				UsersEditUser.Request,

@@ -1,9 +1,9 @@
+import * as process from 'process';
 import * as cookieParser from 'cookie-parser';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { setupCors, setupSwagger } from '@app/common/configs';
 import { ApiModule } from './api.module';
-import * as process from 'process';
 
 async function bootstrap() {
 	const app = await NestFactory.create(ApiModule);

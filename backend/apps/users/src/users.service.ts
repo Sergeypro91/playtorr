@@ -4,11 +4,11 @@ import {
 	ALREADY_REGISTERED_EMAIL_ERROR,
 } from '@app/common/constants';
 import {
+	UserDto,
 	NewUserDto,
 	UsersEmailDto,
 	EditableUserDto,
 	UserWithoutPasswordDto,
-	UserDto,
 } from '@app/common/contracts';
 import { Role } from '@app/common/types';
 import { UserEntity } from './entities';
@@ -24,7 +24,8 @@ export class UsersService {
 
 	public secureUser(user: UserDto): null | UserWithoutPasswordDto {
 		if (user) {
-			const { passwordHash, ...userWithoutPassword } = user;
+			const { passwordHash, refreshTokenHash, ...userWithoutPassword } =
+				user;
 
 			return userWithoutPassword;
 		}
@@ -32,12 +33,10 @@ export class UsersService {
 		return user;
 	}
 
-	public async createUser(
-		newUser: NewUserDto,
-	): Promise<UserWithoutPasswordDto> {
-		const isUserExist = await this.findUserByEmail(newUser.email);
+	public async createUser(newUser: NewUserDto): Promise<UserDto> {
+		const existUser = await this.findUserByEmail(newUser.email);
 
-		if (isUserExist) {
+		if (existUser) {
 			throw new ApiError(
 				HttpStatus.CONFLICT,
 				ALREADY_REGISTERED_EMAIL_ERROR,
@@ -52,9 +51,7 @@ export class UsersService {
 				role: usersCount ? Role.GUEST : Role.ADMIN,
 			}).setPassword(newUser.password);
 
-			return this.secureUser(
-				await this.userRepository.create(newUserEntity),
-			);
+			return this.userRepository.create(newUserEntity);
 		} catch (error) {
 			throw new ApiError(error.statusCode, error.message);
 		}
@@ -72,7 +69,7 @@ export class UsersService {
 
 	public async findUserByEmail(
 		email: string,
-	): Promise<UserWithoutPasswordDto> {
+	): Promise<null | UserWithoutPasswordDto> {
 		try {
 			return this.secureUser(
 				await this.userRepository.findOneByEmail(email),
@@ -92,7 +89,15 @@ export class UsersService {
 		}
 	}
 
-	public async getUserUnsafe(email: string): Promise<UserDto> {
+	public async getUserUnsafeById(id: string): Promise<null | UserDto> {
+		try {
+			return this.userRepository.findOneById(id);
+		} catch (error) {
+			throw new ApiError(error.statusCode, error.message);
+		}
+	}
+
+	public async getUserUnsafeByEmail(email: string): Promise<null | UserDto> {
 		try {
 			return this.userRepository.findOneByEmail(email);
 		} catch (error) {
