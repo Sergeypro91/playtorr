@@ -93,7 +93,6 @@ export class TmdbService {
 	}: GetTmdbPictureRequestDto): Promise<
 		GetTmdbMovieResponseDto | GetTmdbTvResponseDto
 	> {
-		console.log('REQUEST', tmdbId);
 		const queries = new URLSearchParams({
 			append_to_response: appends || 'videos,images,credits',
 		}).toString();

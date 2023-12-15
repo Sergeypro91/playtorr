@@ -15,3 +15,13 @@ export class SignupLocalDto {
 	@IsString()
 	password: string;
 }
+
+export class ActivationDto {
+	@ApiProperty()
+	@IsString()
+	activationToken: string;
+
+	@ApiProperty()
+	@IsString()
+	activationCode: string;
+}

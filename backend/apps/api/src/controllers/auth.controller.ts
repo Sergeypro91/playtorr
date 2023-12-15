@@ -3,14 +3,14 @@ import { RMQError, RMQService } from 'nestjs-rmq';
 import {
 	Req,
 	Res,
+	Get,
 	Post,
-	Controller,
-	HttpException,
 	Body,
-	HttpStatus,
 	HttpCode,
 	UseGuards,
-	Get,
+	HttpStatus,
+	Controller,
+	HttpException,
 } from '@nestjs/common';
 import {
 	ApiTags,
@@ -23,6 +23,7 @@ import { ConfigService } from '@nestjs/config';
 import {
 	ErrorDto,
 	TokensDto,
+	ActivationDto,
 	SignupLocalDto,
 	SigninLocalDto,
 	AuthLogout,
@@ -30,10 +31,11 @@ import {
 	AuthSigninLocal,
 	AuthSignupLocal,
 	AuthRefreshToken,
+	AuthSignupConfirmation,
 } from '@app/common/contracts';
 import {
-	AccessTokenGuard,
 	GoogleAuthGuard,
+	AccessTokenGuard,
 	RefreshTokenGuard,
 } from '../guards';
 import { CurrentUser } from '../decorators';
@@ -52,7 +54,7 @@ export class AuthController {
 	@ApiUnauthorizedResponse({ type: ErrorDto })
 	@ApiBadRequestResponse({ type: ErrorDto })
 	@ApiForbiddenResponse({ type: ErrorDto })
-	@HttpCode(HttpStatus.CREATED)
+	@HttpCode(HttpStatus.OK)
 	@Post('local/signup')
 	async signupLocal(@Body() newUser: SignupLocalDto): Promise<string> {
 		try {
@@ -60,6 +62,32 @@ export class AuthController {
 				AuthSignupLocal.Request,
 				Promise<string>
 			>(AuthSignupLocal.topic, newUser);
+		} catch (error) {
+			if (error instanceof RMQError) {
+				throw new HttpException(error.message, error.code);
+			}
+		}
+	}
+
+	@ApiOperation({ summary: 'Подтверждение регистрации пользователя' })
+	@ApiUnauthorizedResponse({ type: ErrorDto })
+	@ApiBadRequestResponse({ type: ErrorDto })
+	@ApiForbiddenResponse({ type: ErrorDto })
+	@HttpCode(HttpStatus.CREATED)
+	@Post('local/signup/confirmation')
+	async signupConfirmation(
+		@Body() activationData: ActivationDto,
+		@Res({ passthrough: true }) response: Response,
+	): Promise<TokensDto> {
+		try {
+			const tokens = await this.rmqService.send<
+				AuthSignupConfirmation.Request,
+				AuthSignupConfirmation.Response
+			>(AuthSignupConfirmation.topic, activationData);
+
+			this.apiService.setCookies({ response, tokens });
+
+			return tokens;
 		} catch (error) {
 			if (error instanceof RMQError) {
 				throw new HttpException(error.message, error.code);

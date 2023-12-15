@@ -6,6 +6,7 @@ import {
 	AuthSignupLocal,
 	AuthRefreshToken,
 	AuthGoogleAuth,
+	AuthSignupConfirmation,
 } from '@app/common/contracts';
 import { AuthService } from './auth.service';
 
@@ -22,6 +23,14 @@ export class AuthController {
 		@Body() newUser: AuthSignupLocal.Request,
 	): Promise<string> {
 		return this.authService.signupLocal(newUser);
+	}
+
+	@RMQValidate()
+	@RMQRoute(AuthSignupConfirmation.topic)
+	async signupConfirmation(
+		@Body() activationData: AuthSignupConfirmation.Request,
+	): Promise<AuthSignupConfirmation.Response> {
+		return this.authService.signupConfirmation(activationData);
 	}
 
 	@RMQValidate()

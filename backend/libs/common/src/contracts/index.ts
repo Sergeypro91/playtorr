@@ -1,5 +1,6 @@
 export * from './errors.dto';
 export * from './auth';
+export * from './mailer';
 export * from './minio';
 export * from './parser';
 export * from './person';

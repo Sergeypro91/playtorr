@@ -39,6 +39,5 @@ export class ApiService {
 			sameSite: 'strict',
 			expires: new Date(Date.now() + refreshTokenTtl),
 		});
-		console.log('ENTER TO API SERVICE 3');
 	}
 }

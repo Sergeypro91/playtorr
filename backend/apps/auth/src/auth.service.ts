@@ -1,8 +1,8 @@
 import { compare, genSalt, hash } from 'bcryptjs';
-import { RMQError, RMQService } from 'nestjs-rmq';
+import { RMQService } from 'nestjs-rmq';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import {
 	TokensDto,
 	SigninLocalDto,
@@ -15,12 +15,18 @@ import {
 	UsersGetUserUnsafeByEmail,
 	AuthRefreshTokenDto,
 	GoogleUserDto,
+	NewUserDto,
+	MailerSendEmail,
+	ActivationDto,
+	UserDto,
 } from '@app/common/contracts';
 import {
 	ApiError,
-	WRONG_PASSWORD_ERROR,
-	WRONG_CREDENTIALS_ERROR,
 	FORBIDDEN_ERROR,
+	WRONG_PASSWORD_ERROR,
+	SIGNUP_CONFIRM_ERROR,
+	WRONG_CREDENTIALS_ERROR,
+	SIGNUP_EXPIRED_ERROR,
 } from '@app/common/constants';
 import { JWTPayload } from '@app/common/types';
 
@@ -36,13 +42,69 @@ export class AuthService {
 		this.logger = new Logger(AuthService.name);
 	}
 
-	public async signupLocal(newUser: SignupLocalDto) {
-		const user = await this.rmqService.send<
-			UsersCreateUser.Request,
-			UsersCreateUser.Response
-		>(UsersCreateUser.topic, newUser);
+	public async createActivationToken(
+		newUser: NewUserDto,
+	): Promise<ActivationDto> {
+		const activationCode = Math.floor(
+			1000 + Math.random() * 9000,
+		).toString();
+		const activationToken = this.jwtService.sign(
+			{
+				newUser,
+				activationCode,
+			},
+			{
+				secret: this.configService.get('ACTIVATION_SECRET'),
+				expiresIn: '5m',
+			},
+		);
 
-		return `User "${user.userName}" - was created, confirmation send on your email`;
+		return { activationToken, activationCode };
+	}
+
+	public async signupLocal(newUser: SignupLocalDto): Promise<string> {
+		const activationData = await this.createActivationToken(newUser);
+		await this.rmqService.send<MailerSendEmail.Request, Promise<true>>(
+			MailerSendEmail.topic,
+			{
+				to: newUser.email,
+				subject: 'Tor - confirmation Email',
+				text: `Greetings. To register in the application, you were sent a confirmation code - ${activationData.activationCode}. If you have not registered in "Tor" application, simply ignore this message.`,
+			},
+		);
+
+		return activationData.activationToken;
+	}
+
+	public async signupConfirmation({
+		activationToken,
+		activationCode,
+	}: ActivationDto): Promise<TokensDto> {
+		let activationData: { newUser: NewUserDto; activationCode: string };
+
+		try {
+			activationData = this.jwtService.verify(activationToken, {
+				secret: this.configService.get('ACTIVATION_SECRET'),
+			});
+		} catch (error) {
+			throw new ApiError(HttpStatus.UNAUTHORIZED, SIGNUP_EXPIRED_ERROR);
+		}
+
+		if (
+			activationData.newUser &&
+			activationData.activationCode === activationCode
+		) {
+			const user = await this.rmqService.send<
+				UsersCreateUser.Request,
+				UsersCreateUser.Response
+			>(UsersCreateUser.topic, activationData.newUser);
+			const tokens = await this.generateTokens(user);
+			await this.storeRefreshToken(user._id, tokens.refreshToken);
+
+			return tokens;
+		}
+
+		throw new ApiError(HttpStatus.UNAUTHORIZED, SIGNUP_CONFIRM_ERROR);
 	}
 
 	public async signinLocal({
@@ -68,7 +130,6 @@ export class AuthService {
 		}
 
 		const tokens = await this.generateTokens(user);
-
 		await this.storeRefreshToken(user._id, tokens.refreshToken);
 
 		return tokens;
@@ -121,7 +182,6 @@ export class AuthService {
 		}
 
 		const tokens = await this.generateTokens(user);
-
 		await this.storeRefreshToken(user._id, tokens.refreshToken);
 
 		return tokens;

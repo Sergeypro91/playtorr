@@ -1,5 +1,6 @@
 export * from './auth.controller';
 export * from './image.controller';
+export * from './mailer.controller';
 export * from './minio.controller';
 export * from './parser.controller';
 export * from './person.controller';
